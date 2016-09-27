@@ -1,6 +1,7 @@
+#!/usr/bin/perl
 use File::Find::Rule;
 
-@exts = qw<*.h *.cpp *.hpp *.java>;
+@exts = qw<*.h *.hpp *.hqt *.cpp *.java>;
 if (not @ARGV) { @ARGV = ('.') };
 
 $finder = File::Find::Rule->new;
@@ -37,10 +38,8 @@ for $file (@files)
 		print $fout $_;
 	}
 	
-	truncate $fout, tell $fout;	
-}
-continue
-{
-	close $fin;
+	
+	truncate $fout, tell $fout;
 	close $fout;
+	close $fin;
 }
