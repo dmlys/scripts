@@ -1,0 +1,1 @@
+configure.bat -prefix D:\Projects\thirdparty_work\qt-5.4.0-vc14-x64 -opensource -confirm-license -debug-and-release -force-debug-info -c++11 -nomake tests -nomake examples -opengl desktop -no-icu -no-angle -no-plugin-manifests -mp

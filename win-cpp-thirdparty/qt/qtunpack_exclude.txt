@@ -1,0 +1,17 @@
+*\qtquickcontrols
+*\qtgraphicaleffects
+*\qtconnectivity
+*\qtmultimedia
+*\qtwebchannel
+*\qtwebengine
+*\qtcanvas3d
+*\qtandroidextras
+*\qtlocation
+*\qtwebkit
+*\qt3d
+*\qtwebkit-examples
+*\qtdeclarative
+*\qtwayland
+*\qtwebsockets
+*\qtquick1
+*\qtsensors
