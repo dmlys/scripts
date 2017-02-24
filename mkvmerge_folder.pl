@@ -81,7 +81,7 @@ sub readfolder
 	# unqoute if quoted, add .* if $in is a folder
 	$in = $1 if $in =~ /^"(.*)"$/;
 	$in = encode('locale_fs', $in);
-	$in .= '\\*' if -d $in;
+	$in = catfile($in, '*') if -d $in;
 		
 	@files = grep { /$rgx/ }
 	         map  { decode('locale_fs', $_, Encode::FB_CROAK) }
