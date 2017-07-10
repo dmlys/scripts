@@ -17,12 +17,10 @@ if "%1" == "deploy"    goto deploy
 pushd %boost_dir%
 
 setlocal
-call vc141vars x86
 b2 stage --stagedir=..\%stage_dir86% --build-dir=..\boost-build runtime-link=static,shared address-model=32 -j4
 endlocal
 
 setlocal
-call vc141vars x64
 b2 stage --stagedir=..\%stage_dir64% --build-dir=..\boost-build runtime-link=static,shared address-model=64 -j4
 endlocal
 popd

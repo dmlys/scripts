@@ -3,7 +3,7 @@ use File::Copy;
 use File::Path qw<make_path>;
 
 our $ver = '1.2.8';
-our $vcver = 'vc14';
+our $vcver = 'vc14.1';
 our $name = 'zlib';
 our $arname86 = "$name-$ver-$vcver-x86.zip";
 our $arname64 = "$name-$ver-$vcver-x64.zip";

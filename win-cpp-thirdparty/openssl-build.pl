@@ -9,9 +9,9 @@ use autodie qw/:all/;
 
 $src_dir = '.';
 
-$vcvars = 'vc14vars';
-$vcver  = '14';
-$openssl_ver = 'openssl-1.1.0e';
+$vcvars = 'vc141vars';
+$vcver  = '14.1';
+$openssl_ver = 'openssl-1.1.0f';
 $config_opts = 'no-hw no-shared no-asm no-zlib';
 
 %env_x86 = read_env("$vcvars x86");
