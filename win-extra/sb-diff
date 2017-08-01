@@ -1,0 +1,146 @@
+#!/usr/bin/perl
+=head1 NAME
+
+sb-diff - source win bat file, print diff as bash export statements
+
+=head1 SYNOPSIS
+
+sb-diff ${some.bat} ${bat.args}
+
+=head1 DESCRIPTION
+
+This script is used to calculate difference of environment variables before invoking bat file in cmd, and after.
+First it invokes cmd /c set to get clean envorinment.
+Second it invokes cmd /c $@ > null 2>&1 && set to get sourced envorinment.
+Then it compres them and prints export $VAR=$VAL statements to stdout, which can be sourced by bash script
+
+It specially handles PATH variable, transforming paths \w: -> /$1,
+and using ':' as separator instead of ';', as MSYS expects
+  
+=head1 BUGS
+
+perl that comes with MSYS can hang on execution of child processes with cmd, try using fresh installation of ActiveState perl
+
+=head1 Examples
+
+  sb-diff "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64  
+
+=cut
+
+
+use strict;
+use Data::Dumper;
+
+my $env_cmd = join ' ', @ARGV;
+my $env_clean   = `cmd /c set`;
+my $env_sourced = `cmd /c "$env_cmd > nul 2>&1 && set"`;
+
+sub path_like;
+sub parse_env;
+sub parse_envvar;
+sub compare_env;
+sub set_diff;
+sub make_export;
+
+my %vars_clean    = parse_env($env_clean);
+my %vars_sourced  = parse_env($env_sourced);
+my %diff          = compare_env(\%vars_clean, \%vars_sourced);
+
+while (my ($k, $v) = each %diff)
+{
+	print make_export($k, $v);
+}
+
+exit;
+
+sub path_like
+{
+	my $name = shift || $_;
+	return scalar grep { lc $name eq lc $_ } qw<PATH INCLUDE LIB LIBPATH>;
+}
+
+sub make_export
+{
+	my $name = shift;
+	my $val = shift;
+	
+	if (not ref $val)
+	{
+		return "export $name='$val'\n";
+	}
+	elsif (ref $val eq 'ARRAY')
+	{
+		if (lc $name eq lc 'PATH') # special handling of PATH variable
+		{
+			for my $p (@$val)
+			{
+				# transform c: -> /c for msys bash
+				$p =~ s!^(\w):!'/'.lc($1)!ge;
+				$p =~ s!\\!/!g;
+			}
+			
+			my $val = join ':', @$val;
+			return "export PATH='\$PATH:$val'\n";
+		}
+		else
+		{
+			my $val = join ';', @$val;
+			return "export $name='\$$name;$val'\n";
+		}		
+	}
+}
+
+sub parse_envvar
+{
+	my $env = shift || $_;
+	my ($name, $val) = $env =~ /^([^=]+)=(.*)/;
+	
+	return ($name, path_like($name) ? [split ';', $val] : $val);
+}
+
+sub parse_env
+{
+	my $test = shift || $_;
+	
+	open my  $fh, '<:crlf', \$test or die;	
+	my %env = map { chomp; parse_envvar $_; } <$fh>;
+	close $fh;
+	
+	return %env;
+}
+
+sub set_diff
+{
+	my $old = shift;
+	my $new = shift;
+	
+	my %old_set; $old_set{$_}++ for @$old;
+	
+	return grep { not $old_set{$_} } @$new;
+}
+
+
+sub compare_env
+{
+	my ($clean, $sourced) = @_;
+	my %result;
+	
+	for my $name (keys %$sourced)
+	{
+		my $old = $clean->{$name};
+		my $new = $sourced->{$name};
+	
+		if (not path_like $name)
+		{
+			next if ($old eq $new);
+			$result{$name} = $new;
+		}
+		else
+		{
+			my @diff = set_diff($old, $new);			
+			$result{$name} = \@diff if @diff;
+		}
+	}
+		
+	return %result;
+}

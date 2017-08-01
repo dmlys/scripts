@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+#/c/Perl64/bin/perl /e/work/scripts/sb-diff $@
+source /dev/stdin < <(/cygwin/c/Perl64/bin/perl 'E:\work\scripts\sb-diff' $@)
