@@ -1,0 +1,161 @@
+# Copyright 2003, 2005 Douglas Gregor
+# Copyright 2004 John Maddock
+# Copyright 2002, 2003, 2004, 2007 Vladimir Prus
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+
+#   This file is used to configure your Boost.Build installation. You can modify
+# this file in place, or you can place it in a permanent location so that it
+# does not get overwritten should you get a new version of Boost.Build. See:
+#
+#   http://www.boost.org/boost-build2/doc/html/bbv2/overview/configuration.html
+#
+# for documentation about possible permanent locations.
+
+#   This file specifies which toolsets (C++ compilers), libraries, and other
+# tools are available. Often, you should be able to just uncomment existing
+# example lines and adjust them to taste. The complete list of supported tools,
+# and configuration instructions can be found at:
+#
+#   http://boost.org/boost-build2/doc/html/bbv2/reference/tools.html
+#
+
+#   This file uses Jam language syntax to describe available tools. Mostly,
+# there are 'using' lines, that contain the name of the used tools, and
+# parameters to pass to those tools -- where paremeters are separated by
+# semicolons. Important syntax notes:
+#
+#   - Both ':' and ';' must be separated from other tokens by whitespace
+#   - The '\' symbol is a quote character, so when specifying Windows paths you
+#     should use '/' or '\\' instead.
+#
+# More details about the syntax can be found at:
+#
+#   http://boost.org/boost-build2/doc/html/bbv2/advanced.html#bbv2.advanced.jam_language
+#
+
+import os ;
+import path ;
+
+# ------------------
+# GCC configuration.
+# ------------------
+
+# Configure gcc (default version).
+# using gcc ;
+
+# Configure specific gcc version, giving alternative name to use.
+# using gcc : 3.2 : g++-3.2 ;
+
+
+# -------------------
+# MSVC configuration.
+# -------------------
+
+# Configure msvc (default version, searched for in standard locations and PATH).
+using msvc ;
+
+# Configure specific msvc version (searched for in standard locations and PATH).
+# using msvc : 8.0 ;
+
+local def-win-libs = kernel32.lib advapi32.lib
+                     user32.lib gdi32.lib comdlg32.lib shell32.lib
+                     ole32.lib oleaut32.lib uuid.lib
+                     winspool.lib odbc32.lib odbccp32.lib ;
+
+local thirdparty64 = "E:/Projects/thirdparty/vc14.1-x64" ;
+local thirdparty32 = "E:/Projects/thirdparty/vc14.1-x86" ;
+
+local includes64 = "$(thirdparty64)/include" ;
+local libs64 = [ path.native "$(thirdparty64)/lib" ] ;
+local requirements64 = <include>$(includes64) <cxxflags>/FIciso646 <linkflags>/LIBPATH:$(libs64) <linkflags>$(def-win-libs:J=" ") ;
+ 
+local includes86 = "$(thirdparty32)/include" ;
+local libs86 = [ path.native "$(thirdparty32)/lib" ] ;
+local requirements86 = <include>$(includes86) <cxxflags>/FIciso646 <linkflags>/LIBPATH:$(libs86) <linkflags>$(def-win-libs:J=" ") ;
+
+
+
+constant DEFAULT-BUILD : <address-model>64 <link>static ;
+constant DEFAULT-BUILD-DIR : bin ;
+
+#using boost : 1.64 : <include>$(includes64) <library>$(libs64) ;
+using boost : 1.64 : <layout>versioned <link>static ;
+
+# global requirements, they are applied onto any other projects
+project user-config
+	: requirements
+	<define>_SCL_SECURE_NO_WARNINGS
+	# $(requirements86)
+	<address-model>64:$(requirements64)  # if x64 requested explicitly
+	<address-model>32:$(requirements86)  # if x86 requested	
+	;
+
+lib crypt32 ; # win32 Crypt32.dll
+	
+lib openssl-crypto : : <runtime-link>shared <variant>release <name>openssl-crypto-mt ;
+lib openssl-crypto : : <runtime-link>shared <variant>debug   <name>openssl-crypto-mt-gd ;
+lib openssl-crypto : : <runtime-link>static <variant>release <name>openssl-crypto-mt-s ;
+lib openssl-crypto : : <runtime-link>static <variant>debug   <name>openssl-crypto-mt-sgd ;
+
+lib openssl-ssl : : <runtime-link>shared <variant>release <name>openssl-ssl-mt ;
+lib openssl-ssl : : <runtime-link>shared <variant>debug   <name>openssl-ssl-mt-gd ;
+lib openssl-ssl : : <runtime-link>static <variant>release <name>openssl-ssl-mt-s ;
+lib openssl-ssl : : <runtime-link>static <variant>debug   <name>openssl-ssl-mt-sgd ;
+
+alias openssl : openssl-crypto openssl-ssl ;
+
+lib z : : <runtime-link>shared <variant>release <name>zlib-mt     ;
+lib z : : <runtime-link>shared <variant>debug   <name>zlib-mt-gd  ;
+lib z : : <runtime-link>static <variant>release <name>zlib-mt-s   ;
+lib z : : <runtime-link>static <variant>debug   <name>zlib-mt-sgd ;
+
+#static
+lib sqlite3 : : <link>static <runtime-link>shared <variant>release <name>sqlite3-mt ;
+lib sqlite3 : : <link>static <runtime-link>shared <variant>debug   <name>sqlite3-mt-gd ;
+lib sqlite3 : : <link>static <runtime-link>static <variant>release <name>sqlite3-mt-s ;
+lib sqlite3 : : <link>static <runtime-link>static <variant>debug   <name>sqlite3-mt-sgd ;
+
+#shared
+lib sqlite3 : : <link>shared <runtime-link>shared <name>sqlite3 ;
+
+lib fmt : : <runtime-link>shared <variant>release <name>libfmt-mt     ;
+lib fmt : : <runtime-link>shared <variant>debug   <name>libfmt-mt-gd  ;
+lib fmt : : <runtime-link>static <variant>release <name>libfmt-mt-s   ;
+lib fmt : : <runtime-link>static <variant>debug   <name>libfmt-mt-sgd ;
+
+
+# ----------------------
+# Borland configuration.
+# ----------------------
+# using borland ;
+
+
+# ----------------------
+# STLPort configuration.
+# ----------------------
+
+#   Configure specifying location of STLPort headers. Libraries must be either
+# not needed or available to the compiler by default.
+# using stlport : : /usr/include/stlport ;
+
+# Configure specifying location of both headers and libraries explicitly.
+# using stlport : : /usr/include/stlport /usr/lib ;
+
+
+# -----------------
+# QT configuration.
+# -----------------
+
+# Configure assuming QTDIR gives the installation prefix.
+# using qt ;
+
+# Configure with an explicit installation prefix.
+# using qt : /usr/opt/qt ;
+
+# ---------------------
+# Python configuration.
+# ---------------------
+
+# Configure specific Python version.
+# using python : 3.1 : /usr/bin/python3 : /usr/include/python3.1 : /usr/lib ;
