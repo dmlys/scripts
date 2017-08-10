@@ -92,6 +92,7 @@ project user-config
 	;
 
 lib crypt32 ; # win32 Crypt32.dll
+lib ws2_32 ;   # win32 ws2_32.dll
 	
 lib openssl-crypto : : <runtime-link>shared <variant>release <name>openssl-crypto-mt ;
 lib openssl-crypto : : <runtime-link>shared <variant>debug   <name>openssl-crypto-mt-gd ;
@@ -103,7 +104,7 @@ lib openssl-ssl : : <runtime-link>shared <variant>debug   <name>openssl-ssl-mt-g
 lib openssl-ssl : : <runtime-link>static <variant>release <name>openssl-ssl-mt-s ;
 lib openssl-ssl : : <runtime-link>static <variant>debug   <name>openssl-ssl-mt-sgd ;
 
-alias openssl : openssl-crypto openssl-ssl ;
+alias openssl : openssl-crypto openssl-ssl   ws2_32 crypt32 ;
 
 lib z : : <runtime-link>shared <variant>release <name>zlib-mt     ;
 lib z : : <runtime-link>shared <variant>debug   <name>zlib-mt-gd  ;
