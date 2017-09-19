@@ -1,7 +1,7 @@
 set vcver=14.1
 set toolset=%vcver%
 ::set toolset=%vcver%.0
-set boost_dir=boost_1_64_0
+set boost_dir=boost_1_65_1
 set thirdparty_dir=D:\Projects\thirdparty
 
 set stage_dir86=%boost_dir%-lib-x86
@@ -15,16 +15,9 @@ if "%1" == "deploy"    goto deploy
 
 :build
 pushd %boost_dir%
-
-setlocal
 b2 stage --stagedir=..\%stage_dir86% --build-dir=..\boost-build runtime-link=static,shared address-model=32 -j4
-endlocal
-
-setlocal
 b2 stage --stagedir=..\%stage_dir64% --build-dir=..\boost-build runtime-link=static,shared address-model=64 -j4
-endlocal
 popd
-
 goto :eof
 
 :install

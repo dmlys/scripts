@@ -2,10 +2,11 @@ setlocal
 rem sqlite build
 set sqlite_dir=sqlite-amalgamation-3081101
 set sqlite_ver=3.8.11.1
-set vcver=vc14
+set vcver=vc14.1
+set vcvars=vc141vars
 
-call :build_platform %vcver%vars x86
-call :build_platform %vcver%vars x64
+call :build_platform %vcvars% x86
+call :build_platform %vcvars% x64
 
 endlocal
 goto :eof
