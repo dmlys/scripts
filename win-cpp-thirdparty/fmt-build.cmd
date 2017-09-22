@@ -4,9 +4,10 @@ set source_dir=fmt
 set libname=fmt
 set version=4.0.0
 set vcver=vc14.1
+set vcvars=vc141vars
 
-call :build_platform %vcver%vars x86
-call :build_platform %vcver%vars x64
+call :build_platform %vcvars% x86
+call :build_platform %vcvars% x64
 
 endlocal
 goto :eof
@@ -33,15 +34,19 @@ set RELEASE_DEFINES=/D NDEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_W
 set   DEBUG_DEFINES=/D _DEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_WARNINGS
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MT
+set LIB_FLAGS=/LTCG
 call :build_lib lib%libname%-mt-s.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MTd
+set LIB_FLAGS=
 call :build_lib lib%libname%-mt-sgd.lib
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MD
+set LIB_FLAGS=/LTCG
 call :build_lib lib%libname%-mt.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MDd
+set LIB_FLAGS=
 call :build_lib lib%libname%-mt-gd.lib
 
 
@@ -57,7 +62,6 @@ goto :eof
 
 :build_lib
 cl /c %FLAGS% %source_dir%\*.cc /Fobuild\
-lib build\*.obj -out:lib\%1
+lib %LIB_FLAGS%   build\*.obj -out:lib\%1
 del build\* /q
 goto :eof
-
