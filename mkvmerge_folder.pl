@@ -11,11 +11,10 @@ use Encode::Locale;
 
 use Pod::Usage;
 use Getopt::Long;
-use Data::Dumper;
-
 use Sort::Naturally;
 use File::Basename;
 use File::Spec::Functions qw/:ALL/;
+use Data::Dumper;
 
 
 =head1 NAME
@@ -27,44 +26,45 @@ mkvmerge-folder - merges different sources of media into mkv file input set from
 #************************************************************#
 #                       input arguments                      #
 #************************************************************#
-our $mkvmerge = 'D:\\Others\\mkvtoolnix\\mkvmerge.exe';
-our $outdir = 'out';
-our $indir = 'D:\\work\\mkvmerge\\movie';
-our $deftitle = 'movie';
-#our $track_order = "0:3,0:2";
+our $mkvmerge = 'mkvmerge';
+our $cmd_prefix = '';
+our $cmd_suffix = '';
+#our $cmd_prefix = '--default-title "Voltron Legendary Defender"';
+#our $cmd_suffix = '--track-order 0:3,0:2';
+
+our $outdir = '/data-store/tmp/Voltron.Legendary.Defender';
+our $indir = '/data-store/Torrents/Voltron.Legendary.Defender.S01-03.1080p.NF.WEBRip.DD5.1.x264-NTb';
+
 
 our @input = 
 (
 	{
 		in  => '*.mkv',
-		# filter => '',  additional regex filter
-		# lan => '2:rus 3:eng 4:eng',
+		#filter => '',  # additional regex filter
 		
-		name  => '',
-		subst => 'qq{$1.mkv}',
-		title => 'qq{$2}'
-		
-		#other => '--default-track -1:0'
+		#name => '^(.*)(?=\.([^.]+))', # $1 - name, $2 - ext
+		name => '(^Voltron\.Legendary\.Defender\.S\d+E\d+\.(.*))(?=.1080).*',
+		cmd => 'qq/--default-track -1:0 --title "$2" "$inpath"/',
+		out => 'sprintf q/"%s"/, catdir($outdir, qq/$1.mkv/)',
 	},
 	
 	{
-		in  => 'Subs\\*.srt',
-		lan => 'rus',
-		#other => '--default-track -1:0'
+		in  => '\[SUB\]\ Notabenoid/*.srt',
+		cmd => 'qq/--default-track -1:0 --language -1:rus "$inpath"/'
 	},
+
 	
 );
 
 #************************************************************#
 #                       implementation                       #
 #************************************************************#
-binmode(STDIN,  ":encoding(console_in)");  #if -t STDIN;
-binmode(STDOUT, ":encoding(console_out)"); #if -t STDOUT;
-binmode(STDERR, ":encoding(console_out)"); #if -t STDERR;
+binmode(STDIN,  ":encoding(console_in)")  if -t STDIN;
+binmode(STDOUT, ":encoding(console_out)") if -t STDOUT;
+binmode(STDERR, ":encoding(console_out)") if -t STDERR;
 
 sub readfolder;
 sub create_commands;
-sub create_language;
 
 @input = map readfolder, @input;
 create_commands @input;
@@ -95,59 +95,38 @@ sub readfolder
 sub create_commands
 {
 	my @input = @_;
-	my $len        = $#{ $input[0]->{files} };
-	my $rgx_expr   = $input[0]->{name} || '^.*(?=\.[^.]+)';
-	my $subst_expr = $input[0]->{subst} || '&?.mkv';
-	my $title_expr = $input[0]->{title};
-	our $track_order;
-		
+	my $len = $#{ $input[0]->{files} };
 
 	for my $i (0..$len)
 	{
-		my $infile = basename $input[0]->{files}[$i];
-		$infile =~ /$rgx_expr/;
+		my ($name_pattern, $cmd_template, $out_template) = @{$input[0]}{qw/name cmd out/};
 		
-		my $outfile = eval $subst_expr;
+		my $inpath = $input[0]->{files}[$i];
+		my $infile = basename $inpath;
+		$infile =~ /$name_pattern/ if $name_pattern;
+		
+		my $outfile = eval $out_template;
 		$outfile = catfile $outdir, $outfile;
 		
-		my $title = defined($title_expr) ? eval $title_expr : $deftitle;
-		my $cmd = "$mkvmerge -o \"$outfile\" --title \"$title\"";
+		# mkvmerge 
+		my $cmd = sprintf "-o %s %s", eval $out_template, eval $cmd_template;
 
-		for my $arg (@input)
+		for my $arg (@input[1..$#input])
 		{
-			my $in = $arg->{files}[$i];
-			next if not $in;
-						
-			my $other = $arg->{other} // '';
-			my $lan = create_language $arg->{lan};
-			$cmd .= " $other $lan \"$in\"";
+			($name_pattern, $cmd_template) = @{$arg}{qw/name cmd/};
+		
+			$inpath = $arg->{files}[$i];
+			$infile = basename $inpath;
+			next if not $infile;
+		
+			$infile =~ /$name_pattern/ if $name_pattern;
+			$cmd .= ' ' . eval $cmd_template;
 		}
 		
-		$cmd .= " --track-order $track_order" if $track_order;
+		$cmd = "$mkvmerge $cmd_prefix $cmd $cmd_suffix";
 		my $sys_cmd = encode('locale_fs', $cmd);
 		#system $sys_cmd;
 		print $cmd, "\n";
 	}
-}
-
-sub create_language
-{
-	local $_ = shift || $_;
-	return "" if not $_;
-	
-	$_ = join ' ', @$_ if ref($_) eq 'ARRAY';
-	
-	my @lans = split /\s/, $_;
-	my $n = 0;
-	my $res = '';
-	
-	for (@lans)
-	{
-		$res .= " $_",              next  if /^\s*--/;
-		$res .= " --language $_",   next  if /\d+:.*/;
-		$res .= " --language $n:$_"; $n++;
-	}
-		
-	return $res;
 }
 
