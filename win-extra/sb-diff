@@ -12,7 +12,7 @@ sb-diff ${some.bat} ${bat.args}
 This script is used to calculate difference of environment variables before invoking bat file in cmd, and after.
 First it invokes cmd /c set to get clean envorinment.
 Second it invokes cmd /c $@ > null 2>&1 && set to get sourced envorinment.
-Then it compres them and prints export $VAR=$VAL statements to stdout, which can be sourced by bash script
+Then it compares them and prints export $VAR=$VAL statements to stdout, which can be sourced by bash script
 
 It specially handles PATH variable, transforming paths \w: -> /$1,
 and using ':' as separator instead of ';', as MSYS expects
@@ -80,12 +80,12 @@ sub make_export
 			}
 			
 			my $val = join ':', @$val;
-			return "export PATH='\$PATH:$val'\n";
+			return "export PATH=\"\$PATH:$val\"\n";
 		}
 		else
 		{
 			my $val = join ';', @$val;
-			return "export $name='\$$name;$val'\n";
+			return "export $name=\"\$$name;$val\"\n";
 		}		
 	}
 }
