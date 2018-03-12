@@ -1,7 +1,7 @@
 set vcver=14.1
 set toolset=%vcver%
 ::set toolset=%vcver%.0
-set boost_dir=boost_1_65_1
+set boost_dir=boost_1_66_0
 set thirdparty_dir=D:\Projects\thirdparty
 
 set stage_dir86=%boost_dir%-lib-x86
@@ -13,10 +13,12 @@ if "%1" == "build"     goto build
 if "%1" == "install"   goto install
 if "%1" == "deploy"    goto deploy
 
+rem May want to adjust supported compiller version in: boost\config\compiler\visualc.hpp
+
 :build
 pushd %boost_dir%
-b2 stage --stagedir=..\%stage_dir86% --build-dir=..\boost-build runtime-link=static,shared address-model=32 -j4
-b2 stage --stagedir=..\%stage_dir64% --build-dir=..\boost-build runtime-link=static,shared address-model=64 -j4
+b2 stage --stagedir=..\%stage_dir86% --build-dir=..\boost-build --abbreviate-paths runtime-link=static,shared address-model=32 architecture=x86 -j4
+b2 stage --stagedir=..\%stage_dir64% --build-dir=..\boost-build --abbreviate-paths runtime-link=static,shared address-model=64 architecture=x86 -j4
 popd
 goto :eof
 
