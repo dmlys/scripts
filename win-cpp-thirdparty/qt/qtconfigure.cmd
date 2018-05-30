@@ -1,1 +1,2 @@
-configure.bat -prefix D:\Projects\thirdparty_work\qt-5.9.0-vc141-x64 -opensource -confirm-license -debug-and-release -force-debug-info -nomake tests -nomake examples -opengl desktop -no-icu -no-angle -no-plugin-manifests -mp
+set LLVM_INSTALL_DIR=E:\LLVM
+configure.bat -prefix E:\Projects\thirdparty_work\qt-5.11.0-vc141-x64 -opensource -confirm-license -debug-and-release -force-debug-info -nomake tests -nomake examples -opengl desktop -no-icu -no-angle -no-plugin-manifests -mp

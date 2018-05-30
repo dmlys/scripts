@@ -1,8 +1,8 @@
 setlocal
 rem fmt build
-set source_dir=fmt
+set source_dir=src
 set libname=fmt
-set version=4.1.0
+set version=5.0.0
 set vcver=vc14.1
 set vcvars=vc141vars
 
@@ -17,9 +17,8 @@ rem %1 - %vcver%vars %2 - platform
 setlocal
 call %1 %2
 
-rd build lib include /q/s > nul
-mkdir build lib include\%libname%
-copy %source_dir%\*.h include\%libname%
+rd build lib /q/s > nul
+mkdir build lib
 
 rem /Z7 - debug info
 rem /W4 - warning level 4
@@ -54,7 +53,7 @@ set arname=%libname%-%version%-%vcver%-%2.zip
 del %arname%
 7z a -tzip %arname% lib include
 
-rd build lib include /q/s
+rd build lib /q/s
 
 endlocal
 goto :eof
