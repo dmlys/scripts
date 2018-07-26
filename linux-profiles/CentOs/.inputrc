@@ -1,0 +1,58 @@
+# This file controls the behaviour of line input editing for
+# programs that use the GNU Readline library.  Existing
+# programs include FTP, Bash, and GDB.
+#
+# You can re-read the inputrc file with C-x C-r.
+# Lines beginning with '#' are comments.
+# Begin /etc/inputrc
+# Modified by Chris Lynn <roryo@roryo.dynup.net>
+
+# Allow the command prompt to wrap to the next line
+set horizontal-scroll-mode Off
+
+# Enable 8bit input
+set meta-flag On
+set input-meta On
+
+# Turns off 8th bit stripping
+set convert-meta Off
+
+# Keep the 8th bit for display
+set output-meta On
+
+# none, visible or audible
+# set bell-style none
+
+# All of the following map the escape sequence of the
+# value contained inside the 1st argument to the
+# readline specific functions
+
+set colored-stats on
+
+$if term=putty
+"\eOD": backward-word    # Ctrl + arrow-left
+"\eOC": forward-word     # Ctrl + arrow-right
+#"\eOA":                 # Ctrl + arrow-up
+#"\eOB":                 # Ctrl + arrow-down
+$endif
+
+$if term=xterm
+"\e[1;5D": backward-word        # Ctrl + arrow-left
+"\e[1;5C": forward-word         # Ctrl + arrow-right
+
+"\C-?": backward-kill-word      # Ctrl + Backspace
+"\e[3;5~": kill-word            # Ctrl + Del ?
+
+#"\eOH": beginning-of-line
+#"\eOF": end-of-line
+$endif
+
+# for linux console
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+"\e[5~": beginning-of-history
+"\e[6~": end-of-history
+"\e[3~": delete-char
+"\e[2~": quoted-insert
+
+# End /etc/inputrc

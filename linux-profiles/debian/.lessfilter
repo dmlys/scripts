@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# show directory as listing
+if test -d "$1"; then
+  ls --color=always -lhF "$1"
+  exit 0   # we handled it
+fi
+
+exit 1 # handle by regular lesspipe
