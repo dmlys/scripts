@@ -1,0 +1,54 @@
+Configuring DEBIAN after install from scratch:
+
+basic packets to install:
+sudo ntp rsync mc bash-completion nano samba smbclient
+
+install sudo:   apt install sudo
+                /etc/sudoers: %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
+
+add current user to groups(including sudo):
+         usermod -a -G sudo,systemd-journal dima
+		 systemd-journal - journalctl without sudo
+				
+tilde:
+	Debian >= 10: apt-get install tilde
+	Debian <=  9: wget http://os.ghalkes.nl/sources.list.d/install_repo.sh ; sudo sh ./install_repo.sh ; sudo apt-get install tilde
+
+
+User Private Groups: 
+	https://wiki.debian.org/UserPrivateGroups
+	echo "session optional pam_umask.so usergroups" >> /etc/pam.d/common-session
+	
+	after relogin umask should be 0002
+
+	
+Samba:
+	дефолтный файл /etc/samba/smb.conf более менее норм, но следует проверить утилитой testparm
+	hostname может быть длинее 16 символов - тогда следует дать более короткое имя через 
+	netbios name = 
+	
+	Также имеет смысл изменить:
+    create mask = 0664   
+    directory mask = 0775
+	
+	опционально настроить шары
+	
+	
+Active Directory Integration:
+https://wiki.archlinux.org/index.php/Active_Directory_Integration
+http://help.ubuntu.ru/wiki/руководство_по_ubuntu_server/авторизация_по_сети/kerberos#линукс_клиент_kerberos
+Kerberos:
+	apt install krb5-user krb5-doc libpam-krb5
+	
+	nslookup -type=any _kerberos._tcp - найти kerberos контроллеры
+	
+	sudo pam-update-auth - можно вкл/выкл модули авторизации(в том числе керберос)
+	пользователь должен быть создан локально(можно, и возможно лучше минуя керберос)
+	
+
+some usefull net packets:
+	net-tools: ifconfig, netstat, route
+	nmap, ncat, ipcalc
+	bind9: for host	
+	
+	

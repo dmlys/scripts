@@ -1,0 +1,250 @@
+https://wiki.archlinux.org/index.php/installation_guide
+во время инсталляции можно переключаться между терминалами alt + meta(windows key) + стрелочки вправо/лево
+если проводной интернет - arch подключиться сам сразу же
+wi-fi WPA2:
+  # wpa_supplicant -B -i <интерфейс> -В wext -c <(wpa_passphrase $SSID $PASS)
+  # dhclient
+  интерфейс можно посмотреть командой ip a
+
+elinks http://wiki.archlinux.org/
+далее можно по ссылки выйти на этот guide
+  
+timedatectl set-ntp true актуализировать текущее время
+
+/***********************************************************************
+/* Partitioning
+/***********************************************************************
+
+тут можно использовать: parted, (c)gdisk, c(fdisk), lsblk --fs
+lsblk --fs - смотреть список дисков и размеров
+cgdisk - tui для GPT - в целом все интуитивно делается
+cfdisk - tui для MBR
+parted умеет оба, но интерфейс - хуже
+
+https://wiki.archlinux.org/index.php/Partitioning
+https://wiki.archlinux.org/index.php/Partitioning#Example_layouts
+https://wiki.archlinux.org/index.php/EFI_system_partition
+https://wiki.archlinux.org/index.php/GNU_Parted
+https://wiki.archlinux.org/index.php/Fdisk
+
+для UEFI/GPT
+(parted) mkpart ESP fat32 1MiB 513MiB
+(parted) set 1 boot on
+(parted) mkpart primary linux-swap 513MiB 32.5GiB
+(parted) mkpart primary ext4 32.5GiB 132.5GiB
+(parted) mkpart primary ext4 132.5GiB 100%
+
+Для BIOS/GPT
+gdisk /dev/sdb
+далее создаем разделы через диалоги
+1. Спец раздел для grub загрузчика размером 1 MiB, со спец типом(доступен в списке)
+2. SWAP раздел 
+3. ROOT раздел
+4. HOME раздел
+
+/***********************************************************************
+/* Formatting
+/***********************************************************************
+mkswap    -L SWAP /dev/sxx2
+swapon /dev/sxx2 # не обязательно, но genfstab далее увидит этот раздел только если был выполнен swapon
+mkfs.ext4 -L ROOT /dev/sxx3
+mkfs.ext4 -L HOME /dev/sxx4
+
+
+UEFI раздел следует отформатировать:
+mkfs.fat -F32 /dev/sdxY # опционально задать LABEL
+
+/***********************************************************************
+/* Установка
+/***********************************************************************
+mkdir /mnt
+mount -L ROOT /mnt
+
+mkdir /mnt/home
+mount -L HOME /mnt/home
+
+mcedit /etc/pacman.d/mirrorlist - поднять вверх ближайшие географически адресса, Russia, yandex
+
+pacstrap /mnt base
+можно таким образаом еще доустановить пакеты, например NetworkManager:
+pacstrap /mnt mc
+pacstrap /mnt grub
+
+# рекомендую сейчас установить networkmanager
+# и не забыть потом удалить arch linux specific netctl, они конкурируют
+pacstrap /mnt networkmanager
+
+генерируем stab
+genfstab -L /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+#ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+hwclock --systohc
+
+найти и расскоментировать en_US.UTF-8, ru_RU.UTF-8\
+mcedit /etc/locale.gen
+locale-gen
+
+mcedit /etc/hostname - записать желаемое имя
+mcedit /etc/hosts добавить:
+127.0.0.1	 localhost
+::1		     localhost
+127.0.1.1	 myhostname.localdomain	myhostname
+
+
+passwd - задать root пароль
+
+/***********************************************************************
+/* GRUB boot loader
+/***********************************************************************
+pacman -S grub # или выше через pacstrap
+pacman -S efibootmgr #для efi
+
+https://wiki.archlinux.org/index.php/GRUB
+https://wiki.archlinux.org/index.php/EFI_system_partition
+
+# для BIOS
+grub-install --target=i386-pc /dev/sdX
+grub-mkconfig -o /boost/grub/grub.cfg
+
+# для UEFI
+mkdir /boot/efi
+mount /dev/sxx /boot/efi
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB # для UEFI
+grub-mkconfig -o /boost/grub/grub.cfg
+
+
+/***********************************************************************
+/* УСТАНОВИЛИ!!!!!!!!!!!!!!!!!!1
+/***********************************************************************
+выходим arch-chroot
+reboot
+
+если все хорошо - теперь можем загрузиться в наш установленный Arch Linux
+по-умолчанию есть только root пользователь, интернета скорее всего не будет
+
+
+/***********************************************************************
+/* Первичная настройка
+/***********************************************************************
+интернет:
+проще всего использовать NetworkManager установленный заранее:
+# pacman -Rns netctl
+# systemctl enable NetworkManager
+# systemctl start NetworkManager
+# nmtui - настраиваем wifi или LAN
+
+Время:
+https://wiki.archlinux.org/index.php/time
+timedatectl set-ntp 1 #синхронизация времени.
+это запустит службу systemd-timedated.service
+можно при желании и ntpd использовать наверное
+
+Если есть параллельная установка windows, dual boot или просто 2 диска:
+нужно одному из них скорректировать в каком виде хранить RTC/CMOS время
+в linux это:
+timedatectl set-local-rtc 1
+
+в винде как-то через реестр, оба метода имеют недостатки
+
+
+fstab:
+можно и возможно стоит подправить /etc/fstab
+genfstab пишет options rw,relatime, почему не defaults(,relatime)?
+
+/***********************************************************************
+/* Полезные базовые доп пакеты
+/***********************************************************************
+по молчанию установлено очень мало, до-устанавливаем базовые удобства:
+
+pacman --sync --needed mc
+pacman --sync --needed htop
+pacman --sync --needed sudo
+pacman --sync --needed bash-completion
+pacman --sync --needed lesspipe
+pacman --sync --needed tree
+pacman --sync --needed p7zip # 7-zip
+
+pacman --sync --needed wget
+pacman --sync --needed elinks
+pacman --sync --needed openssh
+pacman --sync --needed openssl
+
+pacman --sync --needed base-devel
+pacman --sync --needed binutils
+pacman --sync --needed cmake
+pacman --sync --needed boost
+pacman --sync --needed git
+
+
+/***********************************************************************
+/* Создаем пользователя
+/***********************************************************************
+немного о группах: https://wiki.archlinux.org/index.php/Users_and_groups
+
+для sudo можно использовать группу wheel или создать sudo
+groupadd ---sync --neededystem sudo
+
+создаем пользователя:
+useradd -m -G users,systemd-journal,sudo,wheel,adm dima
+passwd dima
+
+
+По-умолчанию никаких .inputrc, .bashrc, ... конфигов нету - писать самому с нулю, ну или взять готовые ранее используемые
+
+/***********************************************************************
+/* missing firmare
+/***********************************************************************
+если mkinitcpio -P выдает варнинги о недостающих firmare - их можно становить, скорее всего они есть в AUR
+На ноуте N73SM у меня не было aic94xx, wd719x
+базовую информацию можно получить командой modinfo $firmare, modinfo aic94xx
+
+в AUR они могут быть:
+cd ~/projects/firwares
+git clone https://aur.archlinux.org/aic94xx-firmware.git
+git clone https://aur.archlinux.org/wd719xx-firmware.git
+
+cd ...
+makepkg -sri
+
+/***********************************************************************
+/* google drive
+/***********************************************************************
+# note arch does not have devel packages, dev files comes in packages by library name
+pacman --sync --needed yajl
+pacman --sync --needed curl
+pacman --sync --needed libgcrypt
+pacman --sync --needed boost
+pacman --sync --needed expat
+
+git clone https://github.org/vitalif/grive2.git
+cd grive2; mkdir build; cd build
+cmake ..
+make
+sudo make install
+
+далее в папке пожеланию делаем grive -a
+он даст ссылку по которой можно полчить token, увы с помощью elinks получить его не получится 
+- google заворачивает жалуюсь на то что javascript не поддерживается.
+
+ссылку можно получить с помощью grive -a | tee ~/link.txt
+elinks $(cat link.txt | grep http.*$)
+далее ввести user/password на форме
+
+/***********************************************************************
+/* SAMBA
+/***********************************************************************
+https://wiki.archlinux.org/index.php/samba
+Install the samba package: pacman --sync --needed samba
+Samba is configured in the /etc/samba/smb.conf configuration file, which is extensively documented in smb.conf(5).
+Because the samba package does not provide this file, one needs to create it before starting smbd.
+
+A documented example as in smb.conf.default from the Samba git repository[https://git.samba.org/samba.git/?p=samba.git;a=blob_plain;f=examples/smb.conf.default;hb=HEAD may be used to setup /etc/samba/smb.conf.
+Note:
+    The default configuration sets log file to a non-writable location, which will cause errors - change this to the correct location: log file = /var/log/samba/%m.log.
+    If required; the workgroup specified in the [global] section has to match the Windows workgroup (default WORKGROUP).
+
+Tip: Whenever you modify the smb.conf file, run the testparm(1) command to check for syntactic errors.
+

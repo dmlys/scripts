@@ -1,0 +1,44 @@
+Debian server systemd daemons:
+* irqbalance   - distribute hardware interrupts across processors on a multiprocessor system
+* dbus, dbus-daemon - Message bus daemon
+* lvm2-lvmetad - lvmetad - LVM metadata cache daemon
+* ifplugd - A link detection daemon for ethernet devices
+* ssh - SSH daemon
+* ntp - NTP daemon
+* nmbd - NetBIOS name server to provide NetBIOS over IP naming services to clients, SAMBA
+* smbd - server to provide SMB/CIFS services to clients, SAMBA
+* smartd - SMART Disk Monitoring Daemon
+* rpcbind — universal addresses to RPC program number mapper; RPC - some kernel mapper something to something, service to port?
+* minissdpd - daemon keeping track of UPnP devices up; network UPnP, maybe i2p depends on it, also DLNA clients probably to
+* cron - CRON
+* acpid - Advanced Configuration and Power Interface event daemon
+* atd - run jobs queued for later execution, schedule commands with at command
+* exim4 - exim4 - a Mail Transfer Agent, по идее отвечает за получение писем и складывание в почтовый ящик пользователя, не настроен, если только внутренняя доставка
+
+
+system-getty - getty, short for "get tty", is a Unix program running on a host computer that manages physical or virtual terminals (TTYs). When it detects a connection, it prompts for a username and runs the 'login' program to authenticate the user. 
+
+systemd-logind.service
+systemd-udevd.service
+systemd-journald.service
+
+
+user id output:
+uid=1000(dima) 
+gid=1000(dima) 
+groups=
+	1000(dima),
+	4(adm),
+	24(cdrom),
+	25(floppy),
+	27(sudo),
+	29(audio),
+	30(dip),
+	44(video),
+	46(plugdev),
+	50(staff),
+	100(users),
+	102(systemd-journal),
+	108(netdev),
+	113(sambashare)
+             
