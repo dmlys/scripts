@@ -1,0 +1,44 @@
+
+https://github.com/gphalkes/tilde
+https://os.ghalkes.nl/tilde/
+
+
+tilde можно собрать из исходников, правда там самописные makefile'ы без install target'а, но в конечном счета можно просто ln сделать в $HOME/bin
+и так для arch:
+
+gettext     - GNU internationalization library(base-devel)
+pkgconf     - Package compiler and linker metadata toolkit(base-devel)
+flex        - A tool for generating text-scanning programs(base-devel)
+acl         - Access control list utilities, libraries and headers
+attr        - Extended attribute support library for ACL support
+gpm         - xtended attribute support library for ACL support
+ncurses     - System V Release 4.0 curses emulation library
+pcre        - System V Release 4.0 curses emulation library
+libtool     - System V Release 4.0 curses emulation library
+libunistring - Library for manipulating Unicode strings and C strings
+libxcb      - X11 client-side library
+libx11      - X11 client-side library
+
+pacman --sync --needed gettext flex pkgconf acl attr gpm ncurses pcre libtool libunistring libx11 libxcb
+
+mkdir tilde-group
+cd tilde-group
+
+LLnextgen
+wget https://os.ghalkes.nl/LLnextgen/releases/LLnextgen-0.5.5.tgz
+tar xf LLnextgen.tgz
+cd LLnextgen
+./configure
+make
+
+add binary to PATH for next tilde build
+
+# выкачиваем исходники tilde и сопуствующих либ:
+for i in makesys transcript t3shared t3window t3widget t3key t3config t3highlight tilde ; do     git clone https://github.com/gphalkes/$i.git; done
+# прописываем версию, по идее это как-то можно сделать питоновым сриптом dist_config.py, но я не разобрался
+find -name *.h -exec grep -qP '#define T3_\w+_VERSION 0' {} \; -print | xargs perl -i -pe 's/(\#define T3_\w+_VERSION) 0/$1 1/'
+# собираем
+COMPILER=gcc BUILDVERSION=release LDLIBS=-lpthread ./t3shared/doall --skip-non-source --stop-on-error make -C src
+
+# резултьат в $HOME/.../tilde-group/tilde/src/.objects/edit
+ln -s $HOME/.../tilde-group/tilde/src/.objects/edit $HOME/bin/tilde
