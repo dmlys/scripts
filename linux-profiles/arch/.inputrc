@@ -1,43 +1,19 @@
 # /etc/inputrc - global inputrc for libreadline
 # See readline(3readline) and `info rluserman' for more information.
-
-# Be 8 bit clean.
-set input-meta on
-set output-meta on
-
-# To allow the use of 8bit-characters like the german umlauts, uncomment
-# the line below. However this makes the meta key not work as a meta key,
-# which is annoying to those which don't need to type in 8-bit characters.
-
-# set convert-meta off
-
-# try to enable the application keypad when it is called.  Some systems
-# need this to enable the arrow keys.
-# set enable-keypad on
-
-# see /usr/share/doc/bash/inputrc.arrows for other codes of arrow keys
-
-# do not bell on tab-completion
-# set bell-style none
-# set bell-style visible
-
-# some defaults / modifications for the emacs mode
-$if mode=emacs
+$include /etc/inputrc
 
 # alternate mappings for "page up" and "page down" to search the history
 # "\e[5~": history-search-backward
 # "\e[6~": history-search-forward
 
-
 $if term=xterm
-"\e[1;5C": forward-word       # Ctrl + ->
-"\e[1;5D": backward-word      # Ctrl + <-
+#"\e[1;5C": forward-word       # Ctrl + ->
+#"\e[1;5D": backward-word      # Ctrl + <-
 
+# on xterm and konsole, or at least on konsole, default configuration is:
+# backpsace - ^?, Ctrl + backspace - ^H
 "\e[3;5~":  kill-word               # Ctrl + Del
 "\C-H":     backward-kill-word      # Ctrl + Backspace
 "\C-x\C-H": backward-kill-line      # Ctrl + x, Ctrl + Backspace
-#"\C-?": backward-kill-word      # Ctrl + Backspace
 
 $endif #term=xterm
-
-$endif #mode=emacs
