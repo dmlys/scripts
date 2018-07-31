@@ -2,6 +2,10 @@
 http://wiki.bash-hackers.org/scripting/terminalcodes
 http://tldp.org/HOWTO/Keyboard-and-Console-HOWTO-5.html
 
+подробно о DEL BS и их истории
+http://www.ibb.net/~anne/keyboard/keyboard.html
+http://www.ibb.net/~anne/keyboard/keyboardprev.html
+
 posix терминалы работают путем обмена усправляющих последовательностей.
 Обычные символы идут обычными ANSI кодами, в случае ctrl + letter - ^letter, ^A, ^B, ...
 В случае alt - ESC + letter, ^[a
