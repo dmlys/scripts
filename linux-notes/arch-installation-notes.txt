@@ -248,3 +248,38 @@ Note:
 
 Tip: Whenever you modify the smb.conf file, run the testparm(1) command to check for syntactic errors.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***********************************************************************
+/* KDE xorg patch
+/***********************************************************************
+https://aur.archlinux.org/packages/xorg-server-bug865 - фиксит конфликт переключения раскладок alt + shift и прочих комбинаций alt + shift + что-то.
+До этого патча нажатие alt + shift сразу же переключает раскладу и последуюущее нажатие уже не вопринимается как комбинация alt + shift + что-то
+С патчем же переключение происходит при key release alt + shift и если ничего другого не было нажато - все работает нормально, как на винде
+
+
+ключи PGP:
+gpg --recv-keys 4C09DD83CAAA50B2
+gpg --lsign-key 4C09DD83CAAA50B2
+
+
+# внимание в процессе переустанавливается xorg-server, причем пакет заменяется с основного на новый патченый
+$ git clone https://aur.archlinux.org/packages/xorg-server-bug865.git
+$ cd xorg-server-bug865
+$ makepkg --install --syncdeps --rmdeps
+
+# restart xserver, а еще лучше систему
+sudo systemctl restart sddd
+
+
