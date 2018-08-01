@@ -6,7 +6,6 @@ $include /etc/inputrc
 # "\e[5~": history-search-backward
 # "\e[6~": history-search-forward
 
-$if term=xterm
 #"\e[1;5C": forward-word       # Ctrl + ->
 #"\e[1;5D": backward-word      # Ctrl + <-
 
@@ -15,5 +14,3 @@ $if term=xterm
 "\e[3;5~":  kill-word               # Ctrl + Del
 "\C-H":     backward-kill-word      # Ctrl + Backspace
 "\C-x\C-H": backward-kill-line      # Ctrl + x, Ctrl + Backspace
-
-$endif #term=xterm
