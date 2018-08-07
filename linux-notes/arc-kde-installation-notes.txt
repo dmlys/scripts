@@ -1,0 +1,69 @@
+/***********************************************************************
+/* Установка KDE
+/***********************************************************************
+https://wiki.archlinux.org/index.php/KDE
+
+видео драйвер, nouveau - опенсорсный, можно проприетарный - смотри archwiki по слову nvidia
+pacman --sync --needed xf86-video-nouveau mesa
+pacman --sync --needed xorg-server xorg-xinit xorg-xev
+сейас или позже можно установить про патченный xorg сервер, смотри соответсвующий раздел ниже
+
+pacman --sync plasma-meta kde-application sddm
+pacman --sync plasma-meta kde-applications-meta sddm
+
+для ноутбука будет полезно установить
+pacman --sync acpi
+
+systemctl enable sddm
+reboot
+
+и собственно все, готово, у нас есть KDE окружение, далее можно настраивать.
+Рекомендуется установать KDE xorg patch, если его по-прежнему не замерджили в master xorg сервера
+
+/***********************************************************************
+/* KDE xorg patch
+/***********************************************************************
+https://aur.archlinux.org/packages/xorg-server-bug865 - фиксит конфликт переключения раскладок alt + shift и прочих комбинаций alt + shift + что-то.
+До этого патча нажатие alt + shift сразу же переключает раскладу и последуюущее нажатие уже не вопринимается как комбинация alt + shift + что-то
+С патчем же переключение происходит при key release alt + shift и если ничего другого не было нажато - все работает нормально, как на винде
+
+
+ключи PGP:
+gpg --recv-keys 4C09DD83CAAA50B2
+gpg --lsign-key 4C09DD83CAAA50B2
+
+
+# внимание в процессе переустанавливается xorg-server, причем пакет заменяется с основного на новый патченый
+$ git clone https://aur.archlinux.org/xorg-server-bug865.git
+$ cd xorg-server-bug865
+$ makepkg --install --syncdeps --rmdeps
+
+# restart xserver, а еще лучше систему
+sudo systemctl restart sddd
+
+
+/***********************************************************************
+/* настройка KDE
+/***********************************************************************
+в system settingsв целом все и так понятно, тут скорее перечисление пунктов что бы не забыть + для полноты
+Hardware -> Input Devices -> Keyboard
+Keyboard model - asus laptop, logitech ..., что у нас есть 
+Layouts - добавляем ru, Switching policy - Application, shortcut alt+shift
+
+Touchpad - mouse click emulation, pointer motion acceleration, ...
+    KDE, увы под xorg libinput предоставляет не полные настройки тачпада, 
+    
+    для TappingButtonMap: lmr(left middle right) нужно создать файл /etc/X11/xorg.conf.d/30-touchpad.conf:
+    Section "InputClass"
+        Identifier "ETPS/2 Elantech Touchpad"
+        Driver "libinput"
+        MatchIsTouchpad "on"
+        Option "Tapping" "on"
+        Option "TappingButtonMap" "lmr"
+    EndSection
+    
+
+Display - scale можно настроить, если hipdi
+
+Power management - можно настроить всякоесвязанное с батарями, яркомтью/затуханием экрана
+
