@@ -68,7 +68,12 @@ Touchpad - mouse click emulation, pointer motion acceleration, ...
 Display - scale можно настроить, если hipdi
 
 Power management - можно настроить всякое связанное с батареями, яркостью/затуханием экрана
+https://wiki.archlinux.org/index.php/backlight - wiki по яркости, если есть несколько видео карт, например, основная и интегрированная как в ноутбуках
+linux может не сохранять яркость при перезагрузке, связанно с 2мя видеокартами, в вики татье подробнее описано.
+В случае моего ASUS N73SM помогло добавление параметра acpi_backlight=vendor в GRUB_CMDLINE_LINUX_DEFAULT и grub-mkconfig
 
+по backlight еще можно почитать:
+https://wiki.ubuntu.com/Kernel/Debugging/Backlight
 
 /***********************************************************************
 /* шрифты
