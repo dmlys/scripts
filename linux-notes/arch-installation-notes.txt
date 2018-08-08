@@ -115,6 +115,8 @@ mount /dev/sxx /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB # для UEFI
 grub-mkconfig -o /boost/grub/grub.cfg
 
+Если хочется dual-boot с windows - смотри ниже
+
 
 /***********************************************************************
 /* УСТАНОВИЛИ!!!!!!!!!!!!!!!!!!1
@@ -153,6 +155,23 @@ timedatectl set-local-rtc 1
 fstab:
 можно и возможно стоит подправить /etc/fstab
 genfstab пишет options rw,relatime, почему не defaults(,relatime)?
+
+
+/***********************************************************************
+/* GRUB linux + windows пункты меню
+/***********************************************************************
+https://wiki.archlinux.org/index.php/GRUB
+В целом можно и руками прописать grub.cfg,
+
+Для автоматического нахождения нужно:
+pacman --sync --needed os-prober ntfs-3g
+
+ntfs-3g нужен на os-prober'у что бы увидеть windows ntfs разделы,
+после установки ntfs-3g нужно перезгрузить машину, иначе вылазят ошибки про modprobe fuse.. не знаю почему
+
+NOTE: /etc/grub.d/30_os-prober - присутствует и без пакета os-prober, 
+      но внутри он проверяет его наличие, и если не нашел - ничего не делает
+
 
 /***********************************************************************
 /* Полезные базовые доп пакеты
@@ -209,29 +228,6 @@ git clone https://aur.archlinux.org/wd719xx-firmware.git
 cd ...
 makepkg -sri
 
-/***********************************************************************
-/* google drive
-/***********************************************************************
-# note arch does not have devel packages, dev files comes in packages by library name
-pacman --sync --needed yajl
-pacman --sync --needed curl
-pacman --sync --needed libgcrypt
-pacman --sync --needed boost
-pacman --sync --needed expat
-
-git clone https://github.org/vitalif/grive2.git
-cd grive2; mkdir build; cd build
-cmake ..
-make
-sudo make install
-
-далее в папке пожеланию делаем grive -a
-он даст ссылку по которой можно полчить token, увы с помощью elinks получить его не получится 
-- google заворачивает жалуюсь на то что javascript не поддерживается.
-
-ссылку можно получить с помощью grive -a | tee ~/link.txt
-elinks $(cat link.txt | grep http.*$)
-далее ввести user/password на форме
 
 /***********************************************************************
 /* SAMBA
