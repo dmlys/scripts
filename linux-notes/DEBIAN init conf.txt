@@ -33,18 +33,6 @@ Samba:
 	
 	опционально настроить шары
 	
-	
-Active Directory Integration:
-https://wiki.archlinux.org/index.php/Active_Directory_Integration
-http://help.ubuntu.ru/wiki/руководство_по_ubuntu_server/авторизация_по_сети/kerberos#линукс_клиент_kerberos
-Kerberos:
-	apt install krb5-user krb5-doc libpam-krb5
-	
-	nslookup -type=any _kerberos._tcp - найти kerberos контроллеры
-	
-	sudo pam-update-auth - можно вкл/выкл модули авторизации(в том числе керберос)
-	пользователь должен быть создан локально(можно, и возможно лучше минуя керберос)
-	
 
 some usefull net packets:
 	net-tools: ifconfig, netstat, route

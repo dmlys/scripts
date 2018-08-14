@@ -1,0 +1,103 @@
+Некоторый полезные команды OpenSSL:
+ Закрытый ключ получаемый из OpenSSH можно использовать как есть в OpenSSL: 
+ 	openssl pkeyutl -decrypt -inkey .ssh/id_rsa
+ публичный ключ можно получить:
+	openssl pkey -in .ssh/id_rsa -pubout > id_rsa.pub.pem
+
+encrypt/decrypt:
+	openssl pkeyutl -encrypt -pubin -inkey id_rsa.pem -in input.txt
+	openssl pkeyutl -decrypt        -inkey id_rsa -in input.txt
+	
+sha256 hash:
+	openssl dgst -sha256 input.txt
+  
+sign/verify:
+	openssl dgst -sha256 -sign id_rsa input.txt > signature.bin
+	openssl dgst -sha256 -verify id_rsa.pem -signature signature.bin input.txt
+	
+https://superuser.com/questions/943972/what-is-the-difference-between-openssl-pkeyutl-sign-and-openssl-rsautl-sign
+	openssl dgst -sha256 -binary $1 | openssl pkeyutl -sign -pkeyopt digest:sha256 -inkey $KEY # -pkeyopt digest:sha256 добавляет ASN.1 AlgorithmIdentifier
+	openssl pkeyutl -verify -asn1parse -pubin -inkey $KEY -sigfile signature.bin intput.txt
+	openssl pkeyutl -verifyrecover -asn1parse -pubin -inkey $KEY input.txt
+
+самоподписанный сертификат:	
+
+	# через запрос
+	openssl pkey -new > cert.csr
+	openssl pkey -in privkey.pem -out key.pem
+	openssl x509 -in cert.csr -out cert.pem -req -signkey key.pem -days 1001
+	cat key.pem >> cert.pem
+
+	# одной командой	
+	# большинство параметров - будут спрошены утилитой через диалог, если не заданны command line аргументом
+	openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 \
+		-subj "/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=www.example.com"
+	
+	
+форматы:
+	https://support.ssl.com/Knowledgebase/Article/View/19/0/der-vs-crt-vs-cer-vs-pem-certificates-and-how-to-convert-them
+	
+	X509 Сертификаты
+
+		The first thing we have to understand is what each type of file extension is.   There is a lot of confusion about what DER, PEM, CRT, and CER are and many have incorrectly said that they are all interchangeable.  While in certain cases some can be interchanged the best practice is to identify how your certificate is encoded and then label it correctly.  Correctly labeled certificates will be much easier to manipulat
+		Encodings (also used as extensions)
+
+			.DER = The DER extension is used for binary DER encoded certificates. These files may also bear the CER or the CRT extension.   Proper English usage would be “I have a DER encoded certificate” not “I have a DER certificate”.
+			.PEM = The PEM extension is used for different types of X.509v3 files which contain ASCII (Base64) armored data prefixed with a “—– BEGIN …” line.
+
+		Common Extensions
+
+			.CRT = The CRT extension is used for certificates. The certificates may be encoded as binary DER or as ASCII PEM. The CER and CRT extensions are nearly synonymous.  Most common among *nix systems
+			 CER = alternate form of .crt (Microsoft Convention) You can use MS to convert .crt to .cer (.both DER encoded .cer, or base64[PEM] encoded .cer)  The .cer file extension is also recognized by IE as a command to run a MS cryptoAPI command (specifically rundll32.exe cryptext.dll,CryptExtOpenCER) which displays a dialogue for importing and/or viewing certificate contents.
+			.KEY = The KEY extension is used both for public and private PKCS#8 keys. The keys may be encoded as binary DER or as ASCII PEM.
+
+		The only time CRT and CER can safely be interchanged is when the encoding type can be identical.  (ie  PEM encoded CRT = PEM encoded CER)
+	
+	
+	PKCS # 7 / P7B сертификат
+
+		SSL сертификаты в формате PKCS # 7 или P7B — это файлы, которые хранятся в формате Base64 ASCII и имеют расширение файла .p7b или .p7c. P7B сертификаты содержат теги начала сертификата «—— BEGIN PKCS7 ——» и его конца «—— END PKCS7 ——«. Файлы в формате P7B включают в себя только ваш SSL сертификат и промежуточные SSL сертификаты. Приватный ключ при этом идет отдельным файлом. SSL сертификаты в формате PKCS # 7 / P7B поддерживают следующие платформы: Microsoft Windows и Java Tomcat.
+		PFX сертификат (формат PKCS # 12)
+
+		Формат SSL сертификата PKCS # 12 или, как его еще называют, PFX сертификат — бинарный формат, при использовании которого в одном зашифрованном файле хранится не только ваш личный сертификат сервера и промежуточные сертификаты центра сертификации, но и ваш закрытый ключ. PFX файлы, как правило, имеют расширение .pfx или .p12. Обычно, файлы формата PFX используются на Windows серверах для импорта и экспорта файлов SSL сертификатов и вашего приватного ключа.
+		Конвертация SSL сертификатов в OpenSSL
+
+		Данные команды OpenSSL дают возможность преобразовать сертификаты и ключи в разные форматы. Для того чтобы сделать их совместимыми с определенными видами серверов, либо ПО. К примеру, Вам необходимо конвертировать обыкновенный файл PEM, который будет работать с Apache, в формат PFX (PKCS # 12) с целью применения его с Tomcat, либо IIS.
+
+			Конвертировать PEM <-> DER
+
+				openssl x509 -outform der -in certificate.pem -out certificate.der
+				openssl x509 -inform  der -in certificate.der -out certificate.pem
+
+			Конвертировать PEM в P7B
+
+				openssl crl2pkcs7 -nocrl -certfile certificate.cer -out certificate.p7b -certfile CACert.cer
+
+			Конвертировать PEM <-> PFX
+
+				openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfile CACert.crt
+				openssl pkcs12 -nodes  -in  keystore.p12    -out key.pem -passin pass:'somepass' # -nodes -> don't encrypt the private keys at all
+				
+	
+	
+JAVA keystore интеграция:
+  JKS можно конвертнуть в P12 а дальше уже работать с ним с помощью openssl:
+    keytool -importkeystore -srckeystore keystore.jks -destkeystore keystore.p12 
+            -deststoretype PKCS12 -deststorepass $samepass -destkeypass $samepass
+    
+  теперь можно конвертнуть в PEM:
+    openssl pkcs12 -nodes -in keystore.p12 -out key.pem -passin pass:'somepass' # -nodes -> don't encrypt the private keys at all
+
+  В обратную сторону:
+	# -name "alias" is optional
+    openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfile CACert.crt -name "alias" 
+	keytool -importkeystore -srckeystore cert.pfx -srcstoretype pkcs12 -srcalias 1 -destkeystore server.jks -deststoretype JKS -destalias server
+	keytool -list -v -keystore server.jks -storepass 123456
+
+ Некоторые полезные keytool команды:
+	keytool -genkey -alias foo -keypass 123456 -dname "CN =localhost" -keystore keystore.jks -storepass 123456
+	keytool -alias pg -genkeypair -keystore keystore.jks -keyalg RSA -keysize 2048  -dname "CN =localhost" -validity 3650 -storepass 123456
+		
+Зашифрованную информацию JAVA'ой с помощью Cipher'а RSA/ECB/OAEPWithSHA-256AndMGF1Padding можно расшифровать командой:
+	openssl pkeyutl -decrypt -inkey privkey.pem -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha1
+

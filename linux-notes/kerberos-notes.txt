@@ -1,0 +1,44 @@
+/*************************************************************
+/*    Установка и базовая настройка kerberos библиотек
+/*************************************************************
+Обычно пакет называется krb5 и некоторые сопутствующие как-то krb5-user krb5-doc (lib)pam-krb5
+на debian можно сделать dpkg-reconfigure krb5-config и ответить на некоторые вопросы, по факту это создаст /etc/krb5.conf
+
+nslookup -type=any _kerberos._tcp - найти kerberos контроллеры
+
+
+/etc/krb5.conf
+[libdefaults]
+        default_realm = EXAMPLE.COM # UPPER CASE IS IMPORTANT
+
+# на практике мне обычно хватало default_realm, kdc сервера находились автоматически и следующая секция - не нужна
+#[realms]
+#        EXAMPLE.COM = {
+#                kdc = 192.168.0.1
+#                admin_server = 192.168.0.1
+#        }
+
+
+kinit user@EXAMPLE.COM # # получить тикет, UPPER CASE IS IMPORTANT
+klist                  # показать список тикетов
+kdestoy                # разрушить все тикеты
+
+
+/*************************************************************
+/*    Логинимся домменной учеткой
+/*************************************************************
+Тут пока пробел в знаниях
+
+на debian так же можно сделать:
+    sudo pam-update-auth - можно вкл/выкл модули авторизации(в том числе керберос)
+    пользователь должен быть создан локально(можно, и возможно лучше минуя керберос)
+    после чего можно логинится через керберос
+	
+
+
+	
+
+ 
+Active Directory Integration:
+https://wiki.archlinux.org/index.php/Active_Directory_Integration
+http://help.ubuntu.ru/wiki/руководство_по_ubuntu_server/авторизация_по_сети/kerberos#линукс_клиент_kerberos
