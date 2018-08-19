@@ -150,3 +150,43 @@ systemctl enable org.cups.cupsd.service
 systemctl start  org.cups.cupsd.service
 
 firefox localhost:631/admin - добавляем принтеры
+
+
+/***********************************************************************
+/* Bluetooth headset
+/***********************************************************************
+https://wiki.archlinux.org/index.php/Bluetooth_headset
+pacman --sync pulseaudio-alsa pulseaudio-bluetooth bluez bluez-libs bluez-utils
+systemctl enable --now bluetooth.service
+
+bluetoothctl
+[bluetooth]# power on
+[bluetooth]# agent on
+[bluetooth]# default-agent
+[bluetooth]# scan on
+
+если устройства будут найдены - будет вывод в консоль
+
+[bluetooth]# connect XX:XX:XX...
+[bluetooth]# trust   XX:XX:XX...
+
+
+If you're getting a connection error org.bluez.Error.Failed retry by killing existing PulseAudio daemon first:
+$ pulseaudio -k
+[bluetooth]# connect 00:1D:43:6D:03:26
+
+
+
+/etc/bluetooth/main.conf:
+[Policy]
+AutoEnable=true
+
+/etc/pulse/default.pa:
+# automatically switch to newly-connected devices
+load-module module-switch-on-connect
+
+
+При повторном подключении возможно что наушники будут подключаться HFP профилем вместо A2DP
+в вики есть описание как можно это обходить, помогло explicit:
+$ bluetoothctl connect XX:XX:XX
+$ pacmd set-card-profile card_number bluez_card.XX_XX... a2dp_sink
