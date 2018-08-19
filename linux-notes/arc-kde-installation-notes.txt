@@ -117,3 +117,8 @@ pacman --sync --needed ttf-liberation ttf-dejavu
 ~/.config/gtk-3.0/settings.ini:
 [Settings]
 gtk-alternative-button-order=1
+
+/***********************************************************************
+/* GTK интеграция
+/***********************************************************************
+pacman --sync kio-gdrive
