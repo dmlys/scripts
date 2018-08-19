@@ -71,10 +71,17 @@ Power management - можно настроить всякое связанное
 Desktop behavier -> Screen Locking - Lock screen on resume
                  -> Workspace      - Double-click to open files and folders
 
-https://wiki.archlinux.org/index.php/backlight - wiki по яркости, если есть несколько видео карт, например, основная и интегрированная как в ноутбуках
+Яркость на ноубуках:
+https://wiki.archlinux.org/index.php/backlight - wiki по яркости.
+Если есть несколько видео карт, например, основная и интегрированная, или linux просто некорректно определил ACPI backlight устройства
 linux может не сохранять яркость при перезагрузке или suspend/resume.
-В случае моего ASUS N73SM помогло добавление параметра acpi_backlight=vendor в GRUB_CMDLINE_LINUX_DEFAULT и grub-mkconfig для перезагрузки
+В случае моего ASUS N73SM помогло добавление параметра acpi_backlight=vendor в GRUB_CMDLINE_LINUX_DEFAULT -> grub-mkconfig -> перезагрузка
 установка xf86-video-intel - полечило suspend/resume backlight restore
+
+Так же в KDE powerdevil, он же system settings -> Power Management -> Energy Saving,
+контролирует яркость и если включен Screen Brightness/Dim screen(а может даже всегда/обе настройки выключены) - 
+он будет вмешиваться, и может сбрасывать яркость в максимум/минимум/как повезет.
+Нужно выставить желаемую яркость в Energy Saving настройках
 
 по backlight еще можно почитать:
 https://wiki.ubuntu.com/Kernel/Debugging/Backlight
@@ -119,6 +126,24 @@ pacman --sync --needed ttf-liberation ttf-dejavu
 gtk-alternative-button-order=1
 
 /***********************************************************************
-/* GTK интеграция
+/* Google drive
 /***********************************************************************
 pacman --sync kio-gdrive
+это добавить поддержку google drive в dolphin
+
+
+/***********************************************************************
+/* Печать
+/***********************************************************************
+нужно установить cups пакет
+pacman --sync cups
+
+для некоторых принтеров нужно установить драйверы из aur, например samsung'и:
+git clone https://aur.archlinux.org/samsung-unified-driver.git
+cd samsung-unified-driver
+makepkg --install --syncdeps --rmdeps 
+
+systemctl enable org.cups.cupsd.service
+systemctl start  org.cups.cupsd.service
+
+firefox localhost:631/admin - добавляем принтеры
