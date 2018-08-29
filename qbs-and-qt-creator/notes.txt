@@ -59,6 +59,19 @@ Tools -> Options -> Build and run: General:
     Switch to previous mode on debugger exit: true
 
 
+/*********************************************************************
+/*             Qt Creator Clang Code Model Related
+/*********************************************************************
+Currently clang code model has some bugs for supporting c++17, luckily there are workaroung, see qt bug reports
+https://bugreports.qt.io/browse/QTCREATORBUG-20884
+https://bugreports.qt.io/browse/QTCREATORBUG-20702
+https://bugreports.qt.io/browse/QTCREATORBUG-19348
+
+Вроде пишут в master уже починили, но не тестировал
+
+Так же там упоминаются интресные переменные окружения:
+QTC_CLANG_CCM_CMD_PREPEND=-Xclang -std=c++17 # for code model
+QTC_CLANG_CSA_CMD_PREPEND=-Xclang -std=c++17 # for analyzer
 
 /*********************************************************************
 /*             Qt Creator Spell Checker
