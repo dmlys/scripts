@@ -1,0 +1,71 @@
+/*********************************************************************
+/*             Qt Creator
+/*********************************************************************
+style и codestyles находятся в:
+linux   - $HOME/.config/QtProject/qtcreator/{styles,codestyles}
+windows - %APPDATA%\QtProject\qtcreator\{styles,codestyles}
+
+скопировать в эти папки(создать если отсутсвуют) соотвествющие файлы и Qt Creator автоматически их увидет.
+
+Некоторые полезные настройки Qt creator'а, котороые не включены по-умолчанию:
+Tools -> Options -> Environment:
+  Interface:
+    Language:  English
+    Theme:     Dark
+    High Dpi Scaling: false # это то же самое как если включить QT_AUTO_SCREEN_SCALE_FACTOR - автоматическиое масштабирование, после рисования, плохое
+
+  MIME Types:
+    тут можно настроить расширения и ассоциации text/x-c++hdr, Patterns: add *.hqt
+
+Tools -> Options -> Text Editor:
+
+  Font & Colors:
+    Color Scheme - Visual Studio 2017
+
+  Behaviour:
+    Tab Policy: Mixed
+    Tab Size:   4
+    Align Continuation Lines: with spaces
+    
+    Это общие настройки, они так же перенастраивается для C++ и QML
+    
+  Display:
+    Enable Text wrapping: false
+    Display Line Numbers: true
+    Display file encoding: true
+    
+
+Tools -> Options -> C++:
+  Code Style: My C++ Style # тут же настройка табов
+  File Naming:
+    Headers -> Suffix: hpp
+  Code Model: Создать новую
+    -Wall -Wextra -Wno-unused-parameter -Wsuggest-override
+
+
+
+Tools -> Options -> Build and run: General:
+  Save all files before build: true
+  Open compile output pane when building: true
+
+  Default build directory:
+    тут по умолчанию относительный путь выше проекта, стоит поменять на, например, bin
+    значение по-умолчанию для версии 4.7 - ../%{JS: Util.asciify("build-%{CurrentProject:Name}-%{CurrentKit:FileSystemName}-%{CurrentBuild:Name}")}
+
+
+
+Tools -> Options -> Build and run: General:
+  General:
+    Switch to previous mode on debugger exit: true
+
+
+
+
+
+
+/*********************************************************************
+/*             qbs, command line
+/*********************************************************************
+to be filled
+
+
