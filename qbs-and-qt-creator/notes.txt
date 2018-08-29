@@ -60,7 +60,19 @@ Tools -> Options -> Build and run: General:
 
 
 
+/*********************************************************************
+/*             Qt Creator Spell Checker
+/*********************************************************************
+Из коробки spell checker'а нету, но есть plugin, активно развивающийся:
+https://github.com/CJCombrink/SpellChecker-Plugin
 
+в Arch Linux можно поставить из aur:
+для сборки плагина требются исходники qtcreator'а
+git clone https://aur.archlinux.org/qtcreator-src.git                      ; makepkg --install --syncdeps --rmdeps
+git clone https://aur.archlinux.org/qtcreator-spellchecker-plugin-git.git  ; makepkg --install --syncdeps --rmdeps
+
+Дальше перезапустить qt creator, в Tools -> Options появиться новый раздел, в нем нужно выбрать словарь, английский желательно :)
+Обычно словари лежат в /usr/bin/share/hunsplell
 
 
 /*********************************************************************
