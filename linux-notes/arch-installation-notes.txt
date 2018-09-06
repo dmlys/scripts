@@ -107,13 +107,13 @@ https://wiki.archlinux.org/index.php/EFI_system_partition
 
 # для BIOS
 grub-install --target=i386-pc /dev/sdX
-grub-mkconfig -o /boost/grub/grub.cfg
+grub-mkconfig -o /boot/grub/grub.cfg
 
 # для UEFI
 mkdir /boot/efi
 mount /dev/sxx /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB # для UEFI
-grub-mkconfig -o /boost/grub/grub.cfg
+grub-mkconfig -o /boot/grub/grub.cfg
 
 Если хочется dual-boot с windows - смотри ниже
 

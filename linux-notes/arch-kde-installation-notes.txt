@@ -71,6 +71,7 @@ Power management - можно настроить всякое связанное
 Desktop behavier -> Screen Locking - Lock screen on resume
                  -> Workspace      - Double-click to open files and folders
 
+
 Яркость на ноубуках:
 https://wiki.archlinux.org/index.php/backlight - wiki по яркости.
 Если есть несколько видео карт, например, основная и интегрированная, или linux просто некорректно определил ACPI backlight устройства
