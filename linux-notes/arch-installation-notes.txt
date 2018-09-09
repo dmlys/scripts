@@ -2,7 +2,7 @@ https://wiki.archlinux.org/index.php/installation_guide
 во время инсталляции можно переключаться между терминалами alt + meta(windows key) + стрелочки вправо/лево
 если проводной интернет - arch подключиться сам сразу же
 wi-fi WPA2:
-  # wpa_supplicant -B -i <интерфейс> -В wext -c <(wpa_passphrase $SSID $PASS)
+  # wpa_supplicant -B -i <интерфейс> -D wext -c <(wpa_passphrase $SSID $PASS)
   # dhclient
   интерфейс можно посмотреть командой ip a
 

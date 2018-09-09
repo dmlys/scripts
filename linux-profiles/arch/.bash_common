@@ -26,10 +26,6 @@ shopt -s checkwinsize
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
 
-# expand environment variables when bash completion triggers
-# cp $HOME/.config<TAB> -> cp /home/user/.config/
-shopt -s direxpand
-
 # private group umask
 umask 002
 
@@ -113,6 +109,5 @@ fi
 # M - --LONG-PROMPT
 # K - --quit-on-intr (Ctrl + C)
 export LESS=-RSM
-
 
 [[ -f ~/.bash_local ]] && source ~/.bash_local
