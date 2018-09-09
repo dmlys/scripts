@@ -85,7 +85,7 @@ git clone https://aur.archlinux.org/qtcreator-src.git                      ; mak
 git clone https://aur.archlinux.org/qtcreator-spellchecker-plugin-git.git  ; makepkg --install --syncdeps --rmdeps
 
 Дальше перезапустить qt creator, в Tools -> Options появиться новый раздел, в нем нужно выбрать словарь, английский желательно :)
-Обычно словари лежат в /usr/bin/share/hunsplell
+Обычно словари лежат в /usr/share/hunsplell
 
 
 /*********************************************************************
