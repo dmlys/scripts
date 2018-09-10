@@ -26,6 +26,10 @@ shopt -s checkwinsize
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
 
+# expand environment variables when bash completion triggers
+# cp $HOME/.config<TAB> -> cp /home/user/.config/
+shopt -s direxpand
+
 # private group umask
 umask 002
 
@@ -57,8 +61,9 @@ if [ "$color_prompt" = yes ]; then
     PS_GREEN="\\[$GREEN\\]"
     PS_BLUE="\\[$BLUE\\]"
     PS_RESET="\\[$RESET\\]"
+    PS_BOLD="\\[$BOLD\\]"
     
-    PS1="$PS_GREEN\\u@\\h$PS_RESET:$PS_BLUE\\W$PS_RESET\\$ "
+    PS1="$PS_GREEN\\u@\\h$PS_RESET:$PS_BLUE$PS_BOLD\\W$PS_RESET\\$ "
     unset GREEN BLUE ROLD RESET PS_GREEN PS_BLUE PS_RESET
 else
     PS1='\u@\h:\w\$ '
@@ -109,6 +114,5 @@ fi
 # K - --quit-on-intr (Ctrl + C)
 export LESS=-RSM
 
-#export BOOST_BUILD_PATH=/usr/local/share/boost-build
-export BOOST_BUILD_PATH=$HOME/.local/share/boost-build
 
+[[ -f ~/.bash_local ]] && source ~/.bash_local
