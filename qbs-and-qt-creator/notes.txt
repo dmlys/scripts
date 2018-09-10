@@ -2,8 +2,8 @@
 /*             Qt Creator
 /*********************************************************************
 style и codestyles находятся в:
-linux   - $HOME/.config/QtProject/qtcreator/{styles,codestyles}
-windows - %APPDATA%\QtProject\qtcreator\{styles,codestyles}
+linux   - $HOME/.config/QtProject/qtcreator/{styles,codestyles/{Cpp,QmlJS}}
+windows - %APPDATA%\QtProject\qtcreator\{styles,codestyles/{Cpp,QmlJS}}
 
 скопировать в эти папки(создать если отсутсвуют) соотвествющие файлы и Qt Creator автоматически их увидет.
 
