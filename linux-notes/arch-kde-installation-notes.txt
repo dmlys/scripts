@@ -139,6 +139,33 @@ pacman --sync kio-gdrive
 
 
 /***********************************************************************
+/*  bumblebee and laptop nvidea/radeon + intel videocards
+/***********************************************************************
+https://wiki.archlinux.org/index.php/Bumblebee
+https://wiki.archlinux.org/index.php/Xorg#Driver_installation
+в моем случае все зараболо в соответсвии с интсрукциями, но драйвер нужно было поставить проприетарный - nvidia-390xx
+
+sudo pacman --sync --needed nvidia-390xx nvidia-390xx-utils nvidia-390xx-settings
+sudo modprobe nvidia -vv # смотреть выхлоп на премет ошибок
+dmesg --ctime --color=always | less # смотрим лог на предмет ошибок видео драйвера, ищем по слову nvidia
+
+sudo pacman --sync --needed bumblebee bbswitch primus
+sudo gpasswd -a user bumblebee
+
+/etc/bumblebee/bumblebee.conf:
+[optirun]
+Bridge=primus
+
+sudo systemctl enable bumblebeed.service
+
+sudo reboot
+
+# проверяем
+optirun glxgears -info
+optirun glxspheres64
+
+
+/***********************************************************************
 /* Печать
 /***********************************************************************
 # нужно установить cups пакет

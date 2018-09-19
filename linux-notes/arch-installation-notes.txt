@@ -253,3 +253,10 @@ Note:
     If required; the workgroup specified in the [global] section has to match the Windows workgroup (default WORKGROUP).
 
 Tip: Whenever you modify the smb.conf file, run the testparm(1) command to check for syntactic errors.
+
+некототорые программы использующие samba для browse'инга сетевого окружения, например dolphin, могут не работать корректно - ничего не находить
+лечится путем добавления в smb.conf
+[global]
+server max protocol = NT1
+
+по умолчанию используется более новый, но с ним у этих приложений почему-то проблемы
