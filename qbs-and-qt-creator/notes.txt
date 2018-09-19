@@ -93,7 +93,7 @@ git clone https://aur.archlinux.org/qtcreator-spellchecker-plugin-git.git  ; mak
 /*********************************************************************
 qbs setup-toolchains --detect
 qbs setup-qt         --detect
-qbs defaultProfile  qt-5-11-1
+qbs config defaultProfile  qt-5-11-1
 
 qbs help build/...
 qbs config preferences.defaultBuildDirectory bin
