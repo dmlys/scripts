@@ -71,6 +71,11 @@ Power management - можно настроить всякое связанное
 Desktop behavier -> Screen Locking - Lock screen on resume
                  -> Workspace      - Double-click to open files and folders
 
+/etc/systemd/logind.conf:
+# if KDE or other desktop environment does not handle acpi events,
+# systemd handles them - by default it will suspend on lid close
+HandleLidSwitch=ignore
+
 
 Яркость на ноубуках:
 https://wiki.archlinux.org/index.php/backlight - wiki по яркости.

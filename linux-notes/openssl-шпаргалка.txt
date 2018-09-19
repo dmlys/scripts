@@ -23,7 +23,7 @@ https://superuser.com/questions/943972/what-is-the-difference-between-openssl-pk
 самоподписанный сертификат:	
 
 	# через запрос
-	openssl pkey -new > cert.csr
+	openssl req  -new > cert.csr
 	openssl pkey -in privkey.pem -out key.pem
 	openssl x509 -in cert.csr -out cert.pem -req -signkey key.pem -days 1001
 	cat key.pem >> cert.pem
@@ -32,6 +32,9 @@ https://superuser.com/questions/943972/what-is-the-difference-between-openssl-pk
 	# большинство параметров - будут спрошены утилитой через диалог, если не заданны command line аргументом
 	openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 \
 		-subj "/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=www.example.com"
+
+	#-sha256 вроде не нужно
+	#-nodes - создает приватный ключ без пароля
 	
 	
 форматы:
