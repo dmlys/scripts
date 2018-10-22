@@ -1,0 +1,3 @@
+./configure -prefix ~/.local/opt/qt-5.11.2 -opensource -confirm-license -debug-and-release -developer-build -nomake tests -nomake examples -no-icu -mp
+gmake
+gmake install

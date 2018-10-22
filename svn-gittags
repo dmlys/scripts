@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Cwd;
+use File::Basename;
+use Pod::Usage;
+use Getopt::Long;
+
+=head1 NAME
+
+svn-gittags - transform svn to git tags
+
+=head1 DESCRIPTION
+
+Searches for svn tags(like remotes/tags/$name-$ver) and git tag's them
+
+=cut
+
+my @branches = `git branch -r`;
+die "git branch returned $?" if $? != 0;
+
+my @git_tags = `git tag -l`;
+die "git tag returned $?" if $? != 0;
+
+for my $branch (@branches)
+{
+	chomp $branch;
+	$branch =~ s/^\s+|\s+$//; # trim
+
+	my @parts = split "/", $branch;
+	my $remote = $parts[0];
+	my $tag_name = $parts[-1];
+	#my ($tag_sub, $tag_name) = $branch =~ m{origin/(?:(tag)/)?(.*)$};
+
+	next if $remote ne "origin";
+	next if not $tag_name or $tag_name eq "master" or $tag_name eq "trunk";
+	next if index($tag_name, "@") >= 0;	
+	next if grep { index($_, $tag_name) >=0 } @git_tags;
+		
+	my $cmd = "git tag $tag_name $branch";
+	# print "$cmd\n" and next;
+	my $res = system "$cmd";
+	if ($res != 0)
+	{
+		print STDERR "failed to execute git command: $cmd; err - $!\n";
+	}
+}
