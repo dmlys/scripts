@@ -1,0 +1,18 @@
+some simple spreadshhet to remember gdb commands
+
+# set breakpoint
+break main
+break filename.cpp:14
+
+#running
+start       - run program and break immediately
+run         - run program
+step, s     - step
+next, n     - next, step over
+finish, fin - finish current subrouting, step out
+
+#info
+info sharedLibraries - list of loaded so modules
+
+C-x C-a - turn on/turn off tui mode
+C-l     - repaint
