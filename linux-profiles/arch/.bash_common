@@ -26,6 +26,10 @@ shopt -s checkwinsize
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
 
+# expand environment variables when bash completion triggers
+# cp $HOME/.config<TAB> -> cp /home/user/.config/
+shopt -s direxpand
+
 # private group umask
 umask 002
 
@@ -108,6 +112,7 @@ fi
 # X - --no-init Disables sending the termcap initialization and deinitialization strings to the terminal.  This is sometimes desirable if the deinitialization string does something unnecessary, like clearing the screen.
 # M - --LONG-PROMPT
 # K - --quit-on-intr (Ctrl + C)
-export LESS=-RSM
+export LESS=-iRSM
+
 
 [[ -f ~/.bash_local ]] && source ~/.bash_local
