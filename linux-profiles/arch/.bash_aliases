@@ -11,10 +11,6 @@ alias ls="ls $COLOR_OPTS --human-readable"
 # Problem is bash aliases are visible and expanded at the moment of function difinition, that code line bellow just would not work for aliases
 # instead just make thme functions, those would work
 
-#alias ll='ls -lFA'
-#alias l='ls -lF'
-#alias l.='ls -A'
-
 function ll { ls -lFA "$@" ; }
 function l  { ls -lF "$@"  ; }
 function l. { ls -A "$@"   ; }
@@ -24,3 +20,9 @@ function l. { ls -A "$@"   ; }
 complete -F _longopt ll
 complete -F _longopt l
 complete -F _longopt l.
+
+# still define them as aliases, so alias combaning would work
+# sudo l /etc/...
+alias ll='ls -lFA'
+alias l='ls -lF'
+alias l.='ls -A'
