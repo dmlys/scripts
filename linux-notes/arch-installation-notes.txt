@@ -3,7 +3,7 @@ https://wiki.archlinux.org/index.php/installation_guide
 если проводной интернет - arch подключиться сам сразу же
 wi-fi WPA2:
   # wpa_supplicant -B -i <интерфейс> -D wext -c <(wpa_passphrase $SSID $PASS)
-  # dhclient
+  # dh
   интерфейс можно посмотреть командой ip a
 
 elinks http://wiki.archlinux.org/
@@ -204,7 +204,7 @@ pacman --sync --needed git
 немного о группах: https://wiki.archlinux.org/index.php/Users_and_groups
 
 для sudo можно использовать группу wheel или создать sudo
-groupadd ---sync --neededystem sudo
+groupadd --system sudo
 
 создаем пользователя:
 useradd -m -G users,systemd-journal,sudo,wheel,adm dima
@@ -226,7 +226,7 @@ chmod g+s  some_folder - to unable group propagation
 /***********************************************************************
 /* missing firmare
 /***********************************************************************
-если mkinitcpio -P выдает варнинги о недостающих firmare - их можно становить, скорее всего они есть в AUR
+если mkinitcpio -P выдает варнинги о недостающих firmare - их можно установить, скорее всего они есть в AUR
 На ноуте N73SM у меня не было aic94xx, wd719x
 базовую информацию можно получить командой modinfo $firmare, modinfo aic94xx
 
@@ -236,7 +236,7 @@ git clone https://aur.archlinux.org/aic94xx-firmware.git
 git clone https://aur.archlinux.org/wd719xx-firmware.git
 
 cd ...
-makepkg -sri
+makepkg --syncdeps --rmdeps --install
 
 
 /***********************************************************************

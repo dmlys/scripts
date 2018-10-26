@@ -11,9 +11,9 @@
   <style name="AutoComplete" foreground="#000080"/>
   <style name="CurrentLine" foreground="#000000" background="#000000"/>
   <style name="CurrentLineNumber" foreground="#2b91af" bold="true"/>
-  <style name="Occurrences" foreground="#000000" background="#0e4583"/>
+  <style name="Occurrences" foreground="#000000" background="#55aaff"/>
   <style name="Occurrences.Unused" underlineColor="#95db7d" underlineStyle="WaveUnderline"/>
-  <style name="Occurrences.Rename" foreground="#000000" background="#0e4583"/>
+  <style name="Occurrences.Rename" foreground="#000000" background="#55ffff"/>
   <style name="Number" foreground="#b5cea8"/>
   <style name="String" foreground="#d69d85"/>
   <style name="Type" foreground="#ffd700"/>
