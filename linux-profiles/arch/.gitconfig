@@ -1,0 +1,14 @@
+[user]
+	name = Dmitry Lisachenko
+	email = xdemonx07@gmail.com
+[push]
+	default = simple
+
+[core]
+	pager = less -F
+	askpass = ksshaskpass
+	quotepath = false
+[pull]
+	ff = only
+[diff]
+	tool = kompare
