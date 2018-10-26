@@ -1,0 +1,9 @@
+# machine local stuff, usually some paths
+export BOOST_BUILD_PATH=$HOME/.local/share/boost-build
+export CDPATH=.:~/projects/dmlys:/data-store/projects
+
+export VISUAL=mcedit
+#export EDITOR=mcedit
+export PAGER=less
+
+stty -echoctl
