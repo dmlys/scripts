@@ -1,0 +1,5 @@
+sudo modprobe ipmi_devintf ipmi_si
+sudo ipmitool sensor list
+sudo modprobe -r ipmi_devintf ipmi_si
+
+Youjuu Toshi

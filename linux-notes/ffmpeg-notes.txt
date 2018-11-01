@@ -1,0 +1,44 @@
+Sony Bravia KDL-42W705B.xml
+Похоже телевизор плохо понимает mkv формируемый утилитой ffmpeg, если же просто перепаковать резульат с помощью mkvmerge - вроде нормально работает
+аудиокодек EAC не поддерживается
+
+Примеры:
+	ffmpeg -h encoder=hevc | less
+	ffmpeg x265 -help
+	
+	ffmpeg -y -i input.mkv -map 0 -c copy -c:v hevc -preset veryslow -crf 28 output.mkv	
+	
+	ffmpeg -y -i input.mkv -c copy -vf "scale=1920:-1" -c:v libx264 -crf 17 -preset slow -tune film -profile:v high -level 4.1 output.mkv
+	ffmpeg -y -i input.mkv -c copy -c:a ac3 -c:v libx264 -crf 17 -preset slow -tune film -profile:v high -level 4.1 output.mkv
+	
+	ffmpeg -y -i input.mkv -c copy -filter:a volume=2 -c:a ac3 output.mkv
+	ffmpeg -y -i input.mkv -map 0:0 -map 0:2 -map 0:2 -map 0:3 -map 0:4 -c copy -c:a:1 ac3 -b:a:1 640k output.mkv
+	
+	ffmpeg -i input1.mkv -i input2.mkv ....  --metadata:s:s:0 language=rus output.mkv
+	ffmpeg -i ....  --metadata:s:a:0 language=rus output.mkv
+	ffmpeg -i ....  --metadata:s:v   language=rus output.mkv
+	
+	# -dn disables some unsupported data streams
+	ffmpeg -i ..mp4 -map 0 -dn -c copy -c:s srt output.mkv
+
+	metadata:
+	* s - stream
+	* s - subtitle
+	* 0 - first subtitle track
+	
+	
+	mkvpropedit '{}' --edit track:a1 --set flag-default=1
+	mkvpropedit '{}' --edit track:a1 --edit track:v1 --edit track:s1 --set language=rus
+	
+	nohup bash -c 'for ep in {01..10}; do ffmpeg ... ; done' &> ffmpeg.log &
+	nohup bash -c 'for ep in *; do ffmpeg -y -i "$ep" -c copy -filter:a volume=2 -c:a ac3 tmp.mkv; mkvmerge tmp.mkv -o "$ep"'; done
+
+	# конвертация DVD
+	# субтитры нельзя просто конвертнуть, в DVD субтитры по факту картинки накладываемые на видеоряд, srt - же текст
+	# по факту DVD субтитры нужно распознавать с помощью спец программы - вроде есть даже разу в srt, в любом случае ffmpeg этого не умеет
+	cat *.VOB > input.vob
+	ffmpeg -analyzeduration 3000M -probesize 3000M \
+		-y -i input.vob -map 0:1 -map 0:3 -map 0:3 \
+		-c:v libx264 -crf 17 -preset slow -tune film -profile:v high -level 4.1 \
+		-filter:a:2 volume=2 -c:a ac3 \
+		-metadata title="Солярис" -metadata:s:a:0 language=rus -metadata:s:a:1 language=rus
