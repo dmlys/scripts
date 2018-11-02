@@ -60,6 +60,19 @@ Tools -> Options -> Build and run: General:
 
 
 /*********************************************************************
+/*             Qt Creator file wizard templates
+/*********************************************************************
+whenever you create new file/class, they are created according wizard and template.
+Those are in: $HOME/.config/QtProject/qtcreator/templates/wizards
+              /usr/share/qtcreator/templates/wizards
+
+              files/...   for files: cppheader, cppfile
+              classes/... for classse: simple class, item model class, etc
+
+those in $HOME override ones from /usr/share
+
+
+/*********************************************************************
 /*             Qt Creator Clang Code Model Related
 /*********************************************************************
 Currently clang code model has some bugs for supporting c++17, luckily there are workaroung, see qt bug reports

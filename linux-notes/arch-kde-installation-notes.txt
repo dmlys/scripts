@@ -51,17 +51,20 @@ Keyboard model - asus laptop, logitech ..., что у нас есть
 Layouts - добавляем ru, Switching policy - Application, shortcut alt+shift
 
 Touchpad - mouse click emulation, pointer motion acceleration, ...
-    KDE, увы под xorg libinput предоставляет не полные настройки тачпада, 
-    
-    для TappingButtonMap: lmr(left middle right) нужно создать файл /etc/X11/xorg.conf.d/30-touchpad.conf:
-    Section "InputClass"
-        Identifier "ETPS/2 Elantech Touchpad"
-        Driver "libinput"
-        MatchIsTouchpad "on"
-        Option "Tapping" "on"
-        Option "TappingButtonMap" "lmr"
-        Option "AccelSpeed" 0.5           # заодно выставляем ускорение для тачпада
-    EndSection
+    KDE, увы под xorg libinput предоставляет не полные настройки тачпада,
+    * нужно или установить драйвер synaptics(в том числе и для elantech), после чего настройки станут редактируемыми
+      sudo pacman --sync --needed xf86-input-synaptics
+
+    * или прописать параметры для X11:
+        для TappingButtonMap: lmr(left middle right) нужно создать файл /etc/X11/xorg.conf.d/30-touchpad.conf:
+        Section "InputClass"
+            Identifier "ETPS/2 Elantech Touchpad"
+            Driver "libinput"
+            MatchIsTouchpad "on"
+            Option "Tapping" "on"
+            Option "TappingButtonMap" "lmr"
+            Option "AccelSpeed" 0.5           # заодно выставляем ускорение для тачпада
+        EndSection
     
     так же можно поиграться с xinput(настройки для нее немного отличаются от xorg.conf'овых, смотри man 4 libinput)
 
@@ -91,6 +94,26 @@ linux может не сохранять яркость при перезагр�
 
 по backlight еще можно почитать:
 https://wiki.ubuntu.com/Kernel/Debugging/Backlight
+
+
+/***********************************************************************
+/* tearing
+/***********************************************************************
+https://wiki.archlinux.org/index.php/NVIDIA/Troubleshooting#Avoid_screen_tearing_in_KDE_.28KWin.29
+https://www.youtube.com/watch?v=0RvIbVmCOxg&t=21s - видео для теста tearing'а
+
+на стационарной машине с nvidia картой и KDE оболочкой частично: __GL_YIELD="USLEEP"
+по ощущенияем tearing все же отсался, но его стало мало и он почит незаметен, если только приглядываться на спец видео.
+
+~/.config/autostart-scripts/kwin.sh:
+#!/bin/bash
+(sleep 2s && __GL_YIELD="USLEEP" kwin_x11 --replace)
+
+не забыть сделать исполняемым:
+chmod +x ~/.config/autostart-scripts/kwin.sh
+
+
+Нужно попробовать другие способы
 
 
 /***********************************************************************
