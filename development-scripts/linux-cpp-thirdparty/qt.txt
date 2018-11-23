@@ -1,5 +1,5 @@
-./configure -prefix ~/.local/opt/qt-5.11.2 -opensource -confirm-license -debug -no-optimize-debug -developer-build -nomake tests -nomake examples #-no-icu -mp
-qmake
+./configure -prefix ~/.local/opt/qt-5.11.2 -opensource -confirm-license -debug -no-optimize-debug -developer-build -c++std c++1z -nomake tests -nomake examples #-no-icu -mp
+
 make
 make install
 
