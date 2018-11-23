@@ -1,3 +1,6 @@
 ./configure -prefix ~/.local/opt/qt-5.11.2 -opensource -confirm-license -debug -no-optimize-debug -developer-build -nomake tests -nomake examples #-no-icu -mp
-gmake
-gmake install
+qmake
+make
+make install
+
+опционально добавить -j что бы ускорить

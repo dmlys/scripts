@@ -1,0 +1,11 @@
+sqlplus username/password@host:port/service-name
+sqlplus username/password@host:port/SID
+
+похоже очень важно указывать все параметры, пароль так точно, иначе идут очень кривые ошибки типа:
+ERROR: ORA-12504: TNS:listener was not given the SERVICE_NAME in CONNECT_DATA
+Видимо строка парсится криво и sqlplus username@host:port/SID парсится как: username => username@host:port;  password => SID; а остальное - пустое. Но это чисто догадка
+
+
+
+alias sqlplus='rlwrap -c sqlplus '
+touch ~/.sqlplus_history

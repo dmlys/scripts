@@ -87,6 +87,18 @@ QTC_CLANG_CCM_CMD_PREPEND=-Xclang -std=c++17 # for code model
 QTC_CLANG_CSA_CMD_PREPEND=-Xclang -std=c++17 # for analyzer
 
 /*********************************************************************
+/*             Qt Creator Debugging
+/*********************************************************************
+по умолчанию подключать отладчик можно только к дочернему процессу.
+что бы можно было подключиться к уже запущенному не нами процесу без использования root учетки нужно сделать:
+echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+
+по идее можно что-то куда-то прописать что бы эта настройка стала персистентной, вроде как:
+/etc/sysctl.d/10-ptrace.conf: kernel.yama.ptrace_scope = 0 # именно 0
+
+что бы уметь поключаться к уже запущенному процессу с помощью gdb 
+
+/*********************************************************************
 /*             Qt Creator Spell Checker
 /*********************************************************************
 Из коробки spell checker'а нету, но есть plugin, активно развивающийся:
@@ -113,3 +125,6 @@ qbs config preferences.defaultBuildDirectory bin
 qbs build config:debug --command-echo-mode command-line
 
 qbs build config:debug profile:qt-5-11-1
+
+qbs resolve config:release modules.cpp.cxxFlags:-fdiagnostics-color
+qbs build   config:release modules.cpp.cxxFlags:-fdiagnostics-color --command-echo-mode command-line

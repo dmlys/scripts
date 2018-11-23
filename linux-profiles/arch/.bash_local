@@ -7,3 +7,5 @@ export VISUAL=mcedit
 export PAGER=less
 
 stty -echoctl
+
+alias sqlplus='rlwrap -c sqlplus '

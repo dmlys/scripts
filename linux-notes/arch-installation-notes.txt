@@ -178,6 +178,8 @@ NOTE: /etc/grub.d/30_os-prober - присутствует и без пакета
 /***********************************************************************
 по молчанию установлено очень мало, до-устанавливаем базовые удобства:
 
+pacman --sync --needed pacman-contrib # содержит rankmirrors, pactree и ряд прочих полезных утилит
+
 pacman --sync --needed mc
 pacman --sync --needed htop
 pacman --sync --needed sudo
@@ -197,6 +199,8 @@ pacman --sync --needed cmake
 pacman --sync --needed boost
 pacman --sync --needed git
 
+
+pacman --sync --needed pax-utils # содержит lddtree
 
 /***********************************************************************
 /* Создаем пользователя
