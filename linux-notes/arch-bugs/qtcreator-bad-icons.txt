@@ -1,0 +1,41 @@
+симптом:
+  дефолтные Qt иконки в qt приложениях(не KDE, обычные, типа qtcreator). 
+  Не подхватываются системная тема для значков, хотя должна
+
+причины:
+  QGuiApplication::platformName() возвращает имя стиля сконфигурированного в системе для значков.
+  QIcon::fromTheme(...) должен возвращать тематический значок, даже если тема переопределена в Fusion, значки все равно должны быть breeze/breeze-dark или в том что установленно в системе.
+
+  по факту же QGuiApplication::platformName() возвращал пустую строку.
+
+  Связанно это с libKF5IconThemes.so, который теняться через KDE plugin KDEPlasmaPlatformTheme.so, последний впрочем не виноват.
+  в версии 5.52.0-1 -> 5.53.0-1 для ARCH linux появился коммит 
+  421404563e87a50d0af22eb8ca09866fd89a36cc в котором добвили следующий код:
+
+  		// Set the icon theme fallback to breeze
+  		// Most of our apps use "lots" of icons that most of the times
+  		// are only available with breeze, we still honour the user icon
+  		// theme but if the icon is not found there, we go to breeze
+  		// since it's almost sure it'll be there
+  		static void setBreezeFallback()
+  		{
+  		#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+  		    QIcon::setFallbackThemeName("breeze");
+  		#endif
+  		}
+  		
+  		Q_COREAPP_STARTUP_FUNCTION(setBreezeFallback)
+  
+  Нельзя из Q_COREAPP_STARTUP_FUNCTION обращаться не к QtCore(QtGui, QtWidgets, etc)
+  по факту происходит гонка, QIconLoader(внутренний класс) инициализируется раньше чем QGuiApplicationPrivate::platformTheme, 
+  но инициализация QIconLoader зависит от QGuiApplicationPrivate::platformTheme
+
+  при этом это все происходит во время инициализации QGuiApplicationPrivate::platformTheme с помощью KDEPlasmaPlatformTheme.so
+
+  т.е. создается QPlatformTheme реализация из KDEPlasmaPlatformTheme.so, внутри которой отрабатывает Q_COREAPP_STARTUP_FUNCTION(setBreezeFallback), 
+  который дергает QIconLoader, но QGuiApplicationPrivate::platformTheme еще не заполнен.
+
+  В результате QGuiApplication::platformName() всегда пустая строка и по факту системные значки не подхватываются. Используется вкомпиленные в qt defaults
+
+временное решение:
+  downgrade kiconthemes: pacman --upgrade /var/cache/pacman/pkg/kiconthemes-5.52.0-1-x86_64.pkg.tar.xz
