@@ -13,6 +13,9 @@ Sony Bravia KDL-42W705B.xml
 	
 	ffmpeg -y -i input.mkv -c copy -filter:a volume=2 -c:a ac3 output.mkv
 	ffmpeg -y -i input.mkv -map 0:0 -map 0:2 -map 0:2 -map 0:3 -map 0:4 -c copy -c:a:1 ac3 -b:a:1 640k output.mkv
+
+	# задваивание звуковых дорожек с сохранением всех остальных дорожек/субтитров
+	ffmpeg -y -i input.mkv -map 0:v -c:v copy -map 0:a -map 0:a -c:a copy -filter:a:1 volume=2 -c:a:1 ac3 -map 0:s -c:s copy output.mkv
 	
 	ffmpeg -i input1.mkv -i input2.mkv ....  --metadata:s:s:0 language=rus output.mkv
 	ffmpeg -i ....  --metadata:s:a:0 language=rus output.mkv
