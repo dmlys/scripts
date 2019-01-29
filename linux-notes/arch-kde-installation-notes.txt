@@ -104,6 +104,7 @@ https://www.youtube.com/watch?v=0RvIbVmCOxg&t=21s - видео для теста
 
 на стационарной машине с nvidia картой и KDE оболочкой частично: __GL_YIELD="USLEEP"
 по ощущенияем tearing все же отсался, но его стало мало и он почит незаметен, если только приглядываться на спец видео.
+!!! фигня, рвет так что гдаза вытекают, смотри ниже NVIDIA TripleBuffer.
 
 ~/.config/autostart-scripts/kwin.sh:
 #!/bin/bash
@@ -112,8 +113,24 @@ https://www.youtube.com/watch?v=0RvIbVmCOxg&t=21s - видео для теста
 не забыть сделать исполняемым:
 chmod +x ~/.config/autostart-scripts/kwin.sh
 
+Помогло: /etc/X11/xorg.conf.d/20-nvidia.conf:
+Section "Screen"
+    Identifier     "Screen0"
+    Option         "metamodes" "nvidia-auto-select +0+0 { ForceFullCompositionPipeline = On }"
+    Option         "AllowIndirectGLXProtocol" "off"
+    Option         "TripleBuffer" "on"
+EndSection
 
-Нужно попробовать другие способы
+
+
+
+Для intel GPU - https://wiki.archlinux.org/index.php/Intel_graphics#Tearing
+/etc/X11/xorg.conf.d/20-intel.conf:
+Section "Device"
+  Identifier  "Intel Graphics"
+  Driver      "intel"
+  Option      "TearFree" "true"
+EndSection
 
 
 /***********************************************************************
