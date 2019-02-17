@@ -1,6 +1,6 @@
 # machine local stuff, usually some paths
 export BOOST_BUILD_PATH=$HOME/.local/share/boost-build
-export CDPATH=.:~/projects/dmlys:~/projects/work
+export CDPATH=.:~/projects:~/projects/dmlys
 
 export VISUAL=mcedit
 #export EDITOR=mcedit

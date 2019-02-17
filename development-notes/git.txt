@@ -1,0 +1,26 @@
+============================================
+git stash
+
+git stash show -p
+git stash show -p stash@{1}
+
+# можно так же попробовать git diff, -R инвертирует сравниваемые стороны,
+# технически, видимо, stash commit удаляет сохраняемое, а при git stash pop - reverse'ит
+git diff -R stash@{0}
+
+
+
+============================================
+git diff
+
+git diff -G<regex> id1..id2 # ищет изменения в соотвествии с заданным регэкспом
+
+
+===========================================
+git filter-branch
+
+# изменить дату коммита автором на дату коммита коммитера для коммитов master - HEAD
+git filter-branch --env-filter 'GIT_AUTHOR_DATE=$GIT_COMMITTER_DATE' -- master..
+
+# изменить дату коммита коммитера на дату коммита автора для коммитов master - HEAD
+git filter-branch --env-filter 'GIT_COMMITTER=$GIT_AUTHOR_DATE' -- master..
