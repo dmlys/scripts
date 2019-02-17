@@ -171,6 +171,10 @@ pacman --sync --needed ttf-liberation ttf-dejavu
 [Settings]
 gtk-alternative-button-order=1
 
+для firefox интеграции
+sudo pacman --sync --needed xdg-desktop-portal xdg-desktop-portal-kde
+echo 'export GTK_USE_PORTAL=1' > ~/.config/plasma-workspace/env/gtk-use-portal.sh
+
 /***********************************************************************
 /* Google drive
 /***********************************************************************
