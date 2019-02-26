@@ -1,0 +1,178 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Net::LDAP;
+
+use Pod::Usage;
+use Getopt::Long;
+
+=head1 NAME
+
+svn-gitusers - finds users in Active Directory by login and tranforms it into git user string
+
+=head1 SYNOPSIS
+
+svn-gitusers -h $host -u $user -p $pass [files]
+	
+  options:
+    --host        Active Directory host
+    --user        user to login
+    --pass        user password
+    --help        print help
+    --verbose     verbose output
+
+=head1 DESCRIPTION
+
+Script reads input lines transforming each from login to git users-file format.
+
+  # only lines that match /^\s*([\w\d_\-]+)\s/ will be processed
+  # others passed as is
+  user1
+  user2 = User Name <some@mail.com>
+   
+Each login is searched in Active Directory LDAP server. 
+If found it queries it name, mail and prints $login = $name <$mail>.
+Otherwise prints $login = unknown $login <unknown.$login@$domain>.
+
+you can find ldap server address in you domain with command:
+
+  host -t srv _ldap._tcp.$domainname
+  nslookup -type=srv _ldap.$domainname
+  
+user name format can be both:
+
+  $domain\$user (DOMAIN\user)
+  $user@$domain (user@company.ru)
+  
+=head1 BUGS
+
+if you get 'Bad File Descriptor...' under ActiveState perl, try install IO::Socket::IP
+	
+=head1 Command line reference
+
+svn-gitusers --host $ldap-server --user $user --pass $pass [files]
+
+  --host - active directory server in url format(ldap://$something)
+  --user - user to connect with, you should have rights to read some info
+  --pass - user password
+  --verbose - verbose output(logging in STDERR actually)
+
+=head1 Examples
+
+  svn-gitusers -h $host -u $user -p $pass > users.txt
+  svn log --quiet | awk '/^r/ {print $3}' | sort -u | svn-gitusers -h $host -u $user -p $pass > users.txt
+
+=cut
+
+# *************  parameters *************
+#
+# Server address, 'ldap://$host'. 
+# You can find what server with following command: 
+#    host -t srv _ldap._tcp.$domain
+#    nslookup -type=srv _ldap._tcp.$domain
+#
+our $host = '';
+# user/password to connect with
+# user name format is: $DOMAIN\$user or $user@$domain
+our $binddn = '';
+our $pass   = '';
+# ldap base search
+#our $base = 'dc=$city,dc=$organization,dc=$country';
+our $base = '';
+
+# attributes in ldap,
+# can be expected with some gui utilities, for example sysinternals adexplorer.
+
+# default domain, used as email suffix part
+our $domain = '';
+# loginAtrr - attribute holding login, used for search
+our $loginAttr = 'sAMAccountName';
+# attribute holding user name
+our $nameAttr = 'name';
+# attribute holding user mail(can be missing)
+our $mailAttr = 'mail';
+# verbose output
+our $verbose = 0;
+# regex for extracting login
+our $loginRegex = qr/^\s*([\w\d_\-]+)\s/;
+
+#
+# ***************************************
+# script body
+sub write_verbose { print STDERR @_ if $verbose; }
+our @attrs = ($nameAttr, $mailAttr);
+my $help = 0;
+
+GetOptions(
+	'verbose' => \$verbose,
+	'host|h=s' => \$host,
+	'user|u=s' => \$binddn,
+	'pass|p=s' => \$pass,
+	'help|?' => \$help
+) or pod2usage('-exitval' => 1, '-verbose' => 1);
+
+pod2usage('-exitval' => 0, '-verbose' => 2) if $help;
+pod2usage('-exitval' => 1, '-verbose' => 1) if not $host;
+
+
+
+my $ldap = Net::LDAP->new($host, onerror => 'die');
+if ($binddn)
+{
+	write_verbose "ldap logon\n";
+	$ldap->bind($binddn, password => $pass) ;
+}
+else
+{
+	write_verbose "ldap anonymous logon\n";
+	$ldap->bind;
+}
+write_verbose "logon successful\n";
+
+while (<>)
+{	
+	my ($login) = $_ =~ $loginRegex;
+	print and next if not $login;
+		
+	my $filter = "($loginAttr=$login)";
+	my $git_user;
+	
+	write_verbose "searching $login\n";
+	my $result = $ldap->search(base => $base, filter => $filter, attrs => \@attrs);
+	my $entry = $result->pop_entry;
+	if (not $entry)	
+	{
+		# user not found
+		write_verbose "$login not found\n";
+		$git_user = "$login = unknown $login <unknown.$login\@$domain>";
+	}
+	else
+	{
+		# found
+		write_verbose "$login found\n";
+		
+		my $name = $entry->get_value($nameAttr) || $login;
+		my $mail = $entry->get_value($mailAttr);
+		
+		# no mail, assume user not working anymore
+		if (not $mail)
+		{
+			write_verbose "mail not found, constructing from name\n";
+			$mail = $name;
+			$mail =~ s/\s+/./g;
+			$mail .= "\@$domain";
+			
+			$name .= " (not working)";
+		}
+		
+		$git_user = "$login = $name <$mail>";
+	}
+	
+	print "$git_user\n";
+	
+	# finish request
+	$result->abandon unless $result->done;
+}
+
+#logoff
+$ldap->disconnect;
