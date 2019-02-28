@@ -3,10 +3,11 @@
   Не подхватываются системная тема для значков, хотя должна
 
 причины:
-  QGuiApplication::platformName() возвращает имя стиля сконфигурированного в системе для значков.
+  QGuiApplication::platformName() возвращает имя platform plugin'а, в случае KDE - xcb
+  QIcon::themeName() возвращает имя стиля сконфигурированного в системе для значков.
   QIcon::fromTheme(...) должен возвращать тематический значок, даже если тема переопределена в Fusion, значки все равно должны быть breeze/breeze-dark или в том что установленно в системе.
 
-  по факту же QGuiApplication::platformName() возвращал пустую строку.
+  по факту же QIcon::themeName() возвращал пустую строку.
 
   Связанно это с libKF5IconThemes.so, который теняться через KDE plugin KDEPlasmaPlatformTheme.so, последний впрочем не виноват.
   в версии 5.52.0-1 -> 5.53.0-1 для ARCH linux появился коммит 
@@ -35,7 +36,7 @@
   т.е. создается QPlatformTheme реализация из KDEPlasmaPlatformTheme.so, внутри которой отрабатывает Q_COREAPP_STARTUP_FUNCTION(setBreezeFallback), 
   который дергает QIconLoader, но QGuiApplicationPrivate::platformTheme еще не заполнен.
 
-  В результате QGuiApplication::platformName() всегда пустая строка и по факту системные значки не подхватываются. Используется вкомпиленные в qt defaults
+  В результате QIcon::themeName() всегда пустая строка и по факту системные значки не подхватываются. Используется вкомпиленные в qt defaults
 
 временное решение:
   downgrade kiconthemes: pacman --upgrade /var/cache/pacman/pkg/kiconthemes-5.52.0-1-x86_64.pkg.tar.xz
