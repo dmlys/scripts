@@ -1,0 +1,19 @@
+https://wiki.archlinux.org/index.php/Systemd#Targets
+
+on boot add systemd.unit=... # see table below
+
+Mapping between SysV runlevels and systemd targets
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SysV Runlevel     |          systemd Target                                  |                Notes
+0                 |  runlevel0.target, poweroff.target                       |    Halt the system.
+1, s, single      |  runlevel1.target, rescue.target                         |    Single user mode.
+2, 4              |  runlevel2.target, runlevel4.target, multi-user.target   |    User-defined/Site-specific runlevels. By default, identical to 3.
+3                 |  runlevel3.target, multi-user.target                     |    Multi-user, non-graphical. Users can usually login via multiple consoles or via the network.
+5                 |  runlevel5.target, graphical.target                      |    Multi-user, graphical. Usually has all the services of runlevel 3 plus a graphical login.
+6                 |  runlevel6.target, reboot.target                         |    Reboot
+emergency         |  emergency.target                                        |    Emergency shell
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+systemd.unit=multi-user.target # boot witout graphical environment, but otherwise normally, with network support and other stuff
+systemd.unit=rescue.target     # boot in single user/rescue mode, normally root
+
