@@ -1,0 +1,55 @@
+Краткая справка info
+h - общий help
+H - краткая справка по коммандам управления, нажать еще раз H что бы закрыть
+
+краткая выдержка из справки
+
+node навигация:
+l(last) - back to previous node, in history order
+
+[       - Go to the previous node in the document
+]       - Go to the next node in the document
+
+p(prev) - Go to the previous node on this level
+n(next) - Go to the next node on this level
+u(up)   - Go up one level.
+
+t(top)  - Go to the top node of this document.
+d(dir)  - Go to the main 'directory' node.
+
+прочее:
+1...9       Pick the first...ninth item in this node's menu.
+0           Pick the last item in this node's menu.
+m           Pick a menu item specified by name.
+f           Follow a cross reference specified by name.
+g           Go to a node specified by name.
+
+C-g         Cancel the current operation.
+
+поиск:
+s, /        Search forward  for a specified string.
+?           Search backward for a specified string.
+C-x n, {    Search for previous occurrence.
+C-x p, }    Search for next occurrence.
+
+R           Toggle between using regular expressions and literal strings for searching
+
+S    Read a string in the echo area and search for it case-sensitively,
+     even if the string includes only lower-case letters.  With a
+     numeric argument of N, search for Nth occurrence of the string.
+     Negative arguments search backwards
+
+C-s  Interactively search forward through the Info file for a string as
+     you type it.  If the string includes upper-case characters, the
+     search is case-sensitive; otherwise Info ignores the letter case.
+
+C-r  Interactively search backward through the Info file for a string as
+     you type it.  If the string includes upper-case characters, the
+     search is case-sensitive; otherwise Info ignores the letter case.
+
+M-/  Recursively search this node and any subnodes listed in menus for a string.
+
+M-}
+M-{  Go forwards and backwards through the matches for an active tree search
+
+
