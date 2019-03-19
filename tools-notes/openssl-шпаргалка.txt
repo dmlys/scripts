@@ -6,7 +6,7 @@
 
 encrypt/decrypt:
 	openssl pkeyutl -encrypt -pubin -inkey id_rsa.pem -in input.txt
-	openssl pkeyutl -decrypt        -inkey id_rsa -in input.txt
+	openssl pkeyutl -decrypt        -inkey id_rsa     -in input.txt
 	
 sha256 hash:
 	openssl dgst -sha256 input.txt
