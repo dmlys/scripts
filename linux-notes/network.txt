@@ -36,8 +36,9 @@ ip -c -br addr
 
 
 iptables работает вместе с ip route маршрутизацией(смотри картинки в кингах/интернете), некоторые полезные книги:
-https://www.frozentux.net/iptables-tutorial/iptables-tutorial.html (Iptables Tutorial 1.2.2)
-http://www.policyrouting.org/PolicyRoutingBook/ONLINE/TOC.html     (нужно бы найти в pdf/fb2)
+https://www.frozentux.net/iptables-tutorial/iptables-tutorial.html   (Iptables Tutorial 1.2.2)
+http://www.policyrouting.org/PolicyRoutingBook/ONLINE/TOC.html       (нужно бы найти в pdf/fb2)
+https://www.linuxjournal.com/content/linux-advanced-routing-tutorial
 
 iproute2 маршрутизирует вообще все сообщения, и созданные на этой машине и пришедшие из вне, не нам.
 ip route маршрутизирует по destination adress
