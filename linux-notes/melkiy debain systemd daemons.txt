@@ -22,12 +22,8 @@ systemd-logind.service
 systemd-udevd.service
 systemd-journald.service
 
-
 user id output:
-uid=1000(dima) 
-gid=1000(dima) 
 groups=
-	1000(dima),
 	4(adm),
 	24(cdrom),
 	25(floppy),
@@ -41,4 +37,3 @@ groups=
 	102(systemd-journal),
 	108(netdev),
 	113(sambashare)
-             
