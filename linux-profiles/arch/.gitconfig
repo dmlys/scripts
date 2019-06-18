@@ -6,7 +6,6 @@
 
 [core]
 	pager = less -F
-	askpass = ksshaskpass
 	quotepath = false
 [pull]
 	ff = only

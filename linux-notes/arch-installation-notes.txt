@@ -224,7 +224,7 @@ passwd dima
 umask 002 # set in one of shell configuration files
 
 chmod 2775 some_folder
-chmod g+s  some_folder - to unable group propagation
+chmod g+s  some_folder - to enable group propagation
 
 
 /***********************************************************************
