@@ -1,4 +1,5 @@
 alias sudo='sudo '
+#alias supernice='nice -19 ionice -c 3 '
 
 alias ls="ls $COLOR_OPTS --human-readable"
 
