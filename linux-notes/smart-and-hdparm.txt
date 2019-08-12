@@ -1,0 +1,62 @@
+hdparm - get/set SATA/IDE device parameters
+smartctl - Control and Monitor Utility for SMART Disks
+
+hdparm
+ позволяет спршивать и выставлять некоторые параметры.
+ написана Марком Лордом(Mark Lord) главным разработчиком (E)IDE драйвра для Linux
+
+Описано в man hdparm
+Advanced power management(APM) - автоматическое управлени питанием, посредством котроллера HDD.
+  hdparm -B    /dev/sda - получить текущее значение
+  hdparm -B128 /dev/sda - установить новое значение
+   не все диски поддерживают данный интерфейс, некоторые используют алтернативный интерфейс
+   и позволяют конфигурировать используя другие утилиты(смотри ниже).
+
+    Допустимые значения 1..255 в целом полностью implementation defined, но:
+    чем меньше - тем энергосберрегающе, чем больше тем агрессивнее использование электроэнергии.
+
+    По соглашению(но это не точно и диски могут не следовать соглашением):
+      1..127   - разрешает парковку головок(spin-down)
+      128..254 - запрещает парковку головок(spin-down)
+      255      - полносьтю отключает APC(по идее всегда для всех дисков)
+
+    На практике нужно смотреть доку/спеку к жесткому диску или эксперементировать,
+    часто более высокие значения означают менший временной интервал после которого диск перейдет в энергосберегающий режим.
+
+    https://superuser.com/questions/555400/what-do-different-values-of-hard-drives-advanced-power-management-feature-hdpa
+    в коментарии приводится пример для 4TB WD Elements Portable: 
+       Default=128. 127=30 min to standby, slow flashing LED. 126=same as 127. 
+       124=10 min to standby, slow flashing LED. 63=~10 sec to motor spindown, solid LED.
+       12=~4 sec to spindown, solid LED. 1=immediate spindown, solid LED
+
+  hdparm -S !!! получить текущее значение увы нельзя(если только через hdparm -I)
+  hdparm -S120 /dev/sda - перевести диск в idle(low-power) mode, а также установить standby(spindown) timeout. 
+    не все диски поддерживают этот параметр, чаще не поддерживают
+    параметр задает время в единицах по 5 сек, но начиная с 241 по 30 минут.
+    252 - 21 минута... 
+    253 - vendor specific
+    254 - reserved
+    255 - 21 минута + 15 секунд
+
+  для некоторых Western Digital дисков время spin-down можно контроллировать другим способом(например WDC WD40EFRX-68WT0N0)
+    hdparm -J        /dev/sda - получить idle3 timeout
+    hdparm -Jseconds /dev/sda - установить idle3 timeout, вообще не рекомендуется использовать эту утилиту
+    idle3ctl -g        - получить idle3 timeout
+    idle3ctl -d        - отключить idle3 timeout
+    idle3ctl -sseconds - установить idle3 timeout
+
+Automatic Acoustic Management(AAM) - управляет скоростью вращения шпиндаля для контроля шума
+  hdparm -M    /dev/sda - получить текущее значение
+  hdparm -M128 /dev/sda - установить текущее значение
+
+  схема стандартная, но чем меньше тем тише в диапозоне 128-254. на практике диски поддерживают 2-3 режима:
+  0 - off, 128 - quite, 254 - fast
+
+Примеры некоторых дисков:
+WDC WD40EFRX-68WT0N0 - 4TB, не поддерживает стандартный APM, но можно контроллировать через idle3ctl
+WDC WD80EFAX-68KNBN0 - 8TB, default APM: 164 (intermediate level without standby), AAM неподдерживает.
+
+ST9250315AS - default APM: 128 (minimum power consumption without standby), AAM неподдерживает.
+ST9500423AS - default APM: 128 (minimum power consumption without standby), AAM неподдерживает.
+
+hdparm.conf??? udisks???
