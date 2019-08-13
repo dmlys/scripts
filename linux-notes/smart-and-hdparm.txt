@@ -5,6 +5,8 @@ hdparm
  позволяет спрашивать и выставлять некоторые параметры.
  написана Марком Лордом(Mark Lord) главным разработчиком (E)IDE драйвера для Linux
 
+hdparm -C /dev/sda - получить текущее состояние диска: unknown, idle, active, ...
+
 Описано в man hdparm
 Advanced power management(APM) - автоматическое управление питанием, посредством контроллера HDD.
   hdparm -B    /dev/sda - получить текущее значение
@@ -73,3 +75,28 @@ hdparm.conf - конфигурационный файл для hdparm, кото�
 
   Часть параметров(APM, AAM) можно настроить через udisks2: man 8 udisks -> /etc/udisks2/IDENTIFIER.conf
   
+
+
+
+
+
+
+smartctl - интерфейс к S.M.A.R.T функционалу HDD
+
+smartctl --attributes /dev/sda     #[ATA] Prints only the vendor specific SMART Attributes
+
+193 Load Cycle Count or Load/Unload Cycle Count (Fujitsu) - Count of load/unload cycles into head landing zone position. Some drives use 225 (0xE1) for Load Cycle Count instead. 
+                                                            Количество циклов перемещения блока магнитных головок в парковочную область. 
+
+smartctl --info --get=all /dev/sda                 # получить информацию об устройстве
+smartctl --get={all,apm,aam,...} ... --set=apm,val # позволяет получить/установить non-SMART device settings. По-идее альтернатива hdparm для apm, aam, etc
+
+smartctl --test={offline,short,long} /dev/sda      # запустить offline test
+smartctl --abort        /dev/sda                   # прервать offline test
+smartctl --log=selftest /dev/sda                   # print selftest device logs
+smartctl --log=error    /dev/sda                   # print error    device logs
+
+
+
+smartd - демон мониторинга SMART, to be written
+
