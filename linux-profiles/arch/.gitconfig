@@ -11,3 +11,5 @@
 	ff = only
 [diff]
 	tool = kompare
+[url "https://aur.archlinux.org/"]
+	insteadOf = aur:
