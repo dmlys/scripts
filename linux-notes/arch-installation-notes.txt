@@ -3,7 +3,7 @@ https://wiki.archlinux.org/index.php/installation_guide
 если проводной интернет - arch подключиться сам сразу же
 wi-fi WPA2:
   # wpa_supplicant -B -i <интерфейс> -D wext -c <(wpa_passphrase $SSID $PASS)
-  # dh
+  # dhclient
   интерфейс можно посмотреть командой ip a
 
 elinks http://wiki.archlinux.org/
