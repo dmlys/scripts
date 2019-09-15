@@ -217,6 +217,12 @@ passwd dima
 
 По-умолчанию никаких .inputrc, .bashrc, ... конфигов нету - писать самому с нулю, ну или взять готовые ранее используемые
 
+в /etc/sudoers добавляем: %sudo ALL=(ALL) NOPASSWD: ALL
+
+так же можно создать /etc/sudoers.d/keep-editor:
+## Preserve environment variables settings pager and editor
+Defaults env_keep += "PAGER EDITOR VISUAL"
+
 /***********************************************************************
 /* UPG(User private groups)
 /***********************************************************************
