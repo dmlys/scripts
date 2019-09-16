@@ -13,3 +13,5 @@
 	tool = kompare
 [url "https://aur.archlinux.org/"]
 	insteadOf = aur:
+[merge]
+	guitool = kdiff3

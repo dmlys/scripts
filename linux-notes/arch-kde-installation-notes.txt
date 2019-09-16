@@ -8,7 +8,7 @@ pacman --sync --needed xf86-video-nouveau mesa
 pacman --sync --needed xorg-server xorg-xinit xorg-xev xorg-xinput
 сейчас или позже можно установить пропатченный xorg сервер, смотри соответствующий раздел ниже
 
-pacman --sync plasma-meta kde-application sddm
+pacman --sync plasma-meta kde-applications      sddm
 pacman --sync plasma-meta kde-applications-meta sddm
 
 для ноутбука будет полезно установить
