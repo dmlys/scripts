@@ -15,3 +15,5 @@
 	insteadOf = aur:
 [merge]
 	guitool = kdiff3
+[mergetool]
+	keepBackup = false
