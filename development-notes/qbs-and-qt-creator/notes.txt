@@ -118,7 +118,10 @@ git clone https://aur.archlinux.org/qtcreator-spellchecker-plugin-git.git  ; mak
 /*********************************************************************
 qbs setup-toolchains --detect
 qbs setup-qt         --detect
+qbs setup-qt ~/.local/opt/qt-5.11.2/bin/qmake  qt-5.11.2-local-debug
+qbs config profiles.qt-5.11.2-local-debug.baseProfile clang           # по умолчанию gcc
 qbs config defaultProfile  qt-5-11-1
+qbs config defaultProfile  qt-0-0-0-bin
 
 qbs help build/...
 qbs config preferences.defaultBuildDirectory bin
