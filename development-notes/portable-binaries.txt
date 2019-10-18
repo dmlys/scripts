@@ -1,4 +1,5 @@
 https://stackoverflow.com/questions/8823267/linking-against-older-symbol-version-in-a-so-file
+http://insanecoding.blogspot.com/2012/07/creating-portable-linux-binaries.html
 
 Линкуем все статически кроме libc:
   -Wl,static -l..
