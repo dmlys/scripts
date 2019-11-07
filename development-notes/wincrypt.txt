@@ -1,0 +1,37 @@
+HCRYPTPROV - хендл CSP(криптопровайдера).
+  1. По факту это указатель CSP и того как делаются различные криптографические операции, verify, sign, hash, encrypt, decrypt.
+     Все криптофункции-операции так или иначе принимают этот параметр.
+
+  2. Это key container - криптоконтейнер содержащий 1 логический ключ - несколько пар криптоключей(public + private).
+     Эти пары, по-идее, должны иметь предназначение. 2 well-known - AT_SIGNATURE, AT_KEYEXCHANGE, но в теории могут быть и другие.
+  
+  key container - это абстрактное хранилище ключей, это НЕ X509 сертификат, не обязательно файл, смарт карта, прочее.
+  Это может быть просто объект в памяти, содержащий ключи + virtual методы криптографии.
+
+  Так же допускается публичный ключ без приватного.
+
+HCRYPTKEY - хендл пары ключей, private/public, тех самых из HCRYPTPROV. HCRYPTPROV может содержать несколько HCRYPTKEY'ов.
+  Все криптофункции-операции принимают HCRYPTPROV и или явно HCRYPTKEY(например CryptEncrypt), или неявно через DWORD keySpec(например CryptSignHash)
+
+
+HCRYPTKEY можно получить из HCRYPTPROV с помощью CryptGetUserKey.
+HCRYPTPROV можно получить с помощью CryptAcquireContext или CryptAcquireCertificatePrivateKey.
+
+Вообще сертификат более высокоуровневая сущность чем HCRYPTPROV, последний просто пара ключей(или набор). Например SSH ключи существуют без сертификата.
+CryptAcquireCertificatePrivateKey позволяет получить HCRYPTPROV из сертификата(private ключа по идее может и не быть, TODO проверить поведение).
+CryptAcquireContext - получает HCRYPTPROV из некоей сущности по имени(имя файла, куста в реестре, нечто в смарт карте) или же вообще создает новый контекст.
+!!! Например дефолтный Microsoft CSP всегда создает новый контейнер если имя заданно пустое. 
+
+Далее CryptImportPublicKeyInfo позволяет создать HCRYPTKEY и поместить его в указанный HCRYPTPROV.
+
+// Get the certificate context structure from a certificate.
+
+HCRYPTPROV hCryptProv;
+HCRYPTKEY hCertPubKey;
+
+PCCERT_CONTEXT pCertContext = ...
+CryptAcquireContext(&hCryptProv, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+CryptImportPublicKeyInfo(hCryptProv, X509_ASN_ENCODING, &pCertContext->pCertInfo->SubjectPublicKeyInfo, &hCertPubKey);
+
+Таким образом можно получить сертификат из файла, по сокету, откуда-то еще и создать CSP ключ-контейнер на лету.
+это все описано тут: https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-cryptacquirecontexta
