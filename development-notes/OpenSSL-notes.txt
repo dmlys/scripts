@@ -1,4 +1,69 @@
 OpenSSL заметки:
+************************* OpenSSL классы и общее устройство ********************************************************************
+             impl     ключ + impl
+ENGINE -> RSA_method -> RSA -> RSA_sign
+                         ||
+                         \/
+                        EVP_PKEY -> EVP_PKEY_sign
+
+ENGINE - объект реализующий криптографические функции + доступ к ключам private/public.
+         помимо прочего с помощью ENGINE_ctrl, можно выполнять различные действия которые позволяет движок(полностью ENGINE specific).
+
+RSA_method - объект реализующий криптографические функции, по факту структура содержащая function pointers для криптографических операций.
+             своего рода интерфейс с виртуальными методами. ENGINE его создает и возвращает.
+
+RSA - ключ: public + optional private
+      внутри также содержит RSA_method + ENGINE(содержится внутри RSA_method скорее всего)
+
+Различные функции как RSA_sign принимают на вход просто RSA,
+в котором есть RSA_method, внутри которого есть реализация функции подписи задаваемая через RSA_meth_set_sign(обычно это делает ENGINE)
+
+EVP - envelope более высокоуровневые функции, в некотором смысле это variant of RSA, DSA, etc.
+Позволяет иметь ключ + тип ключа/алгоритма и просто с ними работать не парясь по поводу RSA или DSA это, или еще что-то.
+
+
+************************* OpenSSL LOOKUP ***************************************************************************************
+SSL_CTX -> X509_STORE
+                -> X509_LOOKUP
+                        ->X509_LOOKUP_METHOD
+                -> X509_LOOKUP
+                        ->X509_LOOKUP_METHOD
+
+SSL     -> X509_STORE_CTX
+                ->X509_STORE
+
+The X509_STORE holds the tables etc for verification stuff.
+A X509_STORE_CTX is used while validating a single certificate.
+The X509_STORE has X509_LOOKUPs for looking up certs.
+The X509_STORE then calls a function to actually verify the
+certificate chain.
+
+
+X509_LOOKUP и X509_LOOKUP_METHOD - реализуют поиск сертификатов, в основном используется для X509_STORE, который используется в первую очередь для валидации сертификатов.
+Таким образом X509_LOOKUP и X509_LOOKUP_METHOD так же используется в первую очередь для валидации сертификатов.
+
+The X509_LOOKUP_METHOD type is a structure used for the implementation of new X509_LOOKUP types.
+It provides a set of functions used by OpenSSL for the implementation of various X509 and X509_CRL lookup capabilities.
+One instance of an X509_LOOKUP_METHOD can be associated to many instantiations of an X509_LOOKUP structure.
+
+X509_LOOKUP_by_alias, X509_LOOKUP_by_subject, X509_LOOKUP_by_serial undocumented for some reason.
+Но своего рода функции первичного функционала для использования этого самого LOOKUP'а
+
+X509_LOOKUP содержит:
+ *  method data - некий implementation per LOOKUP данные которые X509_LOOKUP_METHOD может выставлять в X509_LOOKUP при создании.
+    Скорее это кеш/runtime info нежели параметры.
+ *  X509_STORE - X509 store в который установили данный lookup
+
+// стандартные lookup'ы
+X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m);
+X509_LOOKUP_METHOD *X509_LOOKUP_hash_dir(void);
+X509_LOOKUP_METHOD *X509_LOOKUP_file(void);
+
+По идее можно реализовать X509_LOOKUP_METHOD для windows certificate store и тем самым заставить OpenSSL валидировать сертификаты с помощью оных в виндохранилище.
+NOTE: сама структура X509_LOOKUP_METHOD не объявлена публично, но все ее поля доступны через геттеры/сеттеры:
+         X509_LOOKUP_meth_set_new_item, X509_LOOKUP_meth_set_init, X509_LOOKUP_meth_set_get_by_subject, ..., etc
+
+
 
 ************************* Как OpenSSL сопоставляет cipher id и cipher name *****************************************************
 При SSL handshake'е клиент передает набор cipher'ов, cipher'ы передаюутся 2байтными идентификаторами(wireshark их показывает)

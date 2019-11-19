@@ -127,7 +127,7 @@
 
      # -extensions section
      # -reqexts    section
-     #    позволяет задать альтернативную секция для описания certificate extensions, то что обычно задается через x509_extensions/req_extensions
+     #    позволяет задать альтернативную секцию для описания certificate extensions, то что обычно задается через x509_extensions/req_extensions
 
      # -addext - Add a specific extension to the certificate (if the -x509 option is present) or certificate request.
      #           The argument must have the form of a key=value pair as it would appear in a config file
