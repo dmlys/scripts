@@ -28,9 +28,21 @@ msbuild log4cplus.manual.vcxproj /t:rebuild /p:configuration=Release;Configurati
 robocopy bin\%1_debug\lib lib *.lib
 robocopy bin\%1_release\lib lib *.lib
 
+msbuild log4cplus.manual.vcxproj /t:rebuild /p:configuration=Debug;ConfigurationType=StaticLibrary
+msbuild log4cplus.manual.vcxproj /t:rebuild /p:configuration=Release;ConfigurationType=StaticLibrary
+
+robocopy bin\%1_debug\lib lib *.lib
+robocopy bin\%1_release\lib lib *.lib
+
 REM unicode static
 msbuild log4cplus.manual.vcxproj /t:rebuild /p:configuration=Debug;ConfigurationType=StaticLibrary;Runtime=Static;CharacterSet=Unicode
 msbuild log4cplus.manual.vcxproj /t:rebuild /p:configuration=Release;ConfigurationType=StaticLibrary;Runtime=Static;CharacterSet=Unicode
+
+robocopy bin\%1_debug\lib lib *.lib
+robocopy bin\%1_release\lib lib *.lib
+
+msbuild log4cplus.manual.vcxproj /t:rebuild /p:configuration=Debug;ConfigurationType=StaticLibrary;CharacterSet=Unicode
+msbuild log4cplus.manual.vcxproj /t:rebuild /p:configuration=Release;ConfigurationType=StaticLibrary;CharacterSet=Unicode
 
 robocopy bin\%1_debug\lib lib *.lib
 robocopy bin\%1_release\lib lib *.lib

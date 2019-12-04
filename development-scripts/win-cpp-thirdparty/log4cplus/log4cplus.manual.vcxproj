@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -33,16 +33,26 @@
   </ImportGroup> 
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	<Import Project="$(ProjectDir)log4cplus.props" />
     <Import Project="$(ProjectDir)MSBuildDefSettings/release.props" Condition="$(Configuration) == 'Release'" />
     <Import Project="$(ProjectDir)MSBuildDefSettings/debug.props" Condition="$(Configuration) == 'Debug'" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
   <PropertyGroup>
-    <TargetName>log4cplus</TargetName>
-    <TargetName Condition="$(Runtime) == 'Static'">$(TargetName)S</TargetName>    
+    <TargetName>log4cplus</TargetName>	
+    
+	<TargetName Condition="$(Runtime) == 'Static'">$(TargetName)MT</TargetName>
+	<TargetName Condition="$(Runtime) == 'Dynamic'">$(TargetName)MD</TargetName>
+	<TargetName Condition="$(Configuration) == 'Debug'">$(TargetName)d</TargetName>
+	
+	<TargetName Condition="$(ConfigurationType) == 'DynamicLibrary'">$(TargetName)D</TargetName>
+	<TargetName Condition="$(ConfigurationType) == 'StaticLibrary'">$(TargetName)S</TargetName>
+
     <TargetName Condition="$(CharacterSet) == 'Unicode'">$(TargetName)U</TargetName>
-    <TargetName Condition="$(Configuration) == 'Debug'">$(TargetName)D</TargetName>
+	
+	<TargetExt  Condition="$(ConfigurationType) == 'DynamicLibrary'">.dll</TargetExt>
+	<TargetExt  Condition="$(ConfigurationType) == 'StaticLibrary'">.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -62,59 +72,62 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(ProjectDir)src\appender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\clogger.cxx" />
-    <ClCompile Include="$(ProjectDir)src\configurator.cxx" />
-    <ClCompile Include="$(ProjectDir)src\connectorthread.cxx" />
-    <ClCompile Include="$(ProjectDir)src\fileinfo.cxx" />
-    <ClCompile Include="$(ProjectDir)src\global-init.cxx" />
-    <ClCompile Include="$(ProjectDir)src\hierarchy.cxx" />
-    <ClCompile Include="$(ProjectDir)src\hierarchylocker.cxx" />
-    <ClCompile Include="$(ProjectDir)src\layout.cxx" />
-    <ClCompile Include="$(ProjectDir)src\lockfile.cxx" />
-    <ClCompile Include="$(ProjectDir)src\log4judpappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\logger.cxx" />
-    <ClCompile Include="$(ProjectDir)src\loggingevent.cxx" />
-    <ClCompile Include="$(ProjectDir)src\loggingmacros.cxx" />
-    <ClCompile Include="$(ProjectDir)src\mdc.cxx" />
-    <ClCompile Include="$(ProjectDir)src\ndc.cxx" />
-    <ClCompile Include="$(ProjectDir)src\patternlayout.cxx" />
-    <ClCompile Include="$(ProjectDir)src\property.cxx" />
-    <ClCompile Include="$(ProjectDir)src\version.cxx" />
-    <ClCompile Include="$(ProjectDir)src\asyncappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\consoleappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\fileappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\nteventlogappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\nullappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\socketappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\syslogappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\win32consoleappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\win32debugappender.cxx" />
-    <ClCompile Include="$(ProjectDir)src\env.cxx" />
-    <ClCompile Include="$(ProjectDir)src\appenderattachableimpl.cxx" />
-    <ClCompile Include="$(ProjectDir)src\loglog.cxx" />
-    <ClCompile Include="$(ProjectDir)src\logloguser.cxx" />
-    <ClCompile Include="$(ProjectDir)src\pointer.cxx" />
-    <ClCompile Include="$(ProjectDir)src\queue.cxx" />
-    <ClCompile Include="$(ProjectDir)src\sleep.cxx" />
-    <ClCompile Include="$(ProjectDir)src\snprintf.cxx" />
-    <ClCompile Include="$(ProjectDir)src\socket-win32.cxx" />
-    <ClCompile Include="$(ProjectDir)src\socket.cxx" />
-    <ClCompile Include="$(ProjectDir)src\socketbuffer.cxx" />
-    <ClCompile Include="$(ProjectDir)src\stringhelper-clocale.cxx" />
-    <ClCompile Include="$(ProjectDir)src\stringhelper-cxxlocale.cxx" />
-    <ClCompile Include="$(ProjectDir)src\stringhelper-iconv.cxx" />
-    <ClCompile Include="$(ProjectDir)src\stringhelper.cxx" />
-    <ClCompile Include="$(ProjectDir)src\timehelper.cxx" />
-    <ClCompile Include="$(ProjectDir)src\factory.cxx" />
-    <ClCompile Include="$(ProjectDir)src\filter.cxx" />
-    <ClCompile Include="$(ProjectDir)src\loggerimpl.cxx" />
-    <ClCompile Include="$(ProjectDir)src\loglevel.cxx" />
-    <ClCompile Include="$(ProjectDir)src\objectregistry.cxx" />
-    <ClCompile Include="$(ProjectDir)src\rootlogger.cxx" />
-    <ClCompile Include="$(ProjectDir)src\syncprims.cxx" />
-    <ClCompile Include="$(ProjectDir)src\threads.cxx" />
-    <ClCompile Include="$(ProjectDir)src\tls.cxx" />
+	<ClCompile Include="$(ProjectDir)src/callbackappender.cxx" />
+	<!-- <ClCompile Include="$(ProjectDir)src/clfsappender.cxx" /> -->
+	<ClCompile Include="$(ProjectDir)src/clogger.cxx" />
+	<ClCompile Include="$(ProjectDir)src/configurator.cxx" />
+	<ClCompile Include="$(ProjectDir)src/connectorthread.cxx" />
+	<ClCompile Include="$(ProjectDir)src/consoleappender.cxx" />
+	<!-- <ClCompile Include="$(ProjectDir)src/cygwin-win32.cxx" /> -->
+	<ClCompile Include="$(ProjectDir)src/env.cxx" />
+	<ClCompile Include="$(ProjectDir)src/factory.cxx" />
+	<ClCompile Include="$(ProjectDir)src/fileappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/fileinfo.cxx" />
+	<ClCompile Include="$(ProjectDir)src/filter.cxx" />
+	<ClCompile Include="$(ProjectDir)src/global-init.cxx" />
+	<ClCompile Include="$(ProjectDir)src/hierarchy.cxx" />
+	<ClCompile Include="$(ProjectDir)src/hierarchylocker.cxx" />
+	<ClCompile Include="$(ProjectDir)src/layout.cxx" />
+	<ClCompile Include="$(ProjectDir)src/lockfile.cxx" />
+	<ClCompile Include="$(ProjectDir)src/log4judpappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/logger.cxx" />
+	<ClCompile Include="$(ProjectDir)src/loggerimpl.cxx" />
+	<ClCompile Include="$(ProjectDir)src/loggingevent.cxx" />
+	<ClCompile Include="$(ProjectDir)src/loggingmacros.cxx" />
+	<ClCompile Include="$(ProjectDir)src/loglevel.cxx" />
+	<ClCompile Include="$(ProjectDir)src/loglog.cxx" />
+	<ClCompile Include="$(ProjectDir)src/mdc.cxx" />
+	<!-- <ClCompile Include="$(ProjectDir)src/msttsappender.cxx" /> -->
+	<ClCompile Include="$(ProjectDir)src/ndc.cxx" />
+	<ClCompile Include="$(ProjectDir)src/nteventlogappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/nullappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/objectregistry.cxx" />
+	<ClCompile Include="$(ProjectDir)src/patternlayout.cxx" />
+	<ClCompile Include="$(ProjectDir)src/pointer.cxx" />
+	<ClCompile Include="$(ProjectDir)src/property.cxx" />
+	<ClCompile Include="$(ProjectDir)src/queue.cxx" />
+	<ClCompile Include="$(ProjectDir)src/rootlogger.cxx" />
+	<ClCompile Include="$(ProjectDir)src/snprintf.cxx" />
+	<ClCompile Include="$(ProjectDir)src/socket.cxx" />
+	<ClCompile Include="$(ProjectDir)src/socketappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/socketbuffer.cxx" />
+	<!-- <ClCompile Include="$(ProjectDir)src/socket-unix.cxx" /> -->
+	<ClCompile Include="$(ProjectDir)src/socket-win32.cxx" />
+	<ClCompile Include="$(ProjectDir)src/stringhelper.cxx" />
+	<ClCompile Include="$(ProjectDir)src/stringhelper-clocale.cxx" />
+	<ClCompile Include="$(ProjectDir)src/stringhelper-cxxlocale.cxx" />
+	<ClCompile Include="$(ProjectDir)src/stringhelper-iconv.cxx" />
+	<ClCompile Include="$(ProjectDir)src/syncprims.cxx" />
+	<ClCompile Include="$(ProjectDir)src/syslogappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/threads.cxx" />
+	<ClCompile Include="$(ProjectDir)src/timehelper.cxx" />
+	<ClCompile Include="$(ProjectDir)src/tls.cxx" />
+	<ClCompile Include="$(ProjectDir)src/version.cxx" />
+	<ClCompile Include="$(ProjectDir)src/win32consoleappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/win32debugappender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/appender.cxx" />
+	<ClCompile Include="$(ProjectDir)src/appenderattachableimpl.cxx" />
+	<ClCompile Include="$(ProjectDir)src/asyncappender.cxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
