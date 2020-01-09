@@ -65,7 +65,7 @@ mount -L HOME /mnt/home
 
 mcedit /etc/pacman.d/mirrorlist - поднять вверх ближайшие географически адресса, Russia, yandex
 
-pacstrap /mnt base
+pacstrap /mnt base linux linux-firmware
 можно таким образаом еще доустановить пакеты, например NetworkManager:
 pacstrap /mnt mc
 pacstrap /mnt grub
