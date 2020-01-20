@@ -152,10 +152,18 @@ timedatectl set-local-rtc 1
 в винде как-то через реестр, оба метода имеют недостатки
 
 
-fstab:
+/etc/fstab:
 можно и возможно стоит подправить /etc/fstab
 genfstab пишет options rw,relatime, почему не defaults(,relatime)?
 
+/etc/pacman.conf:
+IgnorePkg   = kiconthemes
+IgnoreGroup = modified
+...
+Color
+
+/etc/makepkg.conf:
+MAKEFLAGS="-j$(nproc)"
 
 /***********************************************************************
 /* GRUB linux + windows пункты меню

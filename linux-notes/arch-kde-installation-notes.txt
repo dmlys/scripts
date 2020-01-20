@@ -13,6 +13,7 @@ pacman --sync plasma-meta kde-applications-meta sddm
 
 для ноутбука будет полезно установить
 pacman --sync acpi
+pacman --sync brightnessctl
 
 systemctl enable sddm
 reboot
@@ -39,7 +40,7 @@ $ cd xorg-server-bug865
 $ makepkg --install --syncdeps --rmdeps
 
 # restart xserver, а еще лучше систему
-sudo systemctl restart sddd
+sudo systemctl restart sddm
 
 
 /***********************************************************************
@@ -79,7 +80,6 @@ Desktop behavier -> Screen Locking - Lock screen on resume
 # systemd handles them - by default it will suspend on lid close
 HandleLidSwitch=ignore
 
-
 Яркость на ноубуках:
 https://wiki.archlinux.org/index.php/backlight - wiki по яркости.
 Если есть несколько видео карт, например, основная и интегрированная, или linux просто некорректно определил ACPI backlight устройства
@@ -98,6 +98,28 @@ https://wiki.ubuntu.com/Kernel/Debugging/Backlight
 выключить нафиг baloo(сервис индексации файлов, по факту на слабых машинах может приводить к тормазам)
 $ balooctl disable
 
+дефолтные папки:
+mkdir ~/Documents ~/Downloads ~/Music ~/Pictures ~/Videos
+
+/***********************************************************************
+/* ssh-agent
+/***********************************************************************
+https://wiki.archlinux.org/index.php/SSH_keys#SSH_agents Start ssh-agent with systemd user
+
+~/.config/systemd/user/ssh-agent.service:
+[Unit]
+Description=SSH key agent
+
+[Service]
+Type=simple
+Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
+ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
+
+[Install]
+WantedBy=default.target
+
+~/.pam_environment:
+SSH_AUTH_SOCK DEFAULT="${XDG_RUNTIME_DIR}/ssh-agent.socket"
 
 /***********************************************************************
 /* tearing
@@ -184,6 +206,19 @@ echo 'export GTK_USE_PORTAL=1' > ~/.config/plasma-workspace/env/gtk-use-portal.s
 pacman --sync kio-gdrive
 это добавить поддержку google drive в dolphin
 
+
+/***********************************************************************
+/*  NVIDIA PRIME and laptop nvidea + intel videocards
+/***********************************************************************
+https://wiki.archlinux.org/index.php/PRIME#PRIME_render_offload    PRIME render offload
+NVIDIA driver since version 435.17 supports this method.
+It needs a specific set of patches to the xorg-server that are present since version 1.20.6-1 on Arch.
+As per the official documentation, it only works with the modesetting driver over Intel graphics card; success has been had with the Intel driver instead regardless. Refer to Intel graphics#Installation for more information.
+
+The nvidia-prime package provides the Xorg configuration necessary and also a script that can be used to run programs on the NVIDIA card. 
+
+$ prime-run glxinfo | grep "OpenGL renderer"
+$ prime-run vulkaninfo
 
 /***********************************************************************
 /*  bumblebee and laptop nvidea/radeon + intel videocards
