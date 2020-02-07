@@ -11,6 +11,11 @@ pacman --sync --needed xorg-server xorg-xinit xorg-xev xorg-xinput
 pacman --sync plasma-meta kde-applications      sddm
 pacman --sync plasma-meta kde-applications-meta sddm
 
+# kmix не нужен, уже есть plasma-pa(pulseaudio), он длучше
+pacman --remove --recursive kmix
+# konqueror наверное так же не нужон
+pacman --remove konqueror
+
 для ноутбука будет полезно установить
 pacman --sync acpi
 pacman --sync brightnessctl
@@ -216,9 +221,34 @@ It needs a specific set of patches to the xorg-server that are present since ver
 As per the official documentation, it only works with the modesetting driver over Intel graphics card; success has been had with the Intel driver instead regardless. Refer to Intel graphics#Installation for more information.
 
 The nvidia-prime package provides the Xorg configuration necessary and also a script that can be used to run programs on the NVIDIA card. 
-
 $ prime-run glxinfo | grep "OpenGL renderer"
 $ prime-run vulkaninfo
+
+Более подробная инфа по NVIDIA проприетарному драйверу:
+https://download.nvidia.com/XFree86/Linux-x86_64/440.44/README/
+
+там же про управление питанием(это workaround, для новых версий ядра возможно не требуется):
+https://download.nvidia.com/XFree86/Linux-x86_64/440.44/README/dynamicpowermanagement.html
+/etc/udev/rules.d/80-nvidia-pm.rules:
+# Remove NVIDIA USB xHCI Host Controller devices, if present
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c0330", ATTR{remove}="1"
+
+# Remove NVIDIA USB Type-C UCSI devices, if present
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c8000", ATTR{remove}="1"
+
+# Remove NVIDIA Audio devices, if present
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
+
+# Enable runtime PM for NVIDIA VGA/3D controller devices on driver bind
+ACTION=="bind", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x030000", TEST=="power/control", ATTR{power/control}="auto"
+ACTION=="bind", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x030200", TEST=="power/control", ATTR{power/control}="auto"
+
+# Disable runtime PM for NVIDIA VGA/3D controller devices on driver unbind
+ACTION=="unbind", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x030000", TEST=="power/control", ATTR{power/control}="on"
+ACTION=="unbind", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x030200", TEST=="power/control", ATTR{power/control}="on"
+
+/etc/modprobe.d/nvidia-dynamic-power.conf:
+options nvidia "NVreg_DynamicPowerManagement=0x02"
 
 /***********************************************************************
 /*  bumblebee and laptop nvidea/radeon + intel videocards
