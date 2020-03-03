@@ -90,6 +90,16 @@
  	openssl pkeyutl -verify -asn1parse -pubin -inkey $KEY -sigfile signature.bin intput.txt
  	openssl pkeyutl -verifyrecover -asn1parse -pubin -inkey $KEY input.txt
  
+ 
+ cert verify:
+  openssl verify -x509_strict -trusted root.pem -untrusted intermediate.pem -nameopt utf8   cert-to-verify.pem
+
+ cms:
+  openssl cms -verify -in signature.der -inform DER -cmsout -print -noout                    # напечатает информацию о подписи
+  openssl cms -verify -in signature.der -inform DER -CAfile <(cat intermediate.pem root.pem) # выдаст на stdout content + прошло/не прошло проверку
+  # utf8 для сертификатов - хз как включить, похоже что нельзя
+
+
  простой самоподписанный сертификат:
  
  	# через запрос
