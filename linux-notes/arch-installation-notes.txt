@@ -201,7 +201,7 @@ pacman --sync --needed elinks
 pacman --sync --needed openssh
 pacman --sync --needed openssl
 
-pacman --sync --needed base-devel
+pacman --sync --needed base-devel man-pages
 pacman --sync --needed binutils
 pacman --sync --needed cmake
 pacman --sync --needed boost

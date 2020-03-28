@@ -45,3 +45,8 @@ Sony Bravia KDL-42W705B.xml
 		-c:v libx264 -crf 17 -preset slow -tune film -profile:v high -level 4.1 \
 		-filter:a:2 volume=2 -c:a ac3 \
 		-metadata title="Солярис" -metadata:s:a:0 language=rus -metadata:s:a:1 language=rus
+
+
+	Can't write packet with unknown timestamp - ffmpeg -fflags +genpts ...
+	# порядок важен genpts нужно передавать вначале
+	
