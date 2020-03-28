@@ -55,15 +55,24 @@ fi
 
 if [ "$color_prompt" = yes ]; then
     GREEN=$(tput setaf 2)
+    RED=$(tput setaf 1)
     BLUE=$(tput setaf 4)
     BOLD=$(tput bold)
     RESET=$(tput sgr0)
     PS_GREEN="\\[$GREEN\\]"
+    PS_RED="\\[$RED\\]"
     PS_BLUE="\\[$BLUE\\]"
     PS_RESET="\\[$RESET\\]"
     PS_BOLD="\\[$BOLD\\]"
     
-    PS1="$PS_GREEN\\u@\\h$PS_RESET:$PS_BLUE$PS_BOLD\\W$PS_RESET\\$ "
+    if [[ -z ${SSH_CONNECTION+set} ]]; then
+        # local terminal
+        PS1="$PS_GREEN\\u@\\h$PS_RESET:$PS_BLUE$PS_BOLD\\W$PS_RESET\\$ "
+    else
+        # remote connection via ssh
+        PS1="$PS_RED\\u@\\h$PS_RESET:$PS_BLUE$PS_BOLD\\W$PS_RESET\\$ "
+    fi
+
     unset GREEN BLUE ROLD RESET PS_GREEN PS_BLUE PS_RESET
 else
     PS1='\u@\h:\w\$ '
