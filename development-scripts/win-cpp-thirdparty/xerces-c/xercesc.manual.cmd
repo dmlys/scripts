@@ -56,8 +56,8 @@ call :build_lib %libname%-mt-gd.lib
 robocopy src\xercesc\ include\xercesc\ *.hpp *.c /S   /XD NSS /XD FileManagers /XD MsgLoaders /XD MutexManagers /XD NetAccessors /XD Transcoders
 robocopy src\xercesc\util\FileManagers\        include\xercesc\util\FileManagers\        WindowsFileMgr.hpp /S
 robocopy src\xercesc\util\MsgLoaders\InMemory\ include\xercesc\util\MsgLoaders\InMemory\              *.hpp /S
-robocopy src\xercesc\util\MutexManagers\       include\xercesc\util\MutexManagers\   StdMutexMgr.hpp WindowsMutexMgr.hpp /S
-robocopy src\xercesc\util\Transcoders\Win32    include\xercesc\util\Transcoders\Win32            *.hpp /S
+robocopy src\xercesc\util\MutexManagers\       include\xercesc\util\MutexManagers\          StdMutexMgr.hpp WindowsMutexMgr.hpp /S
+robocopy src\xercesc\util\Transcoders\Win32    include\xercesc\util\Transcoders\Win32                 *.hpp /S
 
 set arname=%libname%-%version%-%vcver%-%2.zip
 del %arname%
