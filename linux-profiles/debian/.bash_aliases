@@ -1,4 +1,5 @@
 alias sudo='sudo '
+alias supernice='nice -19 ionice -c 3 '
 
 alias ls="ls $COLOR_OPTS --human-readable"
 
@@ -8,7 +9,7 @@ alias ls="ls $COLOR_OPTS --human-readable"
 # something like                         here our alias would be
 # COMPREPLY=( $( compgen -W "$( LC_ALL=C $1 --help 2>&1 | command sed -ne 's/.*\(--[-A-Za-z0-9]\{1,\}=\{0,1\}\).*/\1/p' | sort -u )" -- "$cur" ) )
 # 
-# Problem is bash aliases are visible and expanded at the moment of function difinition, that code line bellow just would not work for aliases
+# Problem is bash aliases are visible and expanded at the moment of function difinition, that code line above just would not work for aliases
 # instead just make thme functions, those would work
 
 function ll { ls -lFA "$@" ; }
@@ -21,7 +22,7 @@ complete -F _longopt ll
 complete -F _longopt l
 complete -F _longopt l.
 
-# still define them as aliases, so alias combaning would work
+# still define them as aliases, so alias combining would work
 # sudo l /etc/...
 alias ll='ls -lFA'
 alias l='ls -lF'
