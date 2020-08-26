@@ -6,3 +6,10 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/i2pd \
 fmt:
 CXX=~/.local/bin/g++ CC=~/.local/bin/gcc cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.local
 cmake .. -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.local
+
+
+
+#CMP0091 enables CMAKE_MSVC_RUNTIME_LIBRARTY
+#xerces-c:
+cmake -G"NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -Dtranscoder=windows -Dxmlch-type=wchar_t -Dnetwork:BOOL=OFF -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_BUILD_TYPE=RelWithDebInfo && cmake --build .
+

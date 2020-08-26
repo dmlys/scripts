@@ -77,6 +77,8 @@
  encrypt/decrypt:
  	openssl pkeyutl -encrypt -pubin -inkey id_rsa.pem -in input.txt
  	openssl pkeyutl -decrypt        -inkey id_rsa     -in input.txt
+    # algorithm options can be passed via -pkeyopt, for example:
+    #   -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha1
  	
  sha256 hash:
  	openssl dgst -sha256 input.txt
