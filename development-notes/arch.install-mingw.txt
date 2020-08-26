@@ -1,0 +1,32 @@
+# optinally add --solution_way
+? yes | ? # noconfirm не получится, поскольку в процессе установки будет замена gcc-base -> base, а она по-умолчанию No.
+aurman --sync --noedit --pgp_fetch --solution_way mingw-w64-gcc
+# with solution way prints
+# ~~ The following will be done:
+#   Install   : mingw-w64-headers
+#   Install   : mingw-w64-binutils
+#   Install   : mingw-w64-headers-bootstrap
+#   Install   : mingw-w64-gcc-base
+#   Install   : mingw-w64-crt
+#   Remove    : mingw-w64-headers-bootstrap
+#   Install   : mingw-w64-winpthreads
+#   Remove    : mingw-w64-gcc-base
+#   Install   : mingw-w64-gcc
+
+
+# or slighty more by hand
+aurman --sync --noedit --pgp_fetch mingw-w64-gcc-base
+aurman --sync --noedit --pgp_fetch mingw-w64-gcc
+
+
+# install some helpers and build tools
+aurman --sync --noedit --noconfirm --pgp_fetch mingw-w64-ldd
+aurman --sync --noedit --noconfirm --pgp_fetch mingw-w64-environment
+aurman --sync --noedit --noconfirm --pgp_fetch mingw-w64-configure mingw-w64-cmake # mingw-w64-pkg-config
+
+# install some libs
+aurman --sync --noedit --noconfirm --pgp_fetch mingw-w64-fmt mingw-w64-boost mingw-w64-openssl mingw-w64-xerces-c mingw-w64-bzip2 mingw-w64-zstd mingw-w64-zlib
+
+
+?? mingw-w64-wine
+?? mingw-w64-libbacktrace-git
