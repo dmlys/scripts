@@ -123,5 +123,11 @@ fi
 # K - --quit-on-intr (Ctrl + C)
 export LESS=-iRSM
 
+if   [[ -f /usr/share/mc/bin/mc.sh ]]; then
+    source /usr/share/mc/bin/mc.sh
+elif [[ -f /usr/lib/mc/mc-wrapper.sh ]]; then
+    alias mc='source /usr/lib/mc/mc-wrapper.sh'
+fi
 
 [[ -f ~/.bash_local ]] && source ~/.bash_local
+

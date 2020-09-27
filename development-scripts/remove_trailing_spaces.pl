@@ -2,13 +2,12 @@
 use File::Find::Rule;
 
 @exts = qw<*.h *.hpp *.hqt *.cpp *.java>;
-@args = @ARGV;
-@args = ('.') unless @ARGV;
+if (not @ARGV) { @ARGV = ('.') };
 
-@files = grep { -f } @args;
-@dirs  = grep { -d } @args;
+$finder = File::Find::Rule->new;
+$finder->file->name(@exts);
 
-push @files, File::Find::Rule->file->name(@exts)->in(@dirs);
+@files = $finder->in(@ARGV); # search by file extensions
 
 for $file (@files)
 {

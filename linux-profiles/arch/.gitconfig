@@ -17,3 +17,5 @@
 	guitool = kdiff3
 [mergetool]
 	keepBackup = false
+[rerere]
+	enabled = true

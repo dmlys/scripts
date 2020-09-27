@@ -8,15 +8,17 @@ pacman --sync --needed xf86-video-nouveau mesa
 pacman --sync --needed xorg-server xorg-xinit xorg-xev xorg-xinput
 сейчас или позже можно установить пропатченный xorg сервер, смотри соответствующий раздел ниже
 
-pacman --sync plasma-meta kde-applications      sddm
+pacman --sync plasma      kde-applications      sddm
 pacman --sync plasma-meta kde-applications-meta sddm
 
-# kmix не нужен, уже есть plasma-pa(pulseaudio), он длучше
+# kmix не нужен, уже есть plasma-pa(pulseaudio), он лучше
 pacman --remove --recursive kmix
 # konqueror наверное так же не нужон
 pacman --remove konqueror
 # будет полезной утилита pavucontrol
 pacman --sync pavucontrol-qt
+# для KDE discover
+pacman --sync packagekit-qt5 
 
 для ноутбука будет полезно установить
 pacman --sync acpi
@@ -27,6 +29,32 @@ reboot
 
 и собственно все, готово, у нас есть KDE окружение, далее можно настраивать.
 Рекомендуется установить KDE xorg patch, если его по-прежнему не замерджили в master xorg сервера
+
+/***********************************************************************
+/* Limit battery charge
+/***********************************************************************
+https://www.asus.com/support/FAQ/1032726/#4
+https://www.reddit.com/r/linuxhardware/comments/g8kpee/psa_kernel_54_added_the_ability_to_set_a_battery/
+https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX534#Battery_charge_threshold
+
+Большинство современных батарей живут дольше если их заряжать не полностью, а до 60-80 процентов.
+В windows вендоры как правило предоставляют соотв софт/настройки.
+
+В linux на уровне GUI или config files это не настраивается, но можно задать напрямую драйверу через sysfs
+echo 60 | sudo tee /sys/class/power_supply/BAT0/charge_control_end_threshold 
+а еще там же в /sys/class/power_supply/BAT0 можно увидеть заряжаемся ли, текущий заряд и т.п.
+
+Естественно после перезагрузки сброситься, делаем автовыставление: /etc/systemd/system/battery-charge-threshold.service:
+[Unit]
+Description=Set the battery charge threshold
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo 60 > /sys/class/power_supply/BAT0/charge_control_end_threshold'
+
+[Install]
+WantedBy=multi-user.target
 
 /***********************************************************************
 /* KDE xorg patch
