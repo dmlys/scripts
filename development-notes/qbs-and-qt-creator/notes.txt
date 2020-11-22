@@ -2,8 +2,10 @@
 /*             Qt Creator
 /*********************************************************************
 style и codestyles находятся в:
-linux   - $HOME/.config/QtProject/qtcreator/{styles,codestyles/{Cpp,QmlJS}}
-windows - %APPDATA%\QtProject\qtcreator\{styles,codestyles/{Cpp,QmlJS}}
+windows - %APPDATA%\QtProject\qtcreator
+linux   - $HOME/.config/QtProject/qtcreator
+          .../styles
+          .../codestyles/{Cpp,QmlJS}
 
 скопировать в эти папки(создать если отсутсвуют) соотвествющие файлы и Qt Creator автоматически их увидет.
 
@@ -39,6 +41,7 @@ Tools -> Options -> C++:
   Code Style: My C++ Style # тут же настройка табов
   File Naming:
     Headers -> Suffix: hpp
+	Use "#pragma once" instead of "#ifdef" guards
   Code Model: Создать новую
     -Wall -Wextra -Wno-unused-parameter -Wsuggest-override
 
@@ -131,3 +134,10 @@ qbs build config:debug profile:qt-5-11-1
 
 qbs resolve config:release modules.cpp.cxxFlags:-fdiagnostics-color
 qbs build   config:release modules.cpp.cxxFlags:-fdiagnostics-color --command-echo-mode command-line
+
+
+/*********************************************************************
+/*             windows specific
+/*********************************************************************
+Что бы имть нормальный англоязычный вывод в консоль от msvc, а не кракозябры - нужно установить английский языковой пакет для Visual Studio
+далее в настройках qtcreator'а - Tools -> Options -> Kits -> Some msvc kit -> Force UTF-8 MSVC compiler output
