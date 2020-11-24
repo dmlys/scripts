@@ -1,5 +1,25 @@
 some simple spreadshhet to remember gdb commands
 
+#print source listing
+l, list location   # Print lines centered around the line specified by location.
+   list first,last # Print lines from first to last. Both arguments are locations.
+                   # When a list command has two locations, and the source file of the second location is omitted,
+                   # this refers to the same source file as the first location.
+   list ,last      # Print lines ending with last.
+   list first,     # Print lines starting with first.
+   list +          # Print lines just after the lines last printed.
+   list -          # Print lines just before the lines last printed.
+   list            # same as list -
+
+Location can be specified in these ways:
+  LINENUM, to list around that line in current file,
++-LINECOUNT Specifies the line offset lines before/after the last line printed.
+  FILE:LINENUM, to list around that line in that file,
+  FUNCTION, to list around beginning of that function,
+  FILE:FUNCTION, to distinguish among like-named static functions.
+  *ADDRESS, to list around the line containing that address.
+
+
 # set breakpoint
 break main
 break filename.cpp:14
@@ -13,6 +33,12 @@ finish, fin - finish current subrouting, step out
 
 #info
 info sharedLibraries - list of loaded so modules
+info threads         - print threads info
+
+#thread
+thread <num>         - switch to thread <num>
+
+
 
 C-x C-a - turn on/turn off tui mode
 C-l     - repaint

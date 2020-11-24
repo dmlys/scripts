@@ -3,6 +3,8 @@ Sony Bravia KDL-42W705B.xml
 аудиокодек EAC не поддерживается
 
 Примеры:
+	для ffmpeg все индексы начинаются с 0
+
 	ffmpeg -h encoder=hevc | less
 	ffmpeg x265 -help
 	

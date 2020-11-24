@@ -26,6 +26,11 @@ linux примеры:
   #debug   ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -debug   -no-optimize-debug -gdb-index -developer-build -c++std c++17 -nomake tests -nomake examples
   #release ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -release -force-debug-info  -gdb-index                  -c++std c++17 -nomake tests -nomake examples
 
+linux-mingw примеры:
+  cd qtbase - to build only qtbase modules(qt5core, qt5gui, etc)
+  #debug ./configure -prefix /linux-data/mingw-qt5.15.1 -opensource -confirm-license -debug -no-optimize-debug -developer-build -static -c++std c++17 -nomake tests -nomake examples -opengl desktop -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32-
+
+
 windows примеры:
   LLVM требуется для документации, также нужны perl, python
   set LLVM_INSTALL_DIR=E:\LLVM
