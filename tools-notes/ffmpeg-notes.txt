@@ -19,9 +19,19 @@ Sony Bravia KDL-42W705B.xml
 	# задваивание звуковых дорожек с сохранением всех остальных дорожек/субтитров
 	ffmpeg -y -i input.mkv -map 0:v -c:v copy -map 0:a -map 0:a -c:a copy -filter:a:1 volume=2 -c:a:1 ac3 -map 0:s -c:s copy output.mkv
 	
-	ffmpeg -i input1.mkv -i input2.mkv ....  --metadata:s:s:0 language=rus output.mkv
-	ffmpeg -i ....  --metadata:s:a:0 language=rus output.mkv
-	ffmpeg -i ....  --metadata:s:v   language=rus output.mkv
+	# metadata
+	ffmpeg -i input1.mkv -i input2.mkv ....  -metadata:s:s:0 language=rus output.mkv
+	ffmpeg -i ....  -metadata:s:a:0 language=rus output.mkv
+	ffmpeg -i ....  -metadata:s:v   language=rus output.mkv
+	
+	# set title and default streams
+	ffmpeg -i input1 -i input2 ... \
+	    -metadata title="title" \
+        -metadata:s:a:0 language=rus -metadata:s:a:1 language=eng  \
+		-metadata:s:s:0 language=rus -metadata:s:s:1 language=eng  \
+		-disposition:a:1 default -disposition:a:0 none  \
+		-disposition:s:1 default -disposition:s:0 none  \
+	    output.mkv
 	
 	# -dn disables some unsupported data streams
 	ffmpeg -i ..mp4 -map 0 -dn -c copy -c:s srt output.mkv
