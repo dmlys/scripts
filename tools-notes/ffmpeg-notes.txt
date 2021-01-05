@@ -40,7 +40,7 @@ Sony Bravia KDL-42W705B.xml
 
 	# конвертация DVD
 	# субтитры нельзя просто конвертнуть, в DVD субтитры по факту картинки накладываемые на видеоряд, srt - же текст
-	# по факту DVD субтитры нужно распознавать с помощью спец программы - вроде есть даже разу в srt, в любом случае ffmpeg этого не умеет
+	# по факту DVD субтитры нужно распознавать с помощью спец программы - вроде есть даже cразу в srt, в любом случае ffmpeg этого не умеет
 	cat *.VOB > input.vob
 	ffmpeg -analyzeduration 3000M -probesize 3000M \
 		-y -i input.vob -map 0:1 -map 0:3 -map 0:3 \
@@ -52,3 +52,10 @@ Sony Bravia KDL-42W705B.xml
 	Can't write packet with unknown timestamp - ffmpeg -fflags +genpts ...
 	# порядок важен genpts нужно передавать вначале
 	
+    на лету с помощьюе перла меняем имя файла на основе regex'ов
+	for file in "Сезон 3"/*; do
+		file=`basename "$file"`;
+		newname=`perl -e '($s, $e, $n) = $ARGV[0] =~ /Star.trek.TOS\.s(\d*)e(\d*)\.(.*)\.avi/; $n =~ s/\./ /g; print "Star Trek.TOS.S${s}E${e}.${n}.mkv"' "$file"`;
+		srt="${file%.avi}".srt;
+		mkvmerge -o "/data-store/mmedia/TV-Shows/Star Trek TOS/Сезон 3/$newname" "Сезон 3/$file" "/data-store/tmp/Star.trek.TOS.BDRip eng sub/Сезон 3/$srt";
+	done
