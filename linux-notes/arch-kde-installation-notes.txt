@@ -162,6 +162,24 @@ $ balooctl disable
 дефолтные папки:
 mkdir ~/Documents ~/Downloads ~/Music ~/Pictures ~/Videos
 
+
+/***********************************************************************
+/* X11 beeping/bell event
+/***********************************************************************
+https://wiki.archlinux.org/index.php/PulseAudio#X11_Bell_Events
+
+~/.config/pulse/default.pa: >>
+.include /etc/pulse/default.pa
+
+# audible bell
+load-sample-lazy x11-bell /usr/share/sounds/freedesktop/stereo/bell.oga
+load-module module-x11-bell sample=x11-bell
+
+
+так же возможно нужно задать уровень громкости командой: xset b 100
+и как-то ее прописать в автозагрузку через средства KDE Autostart
+
+
 /***********************************************************************
 /* ssh-agent
 /***********************************************************************
