@@ -54,3 +54,9 @@ iptables следует вызывать с ключом -v тогда он по
 ping -6 -b ff02::1%enp5s0
 ip -6 neigh
 
+ssh -6 "fe02::...:...:...%dev"
+
+# regular copy utilities
+rsync/scp  file   user@"[fe02::..:...%dev]"
+# devices can be transfered
+ssh user@addr%dev "cat > out-path" < in-path

@@ -28,7 +28,6 @@
 *\qtserialbus
 *\qtserialport
 *\qtspeech
-*\qtsvg
 *\qtwayland
 *\qtwebchannel
 *\qtwebengine
