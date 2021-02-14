@@ -1,7 +1,7 @@
 set vcver=14.1
 set toolset=%vcver%
 ::set toolset=%vcver%.0
-set boost_dir=boost_1_67_0
+set boost_dir=boost_1_74_0
 set thirdparty_dir=D:\Projects\thirdparty
 
 set stage_dir86=%boost_dir%-lib-x86

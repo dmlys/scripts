@@ -2,9 +2,9 @@ setlocal
 rem fmt build
 set source_dir=src
 set libname=fmt
-set version=5.0.0
-set vcver=vc14.1
-set vcvars=vc141vars
+set version=7.0.3
+set vcver=vc14.2
+set vcvars=vc142vars
 
 call :build_platform %vcvars% x86
 call :build_platform %vcvars% x64

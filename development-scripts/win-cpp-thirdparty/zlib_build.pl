@@ -3,8 +3,7 @@ use File::Copy;
 use File::Path qw<make_path>;
 
 our $ver = '1.2.8';
-our $vcver = 'vc14.1';
-our $vcvars = 'vc141vars';
+our $vcver = 'vc142';
 our $name = 'zlib';
 our $arname86 = "$name-$ver-$vcver-x86.zip";
 our $arname64 = "$name-$ver-$vcver-x64.zip";
@@ -50,8 +49,8 @@ PrepareMakefile('win32/Makefile.msc', 'win32/MakefileStatic.msc', \&MT);
 PrepareMakefile('win32/Makefile.msc', 'win32/MakefileSharedDebug.msc', \&MDD);
 PrepareMakefile('win32/Makefile.msc', 'win32/MakefileStaticDebug.msc', \&MTD);
 
-build_one "$vcvars x86", 'release-x86';
-build_one "$vcvars x64", 'release-x64';
+build_one "${vcver}vars x86", 'release-x86';
+build_one "${vcver}vars x64", 'release-x64';
 
 system "pushd release-x86 & 7z a -tzip $arname86 & popd";
 system "pushd release-x64 & 7z a -tzip $arname64 & popd";

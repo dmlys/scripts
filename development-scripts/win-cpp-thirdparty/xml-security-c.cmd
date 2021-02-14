@@ -1,8 +1,8 @@
 setlocal
 rem xml-security-c helper build script 
 set version=2.0.2
-set vcver=v141
-set vcvars=vc141vars
+set vcver=v142
+set vcvars=vc142vars
 set libname=xml-security
 set thirdparty_include=C:\Projects\thirdparty\vc14.1-x64\include
 

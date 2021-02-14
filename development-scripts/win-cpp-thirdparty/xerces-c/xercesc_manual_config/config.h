@@ -308,7 +308,7 @@
 #define PACKAGE_NAME "xerces-c"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "xerces-c 3.2.2"
+#define PACKAGE_STRING "xerces-c 3.2.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xerces-c"
@@ -317,7 +317,7 @@
 #define PACKAGE_URL "https://xerces.apache.org/xerces-c/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.2.2"
+#define PACKAGE_VERSION "3.2.3"
 
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT 4
@@ -338,7 +338,7 @@
 #define SIZEOF___INT64 8
 
 /* Version number of package */
-#define VERSION "3.2.2"
+#define VERSION "3.2.3"
 
 /* Define if DLL symbols should be exported */
 /* #undef XERCES_DLL_EXPORT */

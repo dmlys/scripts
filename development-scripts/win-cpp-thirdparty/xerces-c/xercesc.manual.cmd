@@ -1,9 +1,9 @@
 setlocal
 rem fmt build
 rem xercesc helper build script 
-set version=3.2.2
-set vcver=v141
-set vcvars=vc141vars
+set version=3.2.3
+set vcver=v142
+set vcvars=vc142vars
 set libname=xercesc
 rem set thirdparty_include=C:\Projects\thirdparty\vc14.1-x64\include
 
