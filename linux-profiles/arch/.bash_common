@@ -54,14 +54,27 @@ if [ -n "$want_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    GREEN=$(tput setaf 2)
+    BLACK=$(tput setaf 0)
     RED=$(tput setaf 1)
+    GREEN=$(tput setaf 2)
+    YELLOW=$(tput setaf 3)
     BLUE=$(tput setaf 4)
+    MAGENTA=$(tput setaf 5)
+    CYAN=$(tput setaf 6)
+    WHITE=$(tput setaf 7)
+
     BOLD=$(tput bold)
     RESET=$(tput sgr0)
-    PS_GREEN="\\[$GREEN\\]"
+
+    PS_BLACK="\\[$BLACK\\]"
     PS_RED="\\[$RED\\]"
+    PS_GREEN="\\[$GREEN\\]"
+    PS_YELLOW="\\[$YELLOW\\]"
     PS_BLUE="\\[$BLUE\\]"
+    PS_MAGENTA="\\[$MAGENTA\\]"
+    PS_CYAN="\\[$CYAN\\]"
+    PS_WHITE="\\[$WHITE\\]"
+
     PS_RESET="\\[$RESET\\]"
     PS_BOLD="\\[$BOLD\\]"
     
@@ -73,7 +86,9 @@ if [ "$color_prompt" = yes ]; then
         PS1="$PS_RED\\u@\\h$PS_RESET:$PS_BLUE$PS_BOLD\\W$PS_RESET\\$ "
     fi
 
-    unset GREEN BLUE ROLD RESET PS_GREEN PS_BLUE PS_RESET
+    unset BLACK RED GREEN YELLOW BLUE MAGENTA CYAN WHITE
+    unset PS_BLACK PS_RED PS_GREEN PS_YELLOW PS_BLUE PS_MAGENTA PS_CYAN PS_WHITE
+    unset BOLD RESET
 else
     PS1='\u@\h:\w\$ '
 fi

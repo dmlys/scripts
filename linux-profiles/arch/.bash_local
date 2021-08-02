@@ -9,3 +9,5 @@ export PAGER=less
 stty -echoctl
 
 alias sqlplus='rlwrap -c sqlplus '
+
+[[ -f ~/.conan-bashcompletion ]] && source ~/.conan-bashcompletion

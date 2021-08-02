@@ -5,7 +5,7 @@ https://wiki.archlinux.org/index.php/KDE
 
 видео драйвер, nouveau - опенсорсный, можно проприетарный - смотри archwiki по слову nvidia
 pacman --sync --needed xf86-video-nouveau mesa
-pacman --sync --needed xorg-server xorg-xinit xorg-xev xorg-xinput
+pacman --sync --needed xorg-server xorg-xinit xorg-xev xorg-xinput xorg-docs
 сейчас или позже можно установить пропатченный xorg сервер, смотри соответствующий раздел ниже
 
 pacman --sync plasma      kde-applications      sddm
@@ -208,8 +208,8 @@ https://wiki.archlinux.org/index.php/NVIDIA/Troubleshooting#Avoid_screen_tearing
 https://www.youtube.com/watch?v=0RvIbVmCOxg&t=21s - видео для теста tearing'а
 
 на стационарной машине с nvidia картой и KDE оболочкой частично: __GL_YIELD="USLEEP"
-по ощущенияем tearing все же отсался, но его стало мало и он почит незаметен, если только приглядываться на спец видео.
-!!! фигня, рвет так что гдаза вытекают, смотри ниже NVIDIA TripleBuffer.
+по ощущениям tearing все же остался, но его стало мало и он почит незаметен, если только приглядываться на спец видео.
+!!! фигня, рвет так что глаза вытекают, смотри ниже NVIDIA TripleBuffer.
 
 ~/.config/autostart-scripts/kwin.sh:
 #!/bin/bash
