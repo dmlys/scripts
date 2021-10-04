@@ -31,13 +31,13 @@ set CPPFLAGS=/O2 /GF /Gy /Gm-
 set DEFINES=/D NDEBUG /D _WINDOWS /D NO_TCL /D _CRT_SECURE_NO_DEPRECATE
 set DEFINES=/D SQLITE_ENABLE_COLUMN_METADATA /D SQLITE_ENABLE_RTREE %DEFINES%
 
-set FLAGS=%DEFINES% %CPPFLAGS% /MT /GL /Z7
+set FLAGS=%DEFINES% %CPPFLAGS% /MT /Z7
 call :build_lib sqlite3-mt-s.lib
 
 set FLAGS=%DEFINES% %CPPFLAGS% /MTd /Z7
 call :build_lib sqlite3-mt-sgd.lib
 
-set FLAGS=%DEFINES% %CPPFLAGS% /MD /GL /Z7
+set FLAGS=%DEFINES% %CPPFLAGS% /MD /Z7
 call :build_lib sqlite3-mt.lib
 
 set FLAGS=%DEFINES% %CPPFLAGS% /MDd /Z7

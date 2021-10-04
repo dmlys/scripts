@@ -26,7 +26,7 @@ rem /EHsc - enable ++ excecptions
 rem /GS - buffer ovverun cheks
 rem /Od - disbale optimizations
 set THIRDPARTY_DIR=D:\Projects\thirdparty\vc14.1-x64\include
-set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2 /GL /Gm-          /I include /I %THIRDPARTY_DIR% /W3 /wd4127 /wd4355
+set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2      /Gm-         /I include /I %THIRDPARTY_DIR% /W3 /wd4127 /wd4355
 set   DEBUG_CPPFLAGS=/EHsc /Z7 /Gm- /Od /Oy- /GS          /I include /I %THIRDPARTY_DIR% /W3 /wd4127 /wd4355
 set RELEASE_DEFINES=/D NDEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_WARNINGS
 set   DEBUG_DEFINES=/D _DEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_WARNINGS

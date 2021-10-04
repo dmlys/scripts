@@ -29,7 +29,7 @@ rem /Gm- - disables minimal rebuild
 rem /EHsc - enable ++ excecptions
 rem /GS - buffer ovverun cheks
 rem /Od - disbale optimizations
-set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2 /GL  /Gm-   /I src /I xercesc_manual_config
+set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2      /Gm-   /I src /I xercesc_manual_config
 set   DEBUG_CPPFLAGS=/EHsc /Z7 /Gm- /Od /Oy- /GS    /I src /I xercesc_manual_config
 set RELEASE_DEFINES=/D NDEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE /D XERCES_BUILDING_LIBRARY=1 /D _THREAD_SAFE=1 /D HAVE_CONFIG_H=1
 set   DEBUG_DEFINES=/D _DEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE /D XERCES_BUILDING_LIBRARY=1 /D _THREAD_SAFE=1 /D HAVE_CONFIG_H=1
@@ -38,7 +38,7 @@ copy xercesc_manual_config\XercesVersion.hpp            src\xercesc\util\XercesV
 copy xercesc_manual_config\Xerces_autoconf_config.hpp   src\xercesc\util\Xerces_autoconf_config.hpp
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MT
-set LIB_FLAGS=/LTCG
+set LIB_FLAGS=
 call :build_lib %libname%-mt-s.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MTd
@@ -46,7 +46,7 @@ set LIB_FLAGS=
 call :build_lib %libname%-mt-sgd.lib
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MD
-set LIB_FLAGS=/LTCG
+set LIB_FLAGS=
 call :build_lib %libname%-mt.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MDd

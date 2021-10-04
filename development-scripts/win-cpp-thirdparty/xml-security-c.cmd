@@ -28,14 +28,14 @@ rem /Gm- - disables minimal rebuild
 rem /EHsc - enable ++ excecptions
 rem /GS - buffer ovverun cheks
 rem /Od - disbale optimizations
-set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2 /GL  /Gm-   /I . /I %thirdparty_include%
+set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2      /Gm-   /I . /I %thirdparty_include%
 set   DEBUG_CPPFLAGS=/EHsc /Z7 /Gm- /Od /Oy- /GS    /I . /I %thirdparty_include%
 set RELEASE_DEFINES=/D NDEBUG /D WIN32 /D _WIN32_WINNT=0x0502 /D _SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE                      /D XSEC_BUILDING_LIBRARY /D XSEC_HAVE_OPENSSL /D XSEC_HAVE_WINCAPI
 set   DEBUG_DEFINES=/D _DEBUG /D WIN32 /D _WIN32_WINNT=0x0502 /D _SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE /D _XSEC_DO_MEMDEBUG /D XSEC_BUILDING_LIBRARY /D XSEC_HAVE_OPENSSL /D XSEC_HAVE_WINCAPI
 rem you may need to remove 
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MT
-set LIB_FLAGS=/LTCG
+set LIB_FLAGS=
 call :build_lib %libname%-mt-s.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MTd
@@ -43,7 +43,7 @@ set LIB_FLAGS=
 call :build_lib %libname%-mt-sgd.lib
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MD
-set LIB_FLAGS=/LTCG
+set LIB_FLAGS=
 call :build_lib %libname%-mt.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MDd

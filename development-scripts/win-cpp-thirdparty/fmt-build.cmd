@@ -27,13 +27,13 @@ rem /Gm- - disables minimal rebuild
 rem /EHsc - enable ++ excecptions
 rem /GS - buffer ovverun cheks
 rem /Od - disbale optimizations
-set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2 /GL  /Gm-         /I include
+set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2      /Gm-         /I include
 set   DEBUG_CPPFLAGS=/EHsc /Z7 /Gm- /Od /Oy- /GS          /I include
 set RELEASE_DEFINES=/D NDEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_WARNINGS
 set   DEBUG_DEFINES=/D _DEBUG /D WIN32 /D _WIN32_WINNT=0x501 /D _SCL_SECURE_NO_WARNINGS
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MT
-set LIB_FLAGS=/LTCG
+set LIB_FLAGS=
 call :build_lib lib%libname%-mt-s.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MTd
@@ -41,7 +41,7 @@ set LIB_FLAGS=
 call :build_lib lib%libname%-mt-sgd.lib
 
 set FLAGS=%RELEASE_DEFINES% %RELEASE_CPPFLAGS% /MD
-set LIB_FLAGS=/LTCG
+set LIB_FLAGS=
 call :build_lib lib%libname%-mt.lib
 
 set FLAGS=%DEBUG_DEFINES% %DEBUG_CPPFLAGS% /MDd
