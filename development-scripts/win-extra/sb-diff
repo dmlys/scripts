@@ -80,12 +80,17 @@ sub make_export
 			}
 			
 			my $val = join ':', @$val;
-			return "export PATH=\"\$PATH:$val\"\n";
+			#return "export PATH=$val:\"\$PATH:\"\n"; #old
+			
+			#return "export PATH=\"\${PATH:+:\$PATH}$val\"\n"; #append
+			 return "export PATH=\"$val\${PATH:+:\$PATH}\"\n"; #prepend
 		}
 		else
 		{
 			my $val = join ';', @$val;
-			return "export $name=\"\$$name;$val\"\n";
+			# export VAR=${VAR:+$VAR;}$rest
+			#return "export $name=\"\${$name:+\$$name;}$val\"\n"; #append
+			 return "export $name=\"$val\${$name:+;\$$name}\"\n"; #prepend
 		}		
 	}
 }
