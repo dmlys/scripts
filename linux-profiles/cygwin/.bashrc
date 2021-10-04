@@ -211,8 +211,7 @@ alias grep='grep --color=auto'                # show differences in colour
 alias egrep='egrep --color=auto'              # show differences in colour
 alias fgrep='fgrep --color=auto'              # show differences in colour
 
-
-alias edit='cygstart "C:\Program Files (x86)\Notepad++\notepad++.exe"'
-
 export CDPATH=.:/d/Projects
 export BOOST_BUILD_PATH=/usr/local/share/boost-build
+
+launch-ssh-agent

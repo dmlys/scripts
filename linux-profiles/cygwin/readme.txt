@@ -9,3 +9,7 @@ none /cygdrive cygdrive noacl,binary,posix=0,user 0 0
 
 to make completion available on interactive, but no login shell
 /etc/bash_completion must exists(and it must be sourced in ~/.bashrc)
+
+ssh-agent:
+install procps packet for pgrep utility
+call launch-ssh-agent function(put it into .bashrc for autostart), defined in .bash_functions
