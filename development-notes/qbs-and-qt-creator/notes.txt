@@ -141,3 +141,8 @@ qbs build   config:release modules.cpp.cxxFlags:-fdiagnostics-color --command-ec
 /*********************************************************************
 Что бы имть нормальный англоязычный вывод в консоль от msvc, а не кракозябры - нужно установить английский языковой пакет для Visual Studio
 далее в настройках qtcreator'а - Tools -> Options -> Kits -> Some msvc kit -> Force UTF-8 MSVC compiler output
+
+Так же стоит прописать пути к thirdparty библиотекам:
+Tools -> Options -> Kits -> Some msvc kit -> Additional Qbs Profile Settings: 
+cpp.libraryPaths -> path(s)
+cpp.systemIncludePaths -> path(s)

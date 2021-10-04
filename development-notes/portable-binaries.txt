@@ -5,7 +5,7 @@ http://insanecoding.blogspot.com/2012/07/creating-portable-linux-binaries.html
   -Wl,static -l..
   -static-libstdc++ -static-libgcc
   
-  c помощью readelf смотрим версию GLIBC а так же смотрим ее не целевых машинах
+  c помощью readelf смотрим версию GLIBC а так же смотрим ее на целевых машинах
   readelf --dyn-sym $bin | grep -o -P 'GLIBC_[^\s]*' | sort -u
   
   смотрим какие функции не вписываются и далее с помощьюе .symver и --wrap трюка линкуем с более старой версией
