@@ -389,10 +389,10 @@
 #define XERCES_PATH_DELIMITER_BACKSLASH 1
 
 /* Define as the platform's export attribute */
-#define XERCES_PLATFORM_EXPORT 
+/* #define XERCES_PLATFORM_EXPORT */
 
 /* Define as the platform's import attribute */
-#define XERCES_PLATFORM_IMPORT 
+/* #define XERCES_PLATFORM_IMPORT */
 
 /* An appropriate signed 16 bit integer type */
 #define XERCES_S16BIT_INT int16_t
@@ -416,7 +416,7 @@
 #define XERCES_SSIZE_T long
 
 /* Define if building a static library */
-#define XERCES_STATIC_LIBRARY 1
+/* #define XERCES_STATIC_LIBRARY 1 */
 
 /* Define if the std namespace is supported */
 #define XERCES_STD_NAMESPACE 1

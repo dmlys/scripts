@@ -1,0 +1,15 @@
+# patch -p0 < xercesc.janitor.patch
+--- src/xercesc/util/Janitor.hpp	2021-10-18 12:56:29.910995800 +0300
++++ src/xercesc/util/Janitor.hpp.new	2021-10-18 19:20:17.056192800 +0300
+@@ -154,7 +154,10 @@
+     MFPT    fToCall;
+ };
+ 
+-#if defined(__GNUC__) || (! defined(_AIX) && ! defined(__hpux) && ! defined(__sun))
++#if defined(_MSC_VER)
++XERCES_TEMPLATE_EXTERN template class ArrayJanitor<XMLByte>;
++XERCES_TEMPLATE_EXTERN template class ArrayJanitor<XMLCh>;
++#elif defined(__GNUC__) || (! defined(_AIX) && ! defined(__hpux) && ! defined(__sun))
+ XERCES_TEMPLATE_EXTERN template class XMLUTIL_EXPORT ArrayJanitor<XMLByte>;
+ XERCES_TEMPLATE_EXTERN template class XMLUTIL_EXPORT ArrayJanitor<XMLCh>;
+ #endif
