@@ -2,7 +2,7 @@ setlocal
 rem cppdb build
 set source_dir=.
 set version=0.3.1
-set vcver=vc14
+set vcver=vc142
 set thirdparty_dir=E:\Projects\thirdparty
 
 call :build_platform %vcver% x86

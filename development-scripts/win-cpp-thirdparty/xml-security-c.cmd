@@ -4,7 +4,6 @@ set version=2.0.2
 set vcver=v142
 set vcvars=vc142vars
 set libname=xml-security
-set thirdparty_include=C:\Projects\thirdparty\vc14.1-x64\include
 
 REM call :build_platform %vcvars% x86
 call :build_platform %vcvars% x64
@@ -28,6 +27,7 @@ rem /Gm- - disables minimal rebuild
 rem /EHsc - enable ++ excecptions
 rem /GS - buffer ovverun cheks
 rem /Od - disbale optimizations
+set thirdparty_include=C:\Projects\thirdparty\vc14.2-%2\include
 set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2      /Gm-   /I . /I %thirdparty_include%
 set   DEBUG_CPPFLAGS=/EHsc /Z7 /Gm- /Od /Oy- /GS    /I . /I %thirdparty_include%
 set RELEASE_DEFINES=/D NDEBUG /D WIN32 /D _WIN32_WINNT=0x0502 /D _SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE                      /D XSEC_BUILDING_LIBRARY /D XSEC_HAVE_OPENSSL /D XSEC_HAVE_WINCAPI
