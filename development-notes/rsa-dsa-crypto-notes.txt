@@ -1,0 +1,44 @@
+Некоторые заметки, пояснения о криптографии :
+https://security.stackexchange.com/questions/35471/is-there-any-particular-reason-to-use-diffie-hellman-over-rsa-for-key-exchange
+https://www.ssl2buy.com/wiki/diffie-hellman-rsa-dsa-ecc-and-ecdsa-asymmetric-key-algorithms
+
+DH, Diffie-Hellman это своего рода первый алгоритм современной криптографии с открытым ключом. 
+  Это алгоритм обмена ключами и предназначен в первую очередь для этого, хотя, вроде, его и можно как-то модифицировать для public-key encryption
+
+RSA(Rivest, Shamir и Adleman) это на самом деле 2 алгоритма: асимметричное шифрование и цифровые подписи,
+  и хотя математическое ядро и ключи у них те же, они делают разные вещи разными путями.
+  
+  RSA is two algorithms, one for asymmetric encryption, and one for digital signatures. These are two distinct beast;
+  although they share the same core mathematical operation and format for keys, they do different things in different ways.
+  Diffie-Hellman is a key exchange algorithm, which is yet another kind of algorithm.
+  Since the algorithms don't do the same thing, you could prefer one over the other depending on the usage context.
+
+  RSA был создан на основе и под впечатлением от DH, но первый решал только проблему обмена ключами,
+  никак не решал проблему аутентификации -> RSA был разработан что бы их решать. 
+
+  RSA так коммерческий: В 1982 году Ривест, Шамир и Адлеман организовали компанию RSA Data Security
+
+DSA(Digital Signature Algorithm) альтернативный алгоритм для подписи, но не шифрования, разработанные по заказу National Security Agency(NSA)
+
+  In 1991, the National Security Agency (NSA) developed the Digital Signature Algorithm (DSA) as an alternative to the RSA algorithm.
+  The National Institute of Standards and Technology (NIST) gave the algorithm its sanction as U.S. government-approved 
+  and certified encryption scheme that offered the same degree of security as RSA,
+  but employs different mathematical algorithms for signing and encryption.
+
+DSS(Digital Signature Standard)
+  Это документ описывающий и специфицирующий электронные подписи.
+  Вроде DSS допускает и описывает больше одного алгоритма подписи. Тем не менее обычно подразумевается DSA
+
+  The Digital Signature Standard (DSS) is a Federal Information Processing Standard
+  specifying a suite of algorithms that can be used to generate digital signatures 
+  established by the U.S. National Institute of Standards and Technology (NIST) in 1994.
+
+  It defines the Digital Signature Algorithm, contains a definition of RSA signatures
+  based on the definitions contained within PKCS #1 version 2.1 and in American National Standard X9.31 with some additional requirements,
+  and contains a definition of the Elliptic Curve Digital Signature Algorithm based on the definition provided by American National Standard X9.62
+  with some additional requirements and some recommended elliptic curves. It also approves the use of all three algorithms.
+
+
+Так же стоит отметить что:
+  RSA имеет лучшую производительность на операциях с открытым ключом, быстрее проверка подписи, шифрование
+  DSA имеет лучшую производительность на операциях с закрытым ключом, быстрее генерация подписи, дешифрование
