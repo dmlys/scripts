@@ -5,6 +5,8 @@
   <style name="Selection" background="#1a5086"/>
   <style name="LineNumber" foreground="#2b91af"/>
   <style name="SearchResult" foreground="#000000" background="#414100"/>
+  <style name="SearchResultAlt1" foreground="#000033" background="#b6ccff"/>
+  <style name="SearchResultAlt2" foreground="#330000" background="#ffb6cc"/>
   <style name="SearchScope" foreground="#000000" background="#0f202d"/>
   <style name="Parentheses" foreground="#00ffff"/>
   <style name="ParenthesesMismatch" foreground="#dcdcdc" background="#0e4583" underlineColor="#ff0000" underlineStyle="WaveUnderline"/>
@@ -18,6 +20,7 @@
   <style name="String" foreground="#d69d85"/>
   <style name="Type" foreground="#ffd700"/>
   <style name="Local" foreground="#bdb76b"/>
+  <style name="Parameter" foreground="#bdb76b"/>
   <style name="Global" foreground="#bdb76b"/>
   <style name="Field" foreground="#bdb76b"/>
   <style name="Static" foreground="#bd63c5"/>
