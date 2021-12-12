@@ -73,14 +73,13 @@ Sony Bravia KDL-42W705B.xml
 
 	#with bash
 	#!/usr/bin/bash
-	
-	opts=(-map 0:v -map 0:a:1 -map 0:a:0 -map 0:s -codec copy -filter:a:0 volume=2 -codec:a:0 ac3 -disposition:a:0 default -disposition:a:1 none -disposition:s:0 default -disposition:s:1 none)
 
 	for ep in {01..10}; do
 		input=(/data-store/Torrents/The.Show.S04.1080p.WEBRip.Rus.Eng/The.Show.S04E$ep.*.mkv)
 		file=`basename "$input"`
 		
-		if [[ $file =~ The.Show.S([[:digit:]]*)E([[:digit:]]*)\.(.*)\.1080p.*mkv ]]; then
+		showrgx=The.Show.S([[:digit:]]*)E([[:digit:]]*)\.(.*)\.1080p.*mkv
+		if [[ $file =~ $showrgx ]]; then
 			season=${BASH_REMATCH[1]}
 			episode=${BASH_REMATCH[2]}
 			title=`tr . ' ' <<< "${BASH_REMATCH[3]}"`
@@ -92,6 +91,8 @@ Sony Bravia KDL-42W705B.xml
 			#output="${output%.*}".mkv;
 
 			echo "$title: $input -> $output"
+
+			opts=(-map 0:v -map 0:a:1 -map 0:a:0 -map 0:s -codec copy -filter:a:0 volume=2 -codec:a:0 ac3 -disposition:a:0 default -disposition:a:1 none -disposition:s:0 default -disposition:s:1 none)
 			ffmpeg -y -i "$input" "${opts[@]}" "$tmp"
 			mkvmerge "$tmp" --output "$output"
 		fi
