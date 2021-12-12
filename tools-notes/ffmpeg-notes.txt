@@ -1,5 +1,5 @@
 Sony Bravia KDL-42W705B.xml
-Похоже телевизор плохо понимает mkv формируемый утилитой ffmpeg, если же просто перепаковать резульат с помощью mkvmerge - вроде нормально работает
+Похоже телевизор плохо понимает mkv формируемый утилитой ffmpeg, если же просто перепаковать результат с помощью mkvmerge - вроде нормально работает
 аудиокодек EAC не поддерживается
 
 Примеры:
@@ -69,3 +69,31 @@ Sony Bravia KDL-42W705B.xml
 		srt="${file%.avi}".srt;
 		mkvmerge -o "/data-store/mmedia/TV-Shows/Star Trek TOS/Сезон 3/$newname" "Сезон 3/$file" "/data-store/tmp/Star.trek.TOS.BDRip eng sub/Сезон 3/$srt";
 	done
+
+
+	#with bash
+	#!/usr/bin/bash
+	
+	opts=(-map 0:v -map 0:a:1 -map 0:a:0 -map 0:s -codec copy -filter:a:0 volume=2 -codec:a:0 ac3 -disposition:a:0 default -disposition:a:1 none -disposition:s:0 default -disposition:s:1 none)
+
+	for ep in {01..10}; do
+		input=(/data-store/Torrents/The.Show.S04.1080p.WEBRip.Rus.Eng/The.Show.S04E$ep.*.mkv)
+		file=`basename "$input"`
+		
+		if [[ $file =~ The.Show.S([[:digit:]]*)E([[:digit:]]*)\.(.*)\.1080p.*mkv ]]; then
+			season=${BASH_REMATCH[1]}
+			episode=${BASH_REMATCH[2]}
+			title=`tr . ' ' <<< "${BASH_REMATCH[3]}"`
+		
+			output="/data-store/mmedia/tmp/tv-shows/The Show (Season 4)/The Show.S04E$ep.$title.mkv"
+			tmp=/data-store/tmp/output.mkv
+		
+			# change ext optionally
+			#output="${output%.*}".mkv;
+
+			echo "$title: $input -> $output"
+			ffmpeg -y -i "$input" "${opts[@]}" "$tmp"
+			mkvmerge "$tmp" --output "$output"
+		fi
+	done
+
