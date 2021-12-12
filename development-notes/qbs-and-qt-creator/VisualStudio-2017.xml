@@ -30,6 +30,7 @@
   <style name="PrimitiveType" foreground="#569cd6"/>
   <style name="Operator" foreground="#dcdcdc"/>
   <style name="Overloaded Operator"/>
+  <style name="Punctuation"/>
   <style name="Preprocessor" foreground="#9b9b9b"/>
   <style name="Label" foreground="#dcdcdc"/>
   <style name="Comment" foreground="#57a64a"/>
@@ -59,6 +60,11 @@
   <style name="DiffDestLine" background="#588a2c"/>
   <style name="DiffDestChar" foreground="#2e2f30" background="#7cc33e"/>
   <style name="LogChangeLine" foreground="#d65645"/>
+  <style name="LogAuthorName" foreground="#007af4"/>
+  <style name="LogCommitDate" foreground="#006600"/>
+  <style name="LogCommitHash" foreground="#ff0000"/>
+  <style name="LogCommitSubject"/>
+  <style name="LogDecoration" foreground="#ff00ff"/>
   <style name="Warning" underlineColor="#d6c545" underlineStyle="SingleUnderline"/>
   <style name="WarningContext" underlineColor="#d6c545" underlineStyle="DotLine"/>
   <style name="Error" underlineColor="#d65645" underlineStyle="SingleUnderline"/>
