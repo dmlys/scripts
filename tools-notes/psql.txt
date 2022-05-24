@@ -1,0 +1,31 @@
+Некоторые подсказки для работы с PSQL
+
+
+https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-INTERPOLATION
+Прочитать содержимое файла в переменную и использовать в sql выражениях:
+\set variable 'cat file' 
+insert into table values(..., :'variable')
+
+
+Meta-Commands
+  Within an argument, text that is enclosed in backquotes (`) is taken as a command line that is passed to the shell. The output of the command (with any trailing newline removed) replaces the backquoted text.
+  If an unquoted colon (:) followed by a psql variable name appears within an argument, it is replaced by the variable's value, as described in SQL Interpolation.
+
+
+https://www.postgresql.org/docs/current/functions-binarystring.html
+bytea и текст, вывод в консоль текстовых блобов
+ select ..., convert_from(column, 'encoding') from table ...;
+ select ..., encode(column, 'escape') from table ...;
+
+ например:
+   select convert_from(data, 'utf-8') from message;
+
+ в целом convert_from with encoding единственно верный способ
+ encode же выполняет: Encodes binary data into a textual representation; supported format values are: base64, escape, hex. 
+   где escape format - escape
+    The escape format converts zero bytes and bytes with the high bit set into octal escape sequences (\nnn), and it doubles backslashes.
+    Other byte values are represented literally. The decode function will raise an error if a backslash is not followed by either a second backslash or three octal digits; it accepts other byte values unchanged. 
+
+   Т.е. ASCII покажет как текст, остальное будет заэскейпнуто
+
+ decode может быть полезен, если данные в base64, hex
