@@ -1,0 +1,162 @@
+/************************************************************/
+/*              компилятор                                  */
+/************************************************************/
+building modern development environment on CentOS 7:
+* gcc 11 
+  tar xf gcc-11.1.0.tar.xz
+  tar xf gmp-6.2.1.tar.bz2
+  tar xf mpc-1.2.1.tar.gz
+  tar xf mpfr-4.1.0.tar.bz2
+  tar xf isl-0.24.tar.bz2 
+
+  cd gcc-11.1.0
+  ln -s ../mpc-1.2.1 mpc
+  ln -s ../mpfr-4.1.0 mpfr
+  ln -s ../gmp-6.2.1 gmp
+  ln -s ../isl-0.24 isl
+
+  cd ..
+  mkdir gcc-11.1.0-build & cd gcc-11.1.0-build
+  ../gcc-11.1.0/configure --prefix ~/.local/opt/gcc-11.1.0 --disable-multilib --disable-nls --enable-languages=c,c++
+  make -j14
+  make install
+
+/************************************************************/
+/*              qt и qbs                                    */
+/************************************************************/
+* qt-5.11.2
+  В целом собирается как обычно, что бы подцепился нужный компилятор - его нужно добавить в переменную окружения PATH
+
+  PATH=$HOME/.local/opt/gcc-11.1.0:$PATH
+  export LD_LIBRARY_PATH=.local/opt/gcc-11.1.0/lib64
+
+  tar xf qt-everywhere-src-5.15.2.tar.xz --exclude-from qtunpack_exclude.txt
+  cd qt-everywhere-src-5.15.2
+  ./configure -prefix ~/.local/opt/qt-5.15.2 -opensource -confirm-license -release -force-debug-info -c++std c++17 -nomake tests -nomake examples -xplatform linux-g++ -device-option
+  make -j14
+  make install
+
+* qbs
+  Просто скачать архив с исходниками не получится. Для сборки нужен git submodule, который не идет в комплекте - проще выкачать git'ом
+
+  sudo yum install zlib-devel
+  sudo yum install python-beautifulsoup4 python-lxml
+
+  git clone https://github.com/qbs/qbs.git
+  cd qbs/
+  git checkout v1.21.0 
+  git submodule update --init
+
+  qmake -r qbs.pro 
+  make -j14
+  make install INSTALL_ROOT=~/.local/opt/qbs-1.21.0
+
+  # увы, похоже корректно задать prefix нельзя, поэтому используем INSTALL_ROOT, а потом ручками переносим
+  mv ~/.local/opt/qbs-1.21.0/usr/local/* ~/.local/opt/qbs-1.21.0/
+  rm ~/.local/opt/qbs-1.21.0/usr/ -r
+
+* Настраиваем qbs
+  qbs setup-toolchains --detect
+  qbs setup-qt --detect
+
+  qbs config defaultProfile qt-0-0-0-bin
+  qbs config preferences.defaultBuildDirectory bin
+
+  qbs config --list
+
+/************************************************************/
+/*                      cmake                               */
+/************************************************************/
+  tar xf cmake-3.22.2.tar.gz 
+  cd cmake-3.22.2/
+  
+  OPENSSL_ROOT_DIR=$HOME/.local/opt/openssl-1.1.1l ./configure --prefix=~/.local/opt/cmake-3.22.2
+  make -j14
+  make install
+
+/************************************************************/
+/*              thirdparty библиотеки                       */
+/************************************************************/
+* boost
+  tar xf boost_1_73_0.tar.bz2 
+  cd boost_1_73_0/
+
+  ./bootstrap.sh 
+  ./b2 --prefix=~/.local/opt/boost-1.73.0 install -j14
+
+* openssl
+  sudo yum install perl-IPC-cmd
+  git clone https://github.com/openssl/openssl.git
+  cd openssl/
+  git checkout OpenSSL_1_1_1l
+
+  ./config --prefix=$HOME/.local/opt/openssl-1.1.1l no-hw no-asm no-zlib
+  make -j14
+  make install
+
+* fmt
+  git clone  https://github.com/fmtlib/fmt.git
+  cd fmt
+  git tag --list
+  git checkout 8.1.1
+
+  mkdir build 
+  cd build/
+  cmake ..
+  
+  cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1
+  make -j14
+  make install
+
+* xerces-c 
+  tar xf xerces-c-3.2.1.tar.gz
+  cd xerces-c-3.2.1/
+  
+  ./configure --prefix $HOME/.local/opt/xerces-c-3.2.1 --disable-network --enable-transcoder-iconv
+  make -j14
+  make install
+
+* xml-security-c
+  tar xf xml-security-c-2.0.2.tar.bz2 
+  cd xml-security-c-2.0.2
+
+  PKG_CONFIG_LIBDIR=$HOME/.local/opt/openssl-1.1.1l/lib/pkgconfig:$HOME/.local/opt/xerces-c-3.2.1/lib/pkgconfig ./configure --prefix=$HOME/.local/opt/xml-security-c-2.0.2 --without-xalan --disable-xkms
+  make -j14
+  make install
+
+
+/************************************************************/
+/*                 devenv.sh                                */
+/************************************************************/
+#!/usr/bin/bash
+QBS_EXTRA_SYSTEM_INCLUDES_ARR=()
+QBS_EXTRA_SYSTEM_INCLUDES_ARR+=($HOME/.local/opt/boost-1.78.0/include)
+QBS_EXTRA_SYSTEM_INCLUDES_ARR+=($HOME/.local/opt/openssl-1.1.1l/include)
+QBS_EXTRA_SYSTEM_INCLUDES_ARR+=($HOME/.local/opt/fmt-8.1.1/include)
+QBS_EXTRA_SYSTEM_INCLUDES_ARR+=($HOME/.local/opt/xerces-c-3.2.1/include)
+QBS_EXTRA_SYSTEM_INCLUDES_ARR+=($HOME/.local/opt/xml-security-c-2.0.2/include)
+
+QBS_EXTRA_LIBPATH_ARR=()
+QBS_EXTRA_LIBPATH_ARR+=($HOME/.local/opt/boost-1.78.0/lib)
+QBS_EXTRA_LIBPATH_ARR+=($HOME/.local/opt/openssl-1.1.1l/lib)
+QBS_EXTRA_LIBPATH_ARR+=($HOME/.local/opt/fmt-8.1.1/lib64)
+QBS_EXTRA_LIBPATH_ARR+=($HOME/.local/opt/xerces-c-3.2.1/lib)
+QBS_EXTRA_LIBPATH_ARR+=($HOME/.local/opt/xml-security-c-2.0.2/lib)
+
+QBS_EXTRA_SYSTEM_INCLUDES=$(IFS=: ; echo "${QBS_EXTRA_SYSTEM_INCLUDES_ARR[*]}")
+QBS_EXTRA_LIBPATH=$(IFS=: ; echo "${QBS_EXTRA_LIBPATH_ARR[*]}")
+
+
+
+PATH=$HOME/.local/opt/gcc-11.1.0/bin:$PATH
+PATH=$HOME/.local/opt/qt-5.15.1/bin:$PATH
+PATH=$HOME/.local/opt/qbs-1.21.0/bin:$PATH
+PATH=$HOME/.local/opt/cmake-3.22.2/bin:$PATH
+
+LD_LIBRARY_PATH=$HOME/.local/opt/gcc-11.1.0/lib64
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$QBS_EXTRA_LIBPATH
+
+
+export QBS_EXTRA_SYSTEM_INCLUDES
+export QBS_EXTRA_LIBPATH
+export LD_LIBRARY_PATH
