@@ -7,14 +7,14 @@ linux   - $HOME/.config/QtProject/qtcreator
           .../styles
           .../codestyles/{Cpp,QmlJS}
 
-скопировать в эти папки(создать если отсутсвуют) соотвествющие файлы и Qt Creator автоматически их увидет.
+скопировать в эти папки(создать если отсутствуют) соответствующие файлы и Qt Creator автоматически их увидет.
 
-Некоторые полезные настройки Qt creator'а, котороые не включены по-умолчанию:
+Некоторые полезные настройки Qt creator'а, которые не включены по-умолчанию:
 Tools -> Options -> Environment:
   Interface:
     Language:  English
     Theme:     Dark
-    High Dpi Scaling: false # это то же самое как если включить QT_AUTO_SCREEN_SCALE_FACTOR - автоматическиое масштабирование, после рисования, плохое
+    High Dpi Scaling: false # это то же самое как если включить QT_AUTO_SCREEN_SCALE_FACTOR - автоматическое масштабирование, после рисования, плохое
 
   MIME Types:
     тут можно настроить расширения и ассоциации text/x-c++hdr, Patterns: add *.hqt
@@ -78,7 +78,8 @@ those in $HOME override ones from /usr/share
 /*********************************************************************
 /*             Qt Creator Clang Code Model Related
 /*********************************************************************
-Currently clang code model has some bugs for supporting c++17, luckily there are workaroung, see qt bug reports
+obsolete, not actual anymore 
+Currently clang code model has some bugs for supporting c++17, luckily there are workaround, see qt bug reports
 https://bugreports.qt.io/browse/QTCREATORBUG-20884
 https://bugreports.qt.io/browse/QTCREATORBUG-20702
 https://bugreports.qt.io/browse/QTCREATORBUG-19348
@@ -99,7 +100,12 @@ echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 по идее можно что-то куда-то прописать что бы эта настройка стала персистентной, вроде как:
 /etc/sysctl.d/10-ptrace.conf: kernel.yama.ptrace_scope = 0 # именно 0
 
-что бы уметь поключаться к уже запущенному процессу с помощью gdb 
+что бы уметь подключаться к уже запущенному процессу с помощью gdb 
+
+GDB по-умолчанию использует некоторые сигналы для своих нужд. Так sigint приводит к паузе в отладке, но само приложение sigint не получит.
+Это можно обойти командой для GDB - handle SIGINT nostop pass
+Вводить ее нужно в Tools->Options->Debugger, вкладка GDB -> "Additional startup commands"
+
 
 /*********************************************************************
 /*             Qt Creator Spell Checker
@@ -139,7 +145,7 @@ qbs build   config:release modules.cpp.cxxFlags:-fdiagnostics-color --command-ec
 /*********************************************************************
 /*             windows specific
 /*********************************************************************
-Что бы имть нормальный англоязычный вывод в консоль от msvc, а не кракозябры - нужно установить английский языковой пакет для Visual Studio
+Что бы иметь нормальный англоязычный вывод в консоль от msvc, а не кракозябры - нужно установить английский языковой пакет для Visual Studio
 далее в настройках qtcreator'а - Tools -> Options -> Kits -> Some msvc kit -> Force UTF-8 MSVC compiler output
 
 Так же стоит прописать пути к thirdparty библиотекам:

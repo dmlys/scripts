@@ -23,8 +23,8 @@
 
 
 linux примеры:
-  #debug   ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -debug   -no-optimize-debug -gdb-index -developer-build -c++std c++17 -nomake tests -nomake examples
-  #release ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -release -force-debug-info  -gdb-index                  -c++std c++17 -nomake tests -nomake examples
+  #debug   ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -debug   -no-optimize-debug -developer-build -c++std c++17 -nomake tests -nomake examples
+  #release ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -release -force-debug-info                   -c++std c++17 -nomake tests -nomake examples
 
 linux-mingw примеры:
   cd qtbase - to build only qtbase modules(qt5core, qt5gui, etc)

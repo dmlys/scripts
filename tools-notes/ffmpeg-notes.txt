@@ -80,8 +80,8 @@ Sony Bravia KDL-42W705B.xml
 		
 		showrgx=The.Show.S([[:digit:]]*)E([[:digit:]]*)\.(.*)\.1080p.*mkv
 		if [[ $file =~ $showrgx ]]; then
-			season=${BASH_REMATCH[1]}
-			episode=${BASH_REMATCH[2]}
+			season=`printf %02d $(( 10#${BASH_REMATCH[1]} ))`
+			episode=`printf %02d $(( 10#${BASH_REMATCH[2]} ))`
 			title=`tr . ' ' <<< "${BASH_REMATCH[3]}"`
 		
 			output="/data-store/mmedia/tmp/tv-shows/The Show (Season 4)/The Show.S04E$ep.$title.mkv"

@@ -6,6 +6,8 @@ http://insanecoding.blogspot.com/2012/07/creating-portable-linux-binaries.html
   -static-libstdc++ -static-libgcc
   
   c помощью readelf смотрим версию GLIBC а так же смотрим ее на целевых машинах
-  readelf --dyn-sym $bin | grep -o -P 'GLIBC_[^\s]*' | sort -u
+  readelf --dyn-sym $bin                  | grep --only-matching --perl-regexp 'GLIBC_[^\s()]*' | sort --unique --version-sort
+  objdump --dynamic-syms --demangle  $bin | grep --only-matching --perl-regexp 'GLIBC_[^\s()]*' | sort --unique --version-sort
+  
   
   смотрим какие функции не вписываются и далее с помощьюе .symver и --wrap трюка линкуем с более старой версией
