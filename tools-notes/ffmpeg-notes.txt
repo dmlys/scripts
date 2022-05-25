@@ -58,6 +58,16 @@ Sony Bravia KDL-42W705B.xml
 		-filter:a:2 volume=2 -c:a ac3 \
 		-metadata title="Солярис" -metadata:s:a:0 language=rus -metadata:s:a:1 language=rus
 
+	# или сразу cat'инг на лету
+	ffmpeg -analyzeduration 3000M -probesize 3000M \
+		-y -i <(cat /data-store/tmp/House\ On\ Haunted\ Hill\ \(DVD5\)/VIDEO_TS/*.VOB) -dn -map 0 \
+		-c copy -c:v libx264 -crf 17 -preset slow -tune film -profile:v high -level 4.1 -max_muxing_queue_size 300000 \
+		-filter:a:2 volume=2 -c:a ac3 -metadata title="House On Haunted Hill" \
+		/data-store/tmp/output.mkv
+
+	Too many packets buffered for output stream 
+	add -max_muxing_queue_size 300000 after conversion flags
+
 
 	Can't write packet with unknown timestamp - ffmpeg -fflags +genpts ...
 	# порядок важен genpts нужно передавать вначале
@@ -74,17 +84,20 @@ Sony Bravia KDL-42W705B.xml
 	#with bash
 	#!/usr/bin/bash
 
-	for ep in {01..10}; do
-		input=(/data-store/Torrents/The.Show.S04.1080p.WEBRip.Rus.Eng/The.Show.S04E$ep.*.mkv)
+	#for ep in {01..10}; do
+		#input=(/data-store/Torrents/The.Show.S04.1080p.WEBRip.Rus.Eng/The.Show.S04E$ep.*.mkv)
+	for input in /data-store/Torrents/The.Show.S04.1080p.WEBRip.Rus.Eng/*.mkv; do
 		file=`basename "$input"`
 		
-		showrgx=The.Show.S([[:digit:]]*)E([[:digit:]]*)\.(.*)\.1080p.*mkv
+		showrgx="The.Show.S([[:digit:]]*)E([[:digit:]]*)\.(.*)\.1080p.*mkv"
 		if [[ $file =~ $showrgx ]]; then
 			season=`printf %02d $(( 10#${BASH_REMATCH[1]} ))`
 			episode=`printf %02d $(( 10#${BASH_REMATCH[2]} ))`
 			title=`tr . ' ' <<< "${BASH_REMATCH[3]}"`
 		
-			output="/data-store/mmedia/tmp/tv-shows/The Show (Season 4)/The Show.S04E$ep.$title.mkv"
+			output="/data-store/mmedia/tmp/tv-shows/The Show (Season 4)/The Show.S${season}E${episode}"
+			if [[ -n $title ]]; then output="$output.$title"; fi
+			output="$output.mkv"
 			tmp=/data-store/tmp/output.mkv
 		
 			# change ext optionally
