@@ -1,0 +1,45 @@
+--- xsec/enc/WinCAPI/WinCAPICryptoKeyRSA.cpp	2018-06-18 17:48:29.000000000 +0300
++++ xsec/enc/WinCAPI/WinCAPICryptoKeyRSA.cpp.new	2022-07-07 23:43:50.555375800 +0300
+@@ -258,11 +258,20 @@ bool WinCAPICryptoKeyRSA::verifySHA1PKCS
+         alg = CALG_MD5;
+         break;
+     case (XSECCryptoHash::HASH_SHA1):
+-        alg=CALG_SHA1;
++        alg = CALG_SHA1;
+         break;
++	case (XSECCryptoHash::HASH_SHA256):
++		alg = CALG_SHA_256;
++		break;
++	case (XSECCryptoHash::HASH_SHA384):
++		alg = CALG_SHA_384;
++		break;
++	case (XSECCryptoHash::HASH_SHA512):
++		alg = CALG_SHA_512;
++		break;
+     default:
+         throw XSECCryptoException(XSECCryptoException::RSAError,
+-            "WinCAPI:RSA Unsupported hash algorithm for RSA sign - only MD5 or SHA1 supported");
++            "WinCAPI:RSA Unsupported hash algorithm for RSA sign - only MD5, SHA1, SHA-256, SHA-384, SHA-512 supported");
+     }
+ 
+     // Decode the signature
+@@ -373,9 +382,18 @@ unsigned int WinCAPICryptoKeyRSA::signSH
+     case (XSECCryptoHash::HASH_SHA1):
+         alg = CALG_SHA1;
+         break;
++	case (XSECCryptoHash::HASH_SHA256):
++		alg = CALG_SHA_256;
++		break;
++	case (XSECCryptoHash::HASH_SHA384):
++		alg = CALG_SHA_384;
++		break;
++	case (XSECCryptoHash::HASH_SHA512):
++		alg = CALG_SHA_512;
++		break;
+     default:
+         throw XSECCryptoException(XSECCryptoException::RSAError,
+-            "WinCAPI:RSA Unsupported hash algorithm for RSA sign - only MD5 or SHA1 supported");
++            "WinCAPI:RSA Unsupported hash algorithm for RSA sign - only MD5, SHA1, SHA-256, SHA-384, SHA-512 supported");
+     }
+ 
+     // Have to create a Windows hash object and feed in the hash
