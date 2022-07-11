@@ -134,8 +134,8 @@ qbs config defaultProfile  qt-0-0-0-bin
 
 qbs help build/...
 qbs config preferences.defaultBuildDirectory bin
-qbs build config:debug --command-echo-mode command-line
 
+qbs build config:debug --command-echo-mode command-line
 qbs build config:debug profile:qt-5-11-1
 
 qbs resolve config:release modules.cpp.cxxFlags:-fdiagnostics-color
@@ -152,3 +152,37 @@ qbs build   config:release modules.cpp.cxxFlags:-fdiagnostics-color --command-ec
 Tools -> Options -> Kits -> Some msvc kit -> Additional Qbs Profile Settings: 
 cpp.libraryPaths -> path(s)
 cpp.systemIncludePaths -> path(s)
+
+
+/*********************************************************************
+/*             сборка qbs на windows из исходников
+/*********************************************************************
+https://doc-snapshots.qt.io/qbs-master/building-qbs.html
+Просто скачать архив с исходниками не получится. Для сборки нужен git submodule, который не идет в комплекте - проще выкачать git'ом:
+  git clone https://github.com/qbs/qbs.git
+
+требуется python и 2 библиотеки для него: beautifulsoup4 lxml
+легко установить с помощью pip: pip install beautifulsoup4 lxml
+
+И конечно требуется собранный QT.
+cmake'ом не получилось - qtscript как-то странно обрабатывается, и такое ощущение что тут есть какая-о ошибка в cmake скриптах и сборка не проходит
+qmake - собирает успешно, но есть нюансы:
+ На практике собрать с qt only release static-link + static-runtime не получилось, скорее всего из-за only release.
+ Сборка с debug-and-release dynamic-link + dynamic runtime прошла без каких-то либо проблем
+
+qmake -r qbs.pro
+nmake
+nmake install INSTALL_ROOT=C:\Projects\thirdparty\qbs-v1.22.1 
+
+настраиваем qbs:
+  qbs setup-toolchains --detect
+  qbs config profiles.MSVC2019-x64.cpp.libraryPaths: "Projects\thirdparty\vc142-x64\lib"
+  qbs config profiles.MSVC2019-x64.cpp.systemIncludePaths: "Projects\thirdparty\vc142-x64\include"
+
+  qbs setup-qt "C:\Projects\thirdparty\qt-5.15.1-vc142-x64\bin\qmake.exe" qt-5-15-1-static
+  qbs config profiles.qt-5-15-1-static.baseProfile MSVC2019-x64
+
+  qbs config defaultProfile  qt-5-15-1-static
+  qbs config preferences.defaultBuildDirectory bin
+
+Готово к использованию
