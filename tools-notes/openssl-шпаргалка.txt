@@ -97,8 +97,9 @@
   openssl verify -x509_strict -trusted root.pem -untrusted intermediate.pem -nameopt utf8   cert-to-verify.pem
 
  cms:
-  openssl cms -verify -in signature.der -inform DER -cmsout -print -noout                    # напечатает информацию о подписи
-  openssl cms -verify -in signature.der -inform DER -CAfile <(cat intermediate.pem root.pem) # выдаст на stdout content + прошло/не прошло проверку
+  openssl cms -verify -in signature.der -inform DER -cmsout -print -noout                                   # напечатает информацию о подписи
+  openssl cms -verify -in signature.der -inform DER -CAfile <(cat intermediate.pem root.pem)                # выдаст на stdout content + прошло/не прошло проверку
+  openssl cms -verify -in signature.der -inform DER -noverify -certfile CORICIABAWEB.pem -content data.txt  # detached signature, with external cert and data, -noverify for not verifing cert against CA
   # utf8 для сертификатов - хз как включить, похоже что нельзя
 
 
