@@ -65,3 +65,4 @@ ssh -6 "fe02::...:...:...%dev"
 rsync/scp  file   user@"[fe02::..:...%dev]"
 # devices can be transfered
 ssh user@addr%dev "cat > out-path" < in-path
+sudo dd if=/dev/sde status=progress bs=8M | xz | ssh -T host 'cat > out-path.iso.xz'
