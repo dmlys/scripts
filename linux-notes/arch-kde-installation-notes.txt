@@ -198,8 +198,19 @@ ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
 [Install]
 WantedBy=default.target
 
+#Более не работает, контролируется опцией user_readenv, которая по умолчанию = 0.
+#Более того from man 8 pam_env:
+#       user_readenv=0|1
+#          Turns on or off the reading of the user specific environment file. 0 is off, 1 is on.
+#          By default this option is off as user supplied environment variables in the PAM environment could affect
+#          behavior of subsequent modules in the stack without the consent of the system administrator.
+#
+#          Due to problematic security this functionality is deprecated since the 1.5.0 version and will be removed completely at some point in the future.
 ~/.pam_environment:
 SSH_AUTH_SOCK DEFAULT="${XDG_RUNTIME_DIR}/ssh-agent.socket"
+
+~/.profile:
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
 
 /***********************************************************************
 /* tearing

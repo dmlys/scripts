@@ -146,3 +146,6 @@ fi
 
 [[ -f ~/.bash_local ]] && source ~/.bash_local
 
+# ========================================================
+# ssh-agent
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
