@@ -11,13 +11,13 @@
 ##      In practice, for example, your shared library will export OpenSSL symbols and actually act like OpenSSL shared library sorta provider, 
 ##      potentially conflicting with OpenSSL own libraries bound by libcrypt, libssl, which could lead to nasty things, like crashes.
 ##   
-##   2. All visible symbols will be exported - included into shared library.
-##      If your shared library uses only several symbols from static library and in any way depends on other - those can be removed/dropped and not included into resulting shared library.
+##   2. All visible symbols will be exported and included into target/resulting shared library.
+##      If your shared library uses only several symbols from static library and in no way depends on other symbols - those can be removed/dropped and not included into resulting shared library.
 ##      But because they all are visible, they all must be included, non will be dropped - shared library includes all code from static library and become fatter, potentially much fatter.
 ## 
 ## Summary: When creating shared library, all code, including code from static libraries, must be compiled with -fPIC.
-##          Highly desirable that all code, including code from static libraries, have to be compiled with -fvisibility=hidden (and -fvisibility-inlines-hidden)
-##          Please not that if exceptions be caught across shared libraries boundaries - they must be visible. Read: https://gcc.gnu.org/wiki/Visibility#Problems_with_C.2B-.2B-_exceptions_.28please_read.21.29
+##          Highly desirable that all code, including code from static libraries, have to be compiled with -fvisibility=hidden (and -fvisibility-inlines-hidden).
+##          Please note that if exceptions be caught across shared libraries boundaries - they must be visible. Read: https://gcc.gnu.org/wiki/Visibility#Problems_with_C.2B-.2B-_exceptions_.28please_read.21.29.
 ## 
 ##
 ## Note: Exported symbols from shared library can be controlled via version script, sort of like msvc .def files
@@ -27,7 +27,7 @@
 ##             local: *;
 ##         };
 ##
-##    This will add to export table only symbols symbols and those starting with symbol_with_wild_card.
+##    This will add to export table only 'symbol' symbols and those starting with 'symbol_with_wild_card'.
 ##    All other, including foreign from other static libraries with visibility=default will not be exported.
 ##    They still will be included, even if not used, but at least they will not conflict with symbols from other shared libraries
 ##
@@ -54,7 +54,8 @@
 ###########################################################################
 ##                         libfmt
 ###########################################################################
-## fmt can be built with cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 by default, but if static library is inteded to be used for building another shared library, it must be compiled with -fPIC(linux/unix requirements)
+## fmt can be built with cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 by default,
+## but if static library is inteded to be used for building another shared library, it must be compiled with -fPIC(linux/unix requirements)
 cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 -DBUILD_SHARED_LIBS=OFF  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
 ## It is also good idea to compile with -fvisibility=hidden, and with cmake those flags can by turn on globally(probably) with: -DCMAKE_CXX_VISIBILITY_PRESET=ON -DCMAKE_VISIBILITY_INLINES_HIDDEN=ON 
