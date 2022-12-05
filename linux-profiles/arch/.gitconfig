@@ -3,12 +3,11 @@
 	email = xdemonx07@gmail.com
 [push]
 	default = simple
-
+[pull]
+	ff = only
 [core]
 	pager = less -F
 	quotepath = false
-[pull]
-	ff = only
 [diff]
 	tool = kompare
 [url "https://aur.archlinux.org/"]
