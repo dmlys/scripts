@@ -11,3 +11,6 @@ stty -echoctl
 alias sqlplus='rlwrap -c sqlplus '
 
 [[ -f ~/.conan-bashcompletion ]] && source ~/.conan-bashcompletion
+
+function hex   { perl -e 'print unpack "H*", $_ for @ARGV' "$@"; }
+function unhex { perl -e 'print   pack "H*", $_ for @ARGV' "$@"; }
