@@ -1,6 +1,6 @@
 setlocal
 rem xercesc helper build script 
-set version=3.2.1
+set version=3.2.3
 set vcver=v141
 set vcvars=vc141vars
 

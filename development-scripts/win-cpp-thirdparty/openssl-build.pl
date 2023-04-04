@@ -11,7 +11,7 @@ $src_dir = '.';
 
 $vcvars = 'vc142vars';
 $vcver  = '142';
-$openssl_ver = 'openssl-1.1.1l';
+$openssl_ver = 'openssl-1.1.1t';
 $config_opts = 'no-hw no-shared no-asm no-zlib';
 
 %env_x86 = read_env("$vcvars x86");

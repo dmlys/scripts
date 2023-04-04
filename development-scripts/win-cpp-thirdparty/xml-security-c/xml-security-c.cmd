@@ -1,6 +1,6 @@
 setlocal
 rem xml-security-c helper build script 
-set version=2.0.2
+set version=2.0.4
 set vcver=v142
 set vcvars=vc142vars
 set libname=xml-security
@@ -27,7 +27,7 @@ rem /Gm- - disables minimal rebuild
 rem /EHsc - enable ++ excecptions
 rem /GS - buffer ovverun cheks
 rem /Od - disbale optimizations
-set thirdparty_include=C:\Projects\thirdparty\vc14.2-%2\include
+set thirdparty_include=C:\Projects\thirdparty\vc142-%2\include
 set RELEASE_CPPFLAGS=/EHsc /Z7 /Gm- /O2      /Gm-   /I . /I %thirdparty_include%
 set   DEBUG_CPPFLAGS=/EHsc /Z7 /Gm- /Od /Oy- /GS    /I . /I %thirdparty_include%
 set RELEASE_DEFINES=/D NDEBUG /D WIN32 /D _WIN32_WINNT=0x0A00 /D _SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE                      /D XSEC_BUILDING_LIBRARY /D XSEC_HAVE_OPENSSL /D XSEC_HAVE_WINCAPI

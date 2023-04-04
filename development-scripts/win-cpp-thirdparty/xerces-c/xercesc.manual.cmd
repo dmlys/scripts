@@ -5,7 +5,7 @@ set version=3.2.3
 set vcver=v142
 set vcvars=vc142vars
 set libname=xercesc
-rem set thirdparty_include=C:\Projects\thirdparty\vc14.1-x64\include
+rem set thirdparty_include=C:\Projects\thirdparty\vc142-x64\include
 
 REM !!!!! IMPORTANT !!!!!
 REM NOTE FOR DLL, in client code you should define XERCES_DLL_EXPORT, but not XERCES_BUILDING_LIBRARY

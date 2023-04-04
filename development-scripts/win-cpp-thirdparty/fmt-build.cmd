@@ -2,7 +2,7 @@ setlocal
 rem fmt build
 set source_dir=src
 set libname=fmt
-set version=7.1.3
+set version=9.1.0
 set vcver=vc142
 set vcvars=vc142vars
 
@@ -60,7 +60,7 @@ goto :eof
 
 
 :build_lib
-cl /c %FLAGS% %source_dir%\*.cc /Fobuild\
+cl /c %FLAGS% %source_dir%\format.cc %source_dir%\os.cc /Fobuild\
 lib %LIB_FLAGS%   build\*.obj -out:lib\%1
 del build\* /q
 goto :eof
