@@ -176,8 +176,8 @@ nmake install INSTALL_ROOT=C:\Projects\thirdparty\qbs-v1.22.1
 
 настраиваем qbs:
   qbs setup-toolchains --detect
-  qbs config profiles.MSVC2019-x64.cpp.libraryPaths: "Projects\thirdparty\vc142-x64\lib"
-  qbs config profiles.MSVC2019-x64.cpp.systemIncludePaths: "Projects\thirdparty\vc142-x64\include"
+  qbs config profiles.MSVC2019-x64.cpp.libraryPaths "Projects\thirdparty\vc142-x64\lib"
+  qbs config profiles.MSVC2019-x64.cpp.systemIncludePaths "Projects\thirdparty\vc142-x64\include"
 
   qbs setup-qt "C:\Projects\thirdparty\qt-5.15.1-vc142-x64\bin\qmake.exe" qt-5-15-1-static
   qbs config profiles.qt-5-15-1-static.baseProfile MSVC2019-x64
