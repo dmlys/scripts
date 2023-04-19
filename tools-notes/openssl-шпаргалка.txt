@@ -69,6 +69,9 @@
 
 
 Некоторый полезные команды OpenSSL:
+ openssl version -a #выдаст версию и прочую полезную информацию о сборке OpenSSL в том числе пути к файлам конфигурации
+
+
  Закрытый ключ получаемый из OpenSSH можно использовать как есть в OpenSSL:
   	openssl pkeyutl -decrypt -inkey .ssh/id_rsa
   публичный ключ можно получить:
@@ -169,6 +172,12 @@
     # -CAkey  - CA сертификат
     # -CAcreateserial - у всех сертификатов должен быть уникальный в рамках CA серийный номер, этот параметр создает новый файл с отслеживаемым серийником(ca-cert.srl)
     # -extfile        - задает файл с v3 расширениями сертификата
+
+ Сертификат и ключ для подписи exe с помощью signtool:
+   # Нужен сертификат с EKU(extendedKeyUsage) codeSigning(1.3.6.1.5.5.7.3.3). 
+   # Для этого нужно добавить -addext extendedKeyUsage=codeSigning. Все остальное аналогично.
+   # Пример cамоподписанный сертификат:
+   openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout signapp-key.pem -out signapp-cert.pem -days 365 -addext extendedKeyUsage=codeSigning
 
 
 JAVA keystore интеграция:
