@@ -19,6 +19,7 @@
   <style name="Number" foreground="#b5cea8"/>
   <style name="String" foreground="#d69d85"/>
   <style name="Type" foreground="#ffd700"/>
+  <style name="Namespace" foreground="#ffd700"/>
   <style name="Local" foreground="#bdb76b"/>
   <style name="Parameter" foreground="#bdb76b"/>
   <style name="Global" foreground="#bdb76b"/>
@@ -32,6 +33,7 @@
   <style name="Overloaded Operator"/>
   <style name="Punctuation"/>
   <style name="Preprocessor" foreground="#9b9b9b"/>
+  <style name="Macro" foreground="#9b9b9b"/>
   <style name="Label" foreground="#dcdcdc"/>
   <style name="Comment" foreground="#57a64a"/>
   <style name="Doxygen.Comment" foreground="#57a64a"/>

@@ -35,13 +35,14 @@ Tools -> Options -> Text Editor:
     Enable Text wrapping: false
     Display Line Numbers: true
     Display file encoding: true
+    Visualize Ident: false
     
 
 Tools -> Options -> C++:
   Code Style: My C++ Style # тут же настройка табов
   File Naming:
     Headers -> Suffix: hpp
-	Use "#pragma once" instead of "#ifdef" guards
+    Use "#pragma once" instead of "#ifdef" guards
   Code Model: Создать новую
     -Wall -Wextra -Wno-unused-parameter -Wsuggest-override
 
