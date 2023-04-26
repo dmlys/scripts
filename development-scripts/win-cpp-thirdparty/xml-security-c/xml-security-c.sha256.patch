@@ -1,3 +1,4 @@
+# patch -p1 < xml-security-c.sha256.patch
 --- xml-security-c-2.0.4-orig/xsec/enc/WinCAPI/WinCAPICryptoKeyRSA.cpp	2018-06-18 17:48:29.000000000 +0300
 +++ xml-security-c-2.0.4/xsec/enc/WinCAPI/WinCAPICryptoKeyRSA.cpp	2022-08-25 19:07:36.752935659 +0300
 @@ -258,11 +258,20 @@
