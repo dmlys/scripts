@@ -13,3 +13,6 @@ to make completion available on interactive, but no login shell
 ssh-agent:
 install procps packet for pgrep utility
 call launch-ssh-agent function(put it into .bashrc for autostart), defined in .bash_functions
+
+packets to install:
+  procps dos2unix colordiff git bash_completion
