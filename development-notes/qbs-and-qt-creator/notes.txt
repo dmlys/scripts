@@ -43,7 +43,18 @@ Tools -> Options -> C++:
   File Naming:
     Headers -> Suffix: hpp
     Use "#pragma once" instead of "#ifdef" guards
-  Code Model: Создать новую
+
+  !!! WARN: Начиная с версии 10, для форматирования прикрутили clang-format(clangd)
+     Там тьма настроек и не очень понятно как это все настраивать(нужно курить маны)
+     К тому же по-умолчанию все форматируется строго пробелами. И немного не так.
+     Старые настройки игнорируются пока включен clang-format - выключить его
+  Code Style: ClangFormat settnigs:
+    Formatting mode: Disable
+
+  И может быть нужно добавить аттрибут файлу с code style'ом(My C++ Style) read-only/immutable: sudo chattr +i My-C++-Style.xml
+  Иначе 10 версия qt creator как-то портит перезатирает настройки, возможно это связано как-то clang-format, а может просто баг
+
+  Code Model: Создать новую(в новых версиях{> 4/6} это отсутствует, новое место пока не нашел)
     -Wall -Wextra -Wno-unused-parameter -Wsuggest-override
 
 
