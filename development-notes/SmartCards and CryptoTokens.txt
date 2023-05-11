@@ -1,0 +1,120 @@
+Smart Cards(смарт карты):
+    https://ru.wikipedia.org/wiki/Смарт-карта           https://en.wikipedia.org/wiki/Smart_card
+
+    Пластиковые карты со встроенной микросхемой (англ. integrated circuit card, ICC — карта со встроенными электронными цепями).
+    В большинстве случаев смарт-карты содержат микропроцессор и операционную систему, управляющую устройством и контролирующую доступ к объектам в его памяти.
+    Кроме того, смарт-карты, как правило, обладают возможностью проводить криптографические вычисления. 
+
+    Важно отметить что карта как правило не имеет батареи или какого-то источника питания.
+    Взаимодействие с картой происходит с помощью card reader'а.
+      При взаимодействии/считывание ридер подает питание на контакты карты.
+      В случае бесконтактных карт - взаимодействие происходит с помощью технологии RFID. В данном случае энергии подается с помощью индукционной катушки(в любом случае от радиоволн считывателя).
+
+    SIM карты, банковские карты, USB крипто-токены, карты для транспорта, карты лояльности - в общем-то все смарт-карты(возможности впрочем могут отличаться).
+    USB крипто-токены - сочетают сразу Smart Cards с считывателем в одном корпусе для удобства.
+
+  https://github.com/kalamangga-net/Linux-HOWTOs/blob/master/Smart-Card-HOWTO: 
+    Тут тоже интересно: 3.2. Memory vs Microprocessor
+
+
+PC/SC(Personal Computer/Smart Card): https://ru.wikipedia.org/wiki/PC/SC
+    Из Википедии: Проект возник из желания Microsoft выйти на рынок операционных систем для смарткарт с проектом Smart Card for Windows.
+     Проект предполагал глубокую интеграцию технологий смарткарт в ОС Windows и выпуск на рынок собственной ОС смарткарт с поддержкой языка Basic (в пику MULTOS и JavaCard).
+     Однако ОС для смарткарт так и не появилась, от проекта остались только программный интерфейс и мощная поддержка технологий смарткарт в Windows.
+     Спецификации оказались удачными и впоследствии были портированы на не-Windows платформы.
+
+    https://alt.technology.smartcards.narkive.com/madWD9zx/pkcs-11-pc-sc-and-microsoft-csp   https://narkive.com/madWD9zx
+       pc/sc is very low level. i.e. "here is a command, send it to that card."
+       also includes functions like "what readers are there?" and "is there a card in the reader", lock/unlock etc.
+
+       pkcs#11 is very high level, i.e. "list all tokens" or "please use that token and that key to sign this data with that padding".
+
+    В целом PC/SC это API и подсистема для очень низкоуровневой работы со Smart Cards.
+    Если я правильно понимаю это такой middleware(посерединке) который скрывает совсем уж low-level и дает некую абстракцию.    
+    Тем не менее тут нет высокоуровневого API. Можно получить список карт, "подключится" к карте, послать какие-то специфические команды. 
+    Но функций сделать подпись или получить список ключей - тут нет.
+
+    Если я правильно понимаю за PC/SC скрыт драйвер card reader'а(он нужен, но им управляет подсистема PC/SC). Но специфика работы с картой частично на совести клиента PC/SC апи.
+    Т.е. своего рода именно драйвер smart card'ы пишеться с помощью PC/SC(в рамках PC/SC и windows, есть и другие альтернативы PC/SC).
+    ??? Хотя возможно часть работы с картой так же внутри PC/SC. Тут не уверен, грань может быть размыта. ???
+
+    Если я правильно понимаю PC/SC дает низко-средне-уровневый интерфейс работы с картами.
+    Какие ключи, их формат, возможно поддерживаемые команды, и некоторые другие особенности на совести поставщика карты памяти, и он должен предоставить драйвер поверх PC/SC.
+    В теории это описывает ISO 7816, но, как я понял, он тут допускает много вольностей и в итоге кто во что гаразд. 
+
+    Наверное можно провести аналогию с сокетами: за интерфейсом сокетов скрыты вся работы с железом, протоколы TCP/IP(или другие). Но дальше с принимающей стороной ты общается байтами, и строишь протокол следующего уровня. Т.е. за PC/SC 1-5 пятые уровни модели ISO(Physical - Session), а вот Presentation/Application уже поверх PC/SC и работа собственно со smart картой и ее OS находятся тут.
+
+    Как итог: такие высокоуровневые операции(относительно Smart Card'ы) как запись нового ключа, использование ключа для криптографических операций,
+              логин с помощью пин кода, перечисление ключей реализуется поставщиком смарт карты c использованием PC/SC в своем проприетарном приложении
+              (в теории другие приложения могли бы работать с этой смарт картой - удачи получить им спеки).
+              Опционально, в случае windows, такой поставщик так же поставляет драйвер для WinCrypto(HPROV и прочее) что бы можно было работать с ключом единообразно.
+
+      Т.е. мало лишь драйвера для работы с card reader'ом(часть PC/SC) - нужна абстракция скрывающая особенности работы с картой, а это уже PKCS11 по идее.
+
+PCSC-lite: https://pcsclite.apdu.fr (pacman --sync --needed pcsclite)
+    Это реализация PC/SC для linux/unix. Вообще PC/SC стандартизирован, официальный сайт www.pcscworkgroup.com
+    Состоит из:
+       демона pcscd;
+       библиотеки реализующей PC/SC API(SCardConnect и прочее), которая в том числе обращается к демону pcscd;
+       драйвера card reader'ов, которые устанавливаются обычно в /usr/lib/pcsc/drivers/
+    man 8 pcscd
+
+CT-API: https://www.smartcardfocus.com/ilp/id~9/p/standards.shtml
+    The CT-API specification provides a reader-independent means of interfacing software applications with smartcards.
+    CT-API was widely used within Germany and some other application areas, but has effectively been superceded by PC/SC and OpenCard interface methods.
+    Старый API скрывающий работу с reader'ами. Был замещен и вытеснен PC/SC.
+
+OpenCT: https://github.com/OpenSC/openct
+    Альтернатива PC/SC разрабатываемая OpenSC для самих себя же. Проще, легче, более Unix/Linux.
+    Скрывает детали работы с reader'ами.
+
+CCID: https://en.wikipedia.org/wiki/CCID_(protocol)
+    CCID (chip card interface device) protocol is a USB protocol that allows a smartcard to be connected to a computer via a card reader using a standard USB interface,
+    without the need for each manufacturer of smartcards to provide its own reader or protocol.
+
+
+PKCS #11(Public-Key Cryptography Standard 11): https://en.wikipedia.org/wiki/PKCS_11
+    PKCS#11 is a software API for accessing cryptographic hardware like smart cards or HSM. PKCS#11 is not a hardware standard or hardware interface.
+    Иногда называемый Cryptoki (от англ. cryptographic token interface) - стандарт описывает высокоуровневый интерфейс для использования, создания или генерации различных криптографических объектов.
+    В первую очередь RSA, DSA криптография, но наверное допустимы и другие совместимые GOST, elliptic curves, прочее.
+
+    Своего рода аналог MS-CAPI(WinCrypto API), только кросс-платформенный и PKCS.
+    Сам стандарт лишь описывает API. Реализация поставляется под конкретные токены, HSM, смарт карты поставщиками(читай PKCS11 драйверы).
+
+PKCS #15(Public-Key Cryptography Standard 15): https://ru.wikipedia.org/wiki/PKCS15
+    PKCS#15 is a format of on-card structures that defines a “filesystem layout” for smart cards. PKCS#15 does not define how those structures are generated or written to the card.
+    Определяет формат файла для хранения учетных данных пользователя (сертификаты, ключи) на криптографических токенах, таких как смарт-карты.
+
+
+OpenSC(Open Smart Card): https://github.com/OpenSC/OpenSC/wiki
+    OpenSC provides a set of libraries and utilities to work with smart cards.
+    Its main focus is on cards that support cryptographic operations, and facilitate their use in security applications such as authentication, mail encryption and digital signatures.
+    OpenSC implements the standard APIs to smart cards, e.g. PKCS#11 API, Windows’ Smart Card Minidriver and macOS CryptoTokenKit.
+
+    Это реализация PKCS #11 поверх PC/SC или OpenCT или CT-API. 
+    Плюс пачка вспомогательных утилит: pkcs11-tool, opensc-tool, opensc-explorer и прочие.
+    Плюс ряд вспомогательны карто-специфичных утилит: сardos-tool, dnie-tool, netkey-tool, etc.
+
+    Основной частью является /usr/lib/opensc-pkcs11.so - реализация PKCS #11
+
+    https://github.com/OpenSC/pkcs11-helper:
+     вспомогательная библиотека для облегчения работы с PKCS #11 со стороны приложений
+    https://github.com/OpenSC/libp11:
+        This code repository produces two libraries:
+          * libp11 provides a higher-level (compared to the PKCS#11 library) interface to access PKCS#11 objects. It is designed to integrate with applications that use OpenSSL.
+          * pkcs11 engine plugin for the OpenSSL library allows accessing PKCS#11 modules in a semi-transparent way.
+
+    opensc-tool --name #Identify the card and print its name
+
+    pkcs11-tool - utility for managing and using PKCS #11 security tokens.
+                  Тестовый клиент для PKCS #11
+
+    pkcs11-tool  --show-info --list-token-slots
+    pkcs11-tool  --show-info --list-token-slots --module=$PATH_TO_PKCS11_DRIVER_SO
+    pkcs11-tool  --sign --mechanism=RSA-PKCS-PSS --hash-algorithm=SHA256 --input-file=/tmp/sign.test  --pin=$PIN --module=$PKCS11_SO
+
+
+p11tool: GnuTLS PKCS #11 tool.
+	Утилита для работы с PKCS #11 от GNUTLS. Аналог pkcs11-tool, но проще(и местами похуже).
+	В /etc/pkcs11/modules/ нужно прописать реализации - смотри man 5 pkcs11.conf, man 1 p11tool
+
