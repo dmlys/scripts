@@ -1,0 +1,34 @@
+lsusb:
+ Bus 001 Device 013: ID 0529:0514 Aladdin Knowledge Systems eToken Pro v4.2.5.4
+
+OpenSC + OpenCT не смог увидеть и нормально работать с данным токеном.
+  /opt/opensc-openct/bin/opensc-tool --name
+    Using reader with a card: Aladdin eToken PRO
+    Failed to connect to card: Card command failed
+
+OpenSC + PCSC-lite из коробки в целом не умеет и не видит данный токен
+  opensc-tool --name
+   No smart card readers found.
+   Failed to connect to reader: No readers found
+
+в AUR можно найти драйвера. 
+sac-core-legacy: SafeNet Authentication Client (version 10.0 for old Alladin eToken support)
+(так же есть еще sac-core и sac-gui, но они токен не видят)
+
+Данный пакет (sac-core-legacy) качает debain пакет из https://installer.id.ee/media/etoken/older%20versions/SAC_10_0_Post_GA_Linux.zip
+Это некий муниципальный Эстонский сайт :) Фиг найдешь официальные источники для Aladdin драйверов
+
+Там внутри можно найти deb и rpm пакеты.
+В которых есть GUI часть для SafeNet Authentication Client, а еще есть драйверы: PKCS #11 и драйвер для PC/SC(aks-ifdh.bundle)
+
+с драйвером PC/SC(aks-ifdh.bundle) почему-то  не выходит:
+  opensc-tool --name
+    Using reader with a card: AKS ifdh 00 00
+    Failed to connect to card: Card command failed
+
+На драйвер PKCS #11 работает и даже подписывает(в рамках утилиты pkcs11-tool)
+  pkcs11-tool  --module=/usr/lib/sac-10.0/libeToken.so --show-info --list-token-slots
+  pkcs11-tool  --module=/usr/lib/sac-10.0/libeToken.so --sign --mechanism=RSA-PKCS-PSS --hash-algorithm=SHA256 --input-file=/tmp/sign.test
+
+Не понятно почему не работает aks-ifdh, но в целом PKCS #11 достаточно по идее
+К слову sac-core вообще качает архивчик с dropbox.com :)
