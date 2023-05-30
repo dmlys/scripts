@@ -38,23 +38,10 @@
 
 
 ###########################################################################
-##                         xerces-c
-###########################################################################
-## xerces-c for linux can be build like this
-./configure --prefix /home/dima/.local/opt/xerces-c-3.2.1 --disable-network --enable-transcoder-gcuiconv
-
-## but if static library is intended to be used for building another shared library, it should be built like this:
- CFLAGS="-fPIC -fvisibility=hidden" CXXFLAGS="-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" \
- ./configure --prefix /home/dima/.local/opt/xerces-c-3.2.1 --disable-network --enable-transcoder-gnuiconv --enable-shared=no
-
-## --with-pic=yes will enable -fPIC, but not -fvisibility, so better use variant above
-# ./configure --prefix /home/dima/.local/opt/xerces-c-3.2.1 --disable-network --enable-transcoder-gnuiconv --enable-shared=no --with-pic=yes
-
-
-###########################################################################
 ##                         libfmt
 ###########################################################################
-## fmt can be built with cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 by default,
+## fmt can be built with:
+cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 by default,
 ## but if static library is inteded to be used for building another shared library, it must be compiled with -fPIC(linux/unix requirements)
 cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 -DBUILD_SHARED_LIBS=OFF  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
@@ -66,6 +53,37 @@ cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 -DBUILD_SHARED_LIBS=OFF  
 ###########################################################################
 ##                         OpenSSL
 ###########################################################################
+## OpenSSL can be built with:
+./config --prefix=$HOME/.local/opt/openssl-1.1.1t no-hw no-shared no-asm no-zlib
 ## it looks like OpenSSL is always built with -fPIC, but visibility must be set by hand
 CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden" \
-./config --prefix=$HOME/.local/opt/openssl-1.1.1l no-hw no-shared no-asm no-zlib
+./config --prefix=$HOME/.local/opt/openssl-1.1.1t no-hw no-shared no-asm no-zlib
+
+
+###########################################################################
+##                         xerces-c
+###########################################################################
+## xerces-c static library for linux can be build like this
+./configure --prefix /home/dima/.local/opt/xerces-c-3.2.3 --disable-network --enable-transcoder-gcuiconv
+
+## but if static library is intended to be used for building another shared library, it should be built like this:
+ CFLAGS="-fPIC -fvisibility=hidden" CXXFLAGS="-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" \
+ ./configure --prefix /home/dima/.local/opt/xerces-c-3.2.3 --disable-network --enable-transcoder-gnuiconv --enable-shared=no
+
+## --with-pic=yes will enable -fPIC, but not -fvisibility, so better use variant above
+# ./configure --prefix /home/dima/.local/opt/xerces-c-3.2.1 --disable-network --enable-transcoder-gnuiconv --enable-shared=no --with-pic=yes
+
+
+###########################################################################
+##                         xml-security-c
+###########################################################################
+## xml-security-c static library for linux can be build like this
+ PKG_CONFIG_PATH=~/.local/opt/xerces-c-3.2.3/lib/pkgconfig:~/.local/opt/openssl-1.1.1t/lib/pkgconfig \
+ openssl_LIBS="-L/home/dima/.local/opt/openssl-1.1.1t/lib -lcrypto -ldl" \
+ ../configure --prefix /home/dima/.local/opt/xml-security-c-2.0.4 --enable-shared=no --with-xalan=no --with-openssl=yes --disable-xkms
+
+## but if static library is intended to be used for building another shared library, it should be built like this:
+ CFLAGS="-fPIC -fvisibility=hidden" CXXFLAGS="-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" \
+ openssl_LIBS="-L/home/dima/.local/opt/openssl-1.1.1t/lib -lcrypto -ldl" \
+ PKG_CONFIG_PATH=~/.local/opt/xerces-c-3.2.3/lib/pkgconfig:~/.local/opt/openssl-1.1.1t/lib/pkgconfig \
+ ../configure --prefix /home/dima/.local/opt/xml-security-c-2.0.4 --enable-shared=no --with-xalan=no --with-openssl=yes --disable-xkms
