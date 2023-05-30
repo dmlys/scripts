@@ -21,6 +21,9 @@
     # jom?
     -make-tool <tool> .... Use <tool> to build qmake [nmake] (Windows only)
 
+    # some modules, libraries can be skipped. Basicly any directories in qt-source directory
+    -skip qtdeclarative -skip  qtlocation -skip  qtlottie -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 -skip qtquicktimeline -skip qtremoteobjects -skip qtwebglplugin
+
 
 linux примеры:
   #debug   ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -debug   -no-optimize-debug -developer-build -c++std c++17 -nomake tests -nomake examples

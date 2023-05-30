@@ -1,4 +1,4 @@
-Общая информация:
+  Общая информация:
  документацию можно смотреть в man:
   * man openssl
   * man openssl-config - общее описание конфигурирования openssl
@@ -179,15 +179,16 @@
    # Пример cамоподписанный сертификат:
    openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout signapp-key.pem -out signapp-cert.pem -days 365 -addext extendedKeyUsage=codeSigning
 
+ PKCS #12:
+   openssl pkcs12 -in keystore.p12 -out bag.pem -nodes -passin pass:'somepass' # -nodes -> don't encrypt the private keys at all
+   # bag.pem будет содержать и ключ и сертификаты(связааный с ключом) и так и дополнительные(CA и прочие), дальше руками распотрошить
+
 
 JAVA keystore интеграция:
   JKS можно конвертнуть в P12 а дальше уже работать с ним с помощью openssl:
     keytool -importkeystore -srckeystore keystore.jks -destkeystore keystore.p12
             -deststoretype PKCS12 -deststorepass $samepass -destkeypass $samepass
-    
-  теперь можно конвертнуть в PEM:
-    openssl pkcs12 -nodes -in keystore.p12 -out key.pem -passin pass:'somepass' # -nodes -> don't encrypt the private keys at all
-
+  
   В обратную сторону:
 	# -name "alias" is optional
     openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfile CACert.crt -name "alias"
