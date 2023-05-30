@@ -1,0 +1,20 @@
+Core(Crash) Dumps are enabled by tweaking limits parameter.
+# -S for soft limits, -H for hard limits, by default (not specifying -H or -S), soft limit is affected(not 100% sure)
+ulimit -a            # print all limits(soft with -S or hard with -H)
+ulimit -c            # print core file size limit
+ulimit -c unlimited  # set core file size limit, 0 - disabled, can be: $size, hard - current hard limit, soft - current soft limit, unlimited - no limit at all
+
+NOTE: !!! core dumps created from systemd-nspawn container are created in host environment, not in container!
+
+ulimit utility is used to set current shell/process limits.
+For permanent configuration - see /etc/security/limits.conf
+
+man ulimit
+man getrlimit    # ulimit is a wrapper around setrlimit/getrlimit POSIX functions.
+man limits.conf
+
+Soft vs Hard limits:
+   Basicly soft limits are for user enforced shell/process limits, those can be changed on the fly at will, but they can not exceed hard limits.
+           hard limits are enforced by root/admin, and while user can lower them - only root can increase them.
+
+   Both are set to some default value, usually by pam_limits.so from /etc/security/limits.conf
