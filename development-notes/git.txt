@@ -30,3 +30,58 @@ git filter-branch --env-filter 'GIT_AUTHOR_DATE=$GIT_COMMITTER_DATE' -- master..
 
 # изменить дату коммита коммитера на дату коммита автора для коммитов master - HEAD
 git filter-branch --env-filter 'GIT_COMMITTER=$GIT_AUTHOR_DATE' -- master..
+
+
+=============== Перенести все файлы в папку в истории ===================================
+## Делается это с помощью команды git filter-branch --index-filter или как рекомендует git более новой и безопасной git filter-repo
+
+
+git filter-repo --to-subdirectory-filter $intosubdir --partial --refs=$branch --force 
+# note без refs будет обрабатывать вообще все коммиты во всех бранчах. --refs ограничивает заданным бранчем.
+# refs implies partial
+
+## В целом git filter-repo более высокоуровневая, безопаснее и ощутимо быстрее. Под капотом она использует git fast-export / git fast-import + промежуточный процессинг 
+
+## git filter-branch  более низкоуровневая, использует bash для процессинга имеет множество подводных камней.
+## Возможно(но это не точно) она позволяет сделать более сложные вещи(а также более сложно все запороть)
+
+## man git filter-branch приводит пример как сделать: To move the whole tree into a subdirectory, or remove it from there
+           git filter-branch --index-filter \
+                   'git ls-files -s | sed "s-\t\"*-&newsubdir/-" |
+                           GIT_INDEX_FILE=$GIT_INDEX_FILE.new \
+                                   git update-index --index-info &&
+                    mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"' HEAD
+
+## Некоторые пояснения: index-filter оперирует на индексом на лету, не меняя физическое состояние workspace'а.
+## git ls-files --stage - печатает на stdout index в полу-человеко-читаемом формате
+## sed - модифицируем пути
+## git update-index --index-info считываем новые пути в index, но в другой файл $GIT_INDEX_FILE.new
+## GIT_INDEX_FILE выставляется git'ом и задает путь в index файлу
+## git update-index похоже дописывает новые пути, поэтому что бы забыть старые - просто создаем новый index.
+## mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"' старый новым
+##
+## На практике, если файлов нет(пустой workspace) - git update-index не создаст файл, и далее это выльется в ошибку в команде mv. Нужно проверять что файл создался.
+## if test -f "$GIT_INDEX_FILE.new"; then mv mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"; fi
+
+git filter-branch -f --index-filter 'git ls-files --stage | sed "s-\t\"*-&burundi/-" | GIT_INDEX_FILE="$GIT_INDEX_FILE.new" git update-index --index-info && if test -f "$GIT_INDEX_FILE.new"; then mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"; fi' -- HEAD
+
+## вместо sed можно использовать perl, а еще пути могут содержать пробелы, что может привести к проблемам(а может и нет), и можно использовать null terminated пути.
+## git ls-files и git update-index поддерживают ключ -z
+
+# sed / perl / perl -z
+git filter-branch -f --index-filter 'git ls-files    --stage | sed            "s-\t\"*-&newbranch/-"  | GIT_INDEX_FILE="$GIT_INDEX_FILE.new" git update-index    --index-info && if test -f "$GIT_INDEX_FILE.new"; then mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"; fi' -- HEAD
+git filter-branch -f --index-filter 'git ls-files    --stage | perl       -pe "s#\t\"?#$&newbranch/#" | GIT_INDEX_FILE="$GIT_INDEX_FILE.new" git update-index    --index-info && if test -f "$GIT_INDEX_FILE.new"; then mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"; fi' -- HEAD
+git filter-branch -f --index-filter 'git ls-files -z --stage | perl -l -0 -pe "s#\t\"?#$&newbranch/#" | GIT_INDEX_FILE="$GIT_INDEX_FILE.new" git update-index -z --index-info && if test -f "$GIT_INDEX_FILE.new"; then mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"; fi' -- HEAD
+
+## пояснения по regex
+## sed  - s-\t\"*-&burundi/-    ищем \t\"* - символ табуляции + опциональную двойную кавычку, меняем на искомое/найденное(&)  + newbranch/
+## perl - s#\t\"?#$&newbranch/# ищем \t\"? - символ табуляции + опциональную двойную кавычку, меняем на искомое/найденное($&) + newbranch/
+##
+## вот так выглядит вывод git ls-files --stage:    100644 58978858db9c17dd092e69bc9e56f4546b2984be 0       git.txt
+##                                                 100644 82af6c370ee21bcbb2ff4044258c6d90089ff121 0       SmartCards and CryptoTokens.txt
+##
+## после применения регекса:                       100644 58978858db9c17dd092e69bc9e56f4546b2984be 0       newbranch/git.txt
+##                                                 100644 82af6c370ee21bcbb2ff4044258c6d90089ff121 0       newbranch/SmartCards and CryptoTokens.txt
+
+## В целом использовать filter-repo тут гораздо проще и быстрее.
+
