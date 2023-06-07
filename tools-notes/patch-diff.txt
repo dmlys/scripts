@@ -1,0 +1,35 @@
+## to apply path in most basic form
+patch -p0 -i patch.file
+#  -pnum  or  --strip=num
+#     Strip the smallest prefix containing num leading slashes from each file name found in the patch file.
+#     A sequence of one or more adjacent slashes is counted as a single slash.
+#     This controls how file names found in the patch file are treated,
+#   Default or just -p strips paths completely 
+#    /u/howard/src/blurfl/blurfl.c   -p0 -> /u/howard/src/blurfl/blurfl.c,  unchaged 
+#                                    -p1 -> u/howard/src/blurfl/blurfl.c
+#                                    -p4 -> blurfl/blurfl.c
+#                                    -p  -> blurfl.c
+# -i patchfile  or  --input=patchfile, default - read from stdin
+
+
+## Make a diff only on *.hpp *.cpp files, excluding $Id comment changes, and spaces
+## To find a diff from 2 directories, where one is slighty changed from other.
+## Only on *.hpp *.cpp files, excluding some change(date from top template of something other)
+## 2 directories: src, src-diff
+
+# first make exclude file
+find src-diff -type f | grep --invert-match --perl-regexp "hpp$|cpp$" | sed 's!.*/!!' | sort -u > excludes.txt
+# find src-diff -type f - search only files
+# leave everything except hpp or cpp files
+# strip paths, leave only file names
+# sort and write to exclude.txt file list
+
+# now diff
+diff --color=always --unified=3 --recursive --ignore-all-space --ignore-matching-lines='\$Id' --exclude-from=excludes.txt     src-patched src
+# --color[=WHEN]                  color output; WHEN is 'never', 'always', or 'auto'; plain --color means --color='auto'
+# -u, -U NUM, --unified[=NUM]     output NUM (default 3) lines of unified context
+# -r, --recursive                 recursively compare any subdirectories found
+# -w, --ignore-all-space          ignore all white space
+# -I, --ignore-matching-lines=RE  ignore changes where all lines match RE
+# -X, --exclude-from=FILE         exclude files that match any pattern in FILE
+
