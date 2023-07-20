@@ -110,9 +110,14 @@ grub-install --target=i386-pc /dev/sdX
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # для UEFI
+#deprecated
 mkdir /boot/efi
 mount /dev/sxx /boot/efi
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB # для UEFI
+#use this instead
+mkdir /efi
+mount /dev/sxx /efi
+
+grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB # для UEFI
 grub-mkconfig -o /boot/grub/grub.cfg
 
 Если хочется dual-boot с windows - смотри ниже
