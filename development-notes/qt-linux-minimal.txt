@@ -1,0 +1,52 @@
+Building Qt on linux distro with GUI installed, usually a trivial task.
+Here notes on how to build on ancient linux distro(CentOs 7) in systemd-nspawn container with minimal libs.
+
+https://doc.qt.io/qt-5/linux-requirements.html
+https://doc.qt.io/qt-5/configure-options.html
+https://www.x.org/wiki/guide/xlib-and-xcb/ - to remember, good link
+
+
+
+We want XCB QPA(do we want OpenGL?). CentOs7 needs following packages:
+   yum install libxcb-devel
+               xcb-util-devel 
+               xcb-util-cursor-devel
+               xcb-util-image-devel
+               xcb-util-keysyms-devel
+               xcb-util-renderutil-devel
+               xcb-util-wm-devel
+               libxkbcommon-devel
+               libxkbcommon-x11-devel
+
+We also need fontconfig-devel, otherwise Qt won't de able to easely search fonts and won't be able to output any text
+(or maybe some additional configuration is needed, needs more research).
+   yum install fontconfig-devel
+
+fontconfig-devel depends on and installs FreeType and libpng. 
+Note lingpng tends to increase versions more easely and newer distros of linux can have incompatible version of libpng, maybe better use qt bundled. Same goes probably to libjpeg.
+Also without libpng it looks like Qt can't draw icons with XCB QPA - not sure why, maybe XCB draws icons through PNG image format.
+
+May be should also install HarfBuzz? (harfbuzz-devel)
+
+With everything in place qt can be configured like this:
+qtskip="-no-feature-network -no-feature-sql -nomake tools -nomake tests -nomake examples"
+qtskip="$qtskip -skip qtdeclarative -skip  qtlocation -skip  qtlottie -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 -skip qtquicktimeline -skip qtremoteobjects -skip qtwebglplugin"
+./configure -prefix ~/.local/opt/qt-5.15.9-static -opensource -confirm-license -release -static -c++std c++17 -silent \
+  --iconv=posix -no-icu -system-zlib -no-glib -no-opengl -no-directfb -no-eglfs -no-gbm -no-kms -no-linuxfb -xcb -qt-libpng -qt-libjpeg -no-tiff -no-webp $qtskip
+  
+
+In case of errors see configure output and config.log
+
+This will configure only Qt libs(no tools, tests, example, doc) with only XCB QPA Platform backend without OpenGL dependencies. With only png, jpeg, ico and gif supported image formats(implemented internally)
+No QML and related stuff. No ICU, iconv=posix. No Qt Networking, Qt SQL. 
+
+Still resulted binary will be dependent on XCB binary libraries. Those probably can be build as static library if needed.
+
+
+
+
+
+set qtskip=-no-feature-network -no-feature-sql -nomake tools -nomake tests -nomake examples
+set qtskip=%qtskip% -skip qtdeclarative -skip  qtlocation -skip  qtlottie -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 -skip qtquicktimeline -skip qtremoteobjects -skip qtwebglplugin
+
+..\qt-everywhere-src-5.15.1\configure -prefix C:\autobuild\SignX-stuff\thirdparty\qt-5.15.1-vc142-x86-static -opensource -confirm-license -c++std c++17 -silent -debug-and-release -force-debug-info -static -static-runtime -no-plugin-manifests -mp -opengl desktop -no-icu -no-angle %qtskip%
