@@ -1,0 +1,245 @@
+/usr/share/doc/linux/admin-guide/sysctl/vm.rst:
+/usr/share/doc/linux/mm/overcommit-accounting.rst:
+
+some additional interesting links:
+https://www.techtarget.com/searchdatacenter/definition/Linux-swappiness
+https://unix.stackexchange.com/questions/265713/how-to-configure-swappiness-in-linux-memory-management#265716
+https://serverfault.com/questions/141988/avoid-linux-out-of-memory-application-teardown/142003#142003
+https://www.baeldung.com/linux/overcommit-modes
+
+tldr:
+overcommit_ratio = 0 weak check, default, overcommit will happen unless some very huge mmap request
+                 = 1 always overcommit, no check
+                 = 2 never  overcommit, total used memory limited by:
+                                          absolute value - overcommit_kbytes,
+                                          or percentage of RAM(+ SWAP) - overcommit_ratio
+
+if overcommit disabled, mmap and malloc call can return NULL and no OOM should happen(in theory).
+in case of overcommit - if memory reclamation not possible - OOM will kill some process until enough memory can be reclaimed.
+
+swappiness: can not disable swap per se, it only configures priority.
+            lower value priorities reclamation of page cache(file/disk cache) -> less swapping
+            higher value priorities swapping anonymous pages to swap file     -> more swapping
+
+            even with value = 0 anonymous pages will be swapped to swap file, if necessary:
+              At 0, the kernel will not initiate swap until the amount of free and
+              file-backed pages is less than the high watermark in a zone.
+
+            by default some anonymous pages can be swapped by some heuristics in background.
+            Also: https://unix.stackexchange.com/a/265716
+              vm.swappiness = 0   # Swap is disabled. In earlier versions, this meant that the kernel would swap only to avoid an out of memory condition, but in later versions this is achieved by setting to 1.
+              vm.swappiness = 1   # Kernel version 3.5 and over, as well as kernel version 2.6.32-303 and over: Minimum amount of swapping without disabling it entirely.
+              vm.swappiness = 10  # This value is sometimes recommended to improve performance when sufficient memory exists in a system, this value *10* could be considered for the performance being expected.
+              vm.swappiness = 60  # The default value.
+              vm.swappiness = 100 # The kernel will swap aggressively.
+
+OOM: when memory can not be commited to already mapped pages because there is not enough - OOM will kill some process and reclaim it's pages.
+     what process will be choosed is based on some heuristics, but can be influenced by proc properties: man 5 proc - /proc/pid/oom_score, /proc/pid/oom_score_adj.
+     choom - display and adjust OOM-killer score.
+     systemd - man 5 systemd.exec:    OOMScoreAdjust=
+               man 5 systemd.service: OOMPolicy=
+
+=====================
+Overcommit Accounting
+=====================
+
+The Linux kernel supports the following overcommit handling modes
+
+0
+        Heuristic overcommit handling. Obvious overcommits of address
+        space are refused. Used for a typical system. It ensures a
+        seriously wild allocation fails while allowing overcommit to
+        reduce swap usage.  root is allowed to allocate slightly more
+        memory in this mode. This is the default.
+
+1
+        Always overcommit. Appropriate for some scientific
+        applications. Classic example is code using sparse arrays and
+        just relying on the virtual memory consisting almost entirely
+        of zero pages.
+
+2
+        Don't overcommit. The total address space commit for the
+        system is not permitted to exceed swap + a configurable amount
+        (default is 50%) of physical RAM.  Depending on the amount you
+        use, in most situations this means a process will not be
+        killed while accessing pages but will receive errors on memory
+        allocation as appropriate.
+
+        Useful for applications that want to guarantee their memory
+        allocations will be available in the future without having to
+        initialize every page.
+
+The overcommit policy is set via the sysctl ``vm.overcommit_memory``.
+
+The overcommit amount can be set via ``vm.overcommit_ratio`` (percentage)
+or ``vm.overcommit_kbytes`` (absolute value). These only have an effect
+when ``vm.overcommit_memory`` is set to 2.
+
+The current overcommit limit and amount committed are viewable in
+``/proc/meminfo`` as CommitLimit and Committed_AS respectively.
+
+overcommit_memory
+=================
+This value contains a flag that enables memory overcommitment.
+
+When this flag is 0, the kernel attempts to estimate the amount
+of free memory left when userspace requests more memory.
+
+When this flag is 1, the kernel pretends there is always enough
+memory until it actually runs out.
+
+When this flag is 2, the kernel uses a "never overcommit"
+policy that attempts to prevent any overcommit of memory.
+Note that user_reserve_kbytes affects this policy.
+
+This feature can be very useful because there are a lot of
+programs that malloc() huge amounts of memory "just-in-case"
+and don't use much of it.
+
+The default value is 0.
+
+See Documentation/mm/overcommit-accounting.rst and
+mm/util.c::__vm_enough_memory() for more information.
+
+
+overcommit_kbytes
+=================
+When overcommit_memory is set to 2, the committed address space is not
+permitted to exceed swap plus this amount of physical RAM. See below.
+
+Note: overcommit_kbytes is the counterpart of overcommit_ratio. Only one
+of them may be specified at a time. Setting one disables the other (which
+then appears as 0 when read).
+
+
+overcommit_ratio
+================
+When overcommit_memory is set to 2, the committed address
+space is not permitted to exceed swap plus this percentage
+of physical RAM.  See above.
+
+
+
+swappiness
+==========
+This control is used to define the rough relative IO cost of swapping
+and filesystem paging, as a value between 0 and 200. At 100, the VM
+assumes equal IO cost and will thus apply memory pressure to the page
+cache and swap-backed pages equally; lower values signify more
+expensive swap IO, higher values indicates cheaper.
+
+Keep in mind that filesystem IO patterns under memory pressure tend to
+be more efficient than swap's random IO. An optimal value will require
+experimentation and will also be workload-dependent.
+
+The default value is 60.
+
+For in-memory swap, like zram or zswap, as well as hybrid setups that
+have swap on faster devices than the filesystem, values beyond 100 can
+be considered. For example, if the random IO against the swap device
+is on average 2x faster than IO from the filesystem, swappiness should
+be 133 (x + 2x = 200, 2x = 133.33).
+
+At 0, the kernel will not initiate swap until the amount of free and
+file-backed pages is less than the high watermark in a zone.
+
+
+
+
+
+
+OOM
+==========
+/proc/pid/oom_score (since Linux 2.6.11)
+      This file displays the current score that the kernel gives to this process for the purpose of selecting a process for the OOM-killer.
+      A higher score means that the process is more likely to be selected by the OOM-killer.
+      The basis for this score is the amount of memory used by the process, with increases (+) or decreases (-) for factors including:
+      •  whether the process is privileged (-).
+
+      Before Linux 2.6.36 the following factors were also used in the calculation of oom_score:
+      •  whether the process creates a lot of children using fork(2) (+);
+      •  whether the process has been running a long time, or has used a lot of CPU time (-);
+      •  whether the process has a low nice value (i.e., > 0) (+); and
+      •  whether the process is making direct hardware access (-).
+
+      The oom_score also reflects the adjustment specified by the oom_score_adj or oom_adj setting for the process.
+
+/proc/pid/oom_score_adj (since Linux 2.6.36)
+      This file can be used to adjust the badness heuristic used to select which process gets killed in out-of-memory conditions.
+
+      The badness heuristic assigns a value to each candidate task ranging from 0 (never kill) to 1000 (always kill) to determine which process is targeted.
+      The units are roughly a proportion along that range of allowed memory the process may allocate from, based on an estimation of its current memory and swap use.
+      For example, if a task is using all allowed memory, its badness score will be 1000. If it is using half of its allowed memory, its score will be 500.
+
+      There is an additional factor included in the badness score: root processes are given 3% extra memory over other tasks.
+
+      The amount of "allowed" memory depends on the context in which the OOM-killer was called.
+      If it is due to the memory assigned to the allocating task's cpuset being exhausted, the allowed memory represents the set of mems assigned to that cpuset (see cpuset(7)).
+      If it is due to a mempolicy's node(s) being exhausted, the allowed memory represents the set of mempolicy nodes.
+      If it is due to a memory limit (or swap limit) being reached, the allowed memory is that configured limit.
+      Finally, if it is due to the entire system being out of memory, the allowed memory represents all allocatable resources.
+
+      The value of oom_score_adj is added to the badness score before it is used to determine which task to kill.
+      Acceptable values range from -1000 (OOM_SCORE_ADJ_MIN) to +1000 (OOM_SCORE_ADJ_MAX).
+      This allows user space to control the preference for OOM-killing, ranging from always preferring a certain task or completely disabling it from OOM-killing.
+      The lowest possible value, -1000, is equivalent to disabling OOM-killing
+      entirely for that task, since it will always report a badness score of 0.
+
+      Consequently,  it is very simple for user space to define the amount of memory to consider for each task.
+      Setting an oom_score_adj value of +500, for example, is roughly equivalent to allowing the remainder of tasks sharing
+      the same system, cpuset, mempolicy, or memory controller resources to use at least 50% more memory.
+      A value of -500, on the other hand, would be roughly equivalent to discounting 50% of the task's allowed memory from being considered as scoring against the task.
+
+      For backward compatibility with previous kernels, /proc/pid/oom_adj can still be used to tune the badness score.  Its value is scaled linearly with oom_score_adj.
+
+      Writing to /proc/pid/oom_score_adj or /proc/pid/oom_adj will change the other with its scaled value.
+
+      The choom(1) program provides a command-line interface for adjusting the oom_score_adj value of a running process or a newly executed command.
+
+
+oom_kill_allocating_task
+========================
+This enables or disables killing the OOM-triggering task in
+out-of-memory situations.
+
+If this is set to zero, the OOM killer will scan through the entire
+tasklist and select a task based on heuristics to kill.  This normally
+selects a rogue memory-hogging task that frees up a large amount of
+memory when killed.
+
+If this is set to non-zero, the OOM killer simply kills the task that
+triggered the out-of-memory condition.  This avoids the expensive
+tasklist scan.
+
+If panic_on_oom is selected, it takes precedence over whatever value
+is used in oom_kill_allocating_task.
+
+The default value is 0.
+
+panic_on_oom
+============
+This enables or disables panic on out-of-memory feature.
+
+If this is set to 0, the kernel will kill some rogue process,
+called oom_killer.  Usually, oom_killer can kill rogue processes and
+system will survive.
+
+If this is set to 1, the kernel panics when out-of-memory happens.
+However, if a process limits using nodes by mempolicy/cpusets,
+and those nodes become memory exhaustion status, one process
+may be killed by oom-killer. No panic occurs in this case.
+Because other nodes' memory may be free. This means system total status
+may be not fatal yet.
+
+If this is set to 2, the kernel panics compulsorily even on the
+above-mentioned. Even oom happens under memory cgroup, the whole
+system panics.
+
+The default value is 0.
+
+1 and 2 are for failover of clustering. Please select either
+according to your policy of failover.
+
+panic_on_oom=2+kdump gives you very strong tool to investigate
+why oom happens. You can get snapshot.
