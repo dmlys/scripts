@@ -30,5 +30,8 @@ sac-core-legacy: SafeNet Authentication Client (version 10.0 for old Alladin eTo
   pkcs11-tool  --module=/usr/lib/sac-10.0/libeToken.so --show-info --list-token-slots
   pkcs11-tool  --module=/usr/lib/sac-10.0/libeToken.so --sign --mechanism=RSA-PKCS-PSS --hash-algorithm=SHA256 --input-file=/tmp/sign.test
 
+Но при этом для драйвера PKCS11 нужно обязательно запустить службу: pcscd.service(видимо реализация под капотом как-то использует PC/SC)
+  sudo systemctl start pcscd.service
+
 Не понятно почему не работает aks-ifdh, но в целом PKCS #11 достаточно по идее
 К слову sac-core вообще качает архивчик с dropbox.com :)
