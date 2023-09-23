@@ -183,6 +183,9 @@
    openssl pkcs12 -in keystore.p12 -out bag.pem -nodes -passin pass:'somepass' # -nodes -> don't encrypt the private keys at all
    # bag.pem будет содержать и ключ и сертификаты(связааный с ключом) и так и дополнительные(CA и прочие), дальше руками распотрошить
 
+   # в обратную сторону с CA
+   openssl pkcs12 -export -inkey key.pem -in cert.pem -CAfile ca-cert.pem -chain -out key.p12
+
 
 JAVA keystore интеграция:
   JKS можно конвертнуть в P12 а дальше уже работать с ним с помощью openssl:
