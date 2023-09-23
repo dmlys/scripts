@@ -31,6 +31,17 @@ reboot
 Рекомендуется установить KDE xorg patch, если его по-прежнему не замерджили в master xorg сервера
 
 /***********************************************************************
+/* NVIDIA proprietary driver
+/***********************************************************************
+pacman --sync --needed nvidia nvidia-utils nvidia-settings
+
+https://wiki.archlinux.org/title/NVIDIA#Installation
+рекомендуется: Remove kms from the HOOKS array in /etc/mkinitcpio.conf and regenerate initramfs - mkinitcpio -P
+
+# to enable NVIDIA kernel mode setting on NVIDIA proprietary driver add following file with kernel option
+/etc/modprobe.d/nvidia_drm_modeset.conf: options nvidia_drm modeset=1
+
+/***********************************************************************
 /* Limit battery charge
 /***********************************************************************
 https://www.asus.com/support/FAQ/1032726/#4
