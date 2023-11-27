@@ -1,0 +1,92 @@
+https://sourceware.org/gdb/current/onlinedocs/gdb.html/Separate-Debug-Files.html
+
+objcopy --only-keep-debug foo foo.debug
+strip --strip-debug foo
+objcopy --add-gnu-debuglink=foo.debug foo
+
+
+Выдержка из Separate-Debug-Files.html:
+18.3 Debugging Information in Separate Files
+
+GDB allows you to put a program’s debugging information in a file separate from the executable itself, in a way that allows GDB to find and load the debugging information automatically.
+Since debugging information can be very large—sometimes larger than the executable code itself—some systems distribute debugging information for their executables in separate files,
+which users can install only when they need to debug a problem.
+
+GDB supports two ways of specifying the separate debug info file:
+
+    * The executable contains a debug link that specifies the name of the separate debug info file.
+      The separate debug file’s name is usually executable.debug, where executable is the name of the corresponding executable file without leading directories (e.g., ls.debug for /usr/bin/ls).
+      In addition, the debug link specifies a 32-bit Cyclic Redundancy Check (CRC) checksum for the debug file,
+      which GDB uses to validate that the executable and the debug file came from the same build.
+    * The executable contains a build ID, a unique bit string that is also present in the corresponding debug info file.
+      (This is supported only on some operating systems, when using the ELF or PE file formats for binary files and the GNU Binutils.)
+      For more details about this feature, see the description of the --build-id command-line option in Command Line Options in The GNU Linker.
+      The debug info file’s name is not specified explicitly by the build ID, but can be computed from the build ID, see below. 
+
+Depending on the way the debug info file is specified, GDB uses two different methods of looking for the debug file:
+
+    * For the “debug link” method, GDB looks up the named file in the directory of the executable file, then in a subdirectory of that directory named .debug,
+      and finally under each one of the global debug directories, in a subdirectory whose name is identical to the leading directories of the executable’s absolute file name.
+      (On MS-Windows/MS-DOS, the drive letter of the executable’s leading directories is converted to a one-letter subdirectory, i.e. d:/usr/bin/ is converted to /d/usr/bin/,
+       because Windows filesystems disallow colons in file names.)
+    * For the “build ID” method, GDB looks in the .build-id subdirectory of each one of the global debug directories for a file named nn/nnnnnnnn.debug,
+      where nn are the first 2 hex characters of the build ID bit string, and nnnnnnnn are the rest of the bit string.
+      (Real build ID strings are 32 or more hex characters, not 10.)
+      GDB can automatically query debuginfod servers using build IDs in order to download separate debug files that cannot be found locally. For more information see Debuginfod. 
+
+So, for example, suppose you ask GDB to debug /usr/bin/ls, which has a debug link that specifies the file ls.debug, and a build ID whose value in hex is abcdef1234.
+If the list of the global debug directories includes /usr/lib/debug, then GDB will look for the following debug information files, in the indicated order:
+
+    - /usr/lib/debug/.build-id/ab/cdef1234.debug
+    - /usr/bin/ls.debug
+    - /usr/bin/.debug/ls.debug
+    - /usr/lib/debug/usr/bin/ls.debug. 
+
+If the debug file still has not been found and debuginfod (see Debuginfod) is enabled, GDB will attempt to download the file from debuginfod servers.
+
+Global debugging info directories default to what is set by GDB configure option --with-separate-debug-dir and augmented by the colon-separated list of directories
+provided via GDB configure option --additional-debug-dirs. During GDB run you can also set the global debugging info directories, and view the list GDB is currently using.
+
+set debug-file-directory directories
+
+    Set the directories which GDB searches for separate debugging information files to directory.
+    Multiple path components can be set concatenating them by a path separator.
+
+show debug-file-directory
+
+    Show the directories GDB searches for separate debugging information files.
+
+A debug link is a special section of the executable file named .gnu_debuglink. The section must contain:
+
+    A filename, with any leading directory components removed, followed by a zero byte,
+    zero to three bytes of padding, as needed to reach the next four-byte boundary within the section,
+    and a four-byte CRC checksum, stored in the same endianness used for the executable file itself.
+    The checksum is computed on the debugging information file’s full contents by the function given below, passing zero as the crc argument. 
+
+Any executable file format can carry a debug link, as long as it can contain a section named .gnu_debuglink with the contents described above.
+
+The build ID is a special section in the executable file (and in other ELF binary files that GDB may consider).
+This section is often named .note.gnu.build-id, but that name is not mandatory.
+It contains unique identification for the built files—the ID remains the same across multiple builds of the same build tree.
+The default algorithm SHA1 produces 160 bits (40 hexadecimal characters) of the content for the build ID string.
+The same section with an identical value is present in the original built binary with symbols, in its stripped variant, and in the separate debugging information file.
+
+The debugging information file itself should be an ordinary executable, containing a full set of linker symbols, sections, and debugging information.
+The sections of the debugging information file should have the same names, addresses, and sizes as the original file,
+but they need not contain any data—much like a .bss section in an ordinary executable.
+
+The GNU binary utilities (Binutils) package includes the ‘objcopy’ utility that can produce the separated executable / debugging information file pairs using the following commands:
+
+objcopy --only-keep-debug foo foo.debug
+strip -g foo
+
+These commands remove the debugging information from the executable file foo and place it in the file foo.debug. You can use the first, second or both methods to link the two files:
+
+    The debug link method needs the following additional command to also leave behind a debug link in foo:
+
+    objcopy --add-gnu-debuglink=foo.debug foo
+
+    Ulrich Drepper’s elfutils package, starting with version 0.53, contains a version of the strip command such that the command strip foo -f foo.debug
+    has the same functionality as the two objcopy commands and the ln -s command above, together.
+    Build ID gets embedded into the main executable using ld --build-id or the GCC counterpart gcc -Wl,--build-id.
+    Build ID support plus compatibility fixes for debug files separation are present in GNU binary utilities (Binutils) package since version 2.18.
