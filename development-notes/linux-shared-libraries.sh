@@ -41,9 +41,9 @@
 ##                         libfmt
 ###########################################################################
 ## fmt can be built with:
-cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 by default,
+cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-9.1.0 by default,
 ## but if static library is inteded to be used for building another shared library, it must be compiled with -fPIC(linux/unix requirements)
-cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 -DBUILD_SHARED_LIBS=OFF  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-9.1.0 -DBUILD_SHARED_LIBS=OFF  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
 ## It is also good idea to compile with -fvisibility=hidden, and with cmake those flags can by turn on globally(probably) with: -DCMAKE_CXX_VISIBILITY_PRESET=ON -DCMAKE_VISIBILITY_INLINES_HIDDEN=ON 
 ## But FMT already enables those flags(you can see this with make VERBOSE=1), so it's unneeded
@@ -56,7 +56,7 @@ cmake .. -DCMAKE_INSTALL_PREFIX=~/.local/opt/fmt-8.1.1 -DBUILD_SHARED_LIBS=OFF  
 ## OpenSSL can be built with:
 ./config --prefix=$HOME/.local/opt/openssl-1.1.1t no-hw no-shared no-asm no-zlib
 ## it looks like OpenSSL is always built with -fPIC, but visibility must be set by hand
-CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden" \
+CFLAGS="-O2 -fvisibility=hidden" CXXFLAGS="-O2 -fvisibility=hidden -fvisibility-inlines-hidden" \
 ./config --prefix=$HOME/.local/opt/openssl-1.1.1t no-hw no-shared no-asm no-zlib
 
 
@@ -67,7 +67,7 @@ CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden -fvisibility-inlines-
 ./configure --prefix /home/dima/.local/opt/xerces-c-3.2.3 --disable-network --enable-transcoder-gcuiconv
 
 ## but if static library is intended to be used for building another shared library, it should be built like this:
- CFLAGS="-fPIC -fvisibility=hidden" CXXFLAGS="-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" \
+ CFLAGS="-O2 -fPIC -fvisibility=hidden" CXXFLAGS="-O2 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden" \
  ./configure --prefix /home/dima/.local/opt/xerces-c-3.2.3 --disable-network --enable-transcoder-gnuiconv --enable-shared=no
 
 ## --with-pic=yes will enable -fPIC, but not -fvisibility, so better use variant above
@@ -83,7 +83,7 @@ CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden -fvisibility-inlines-
  ../configure --prefix /home/dima/.local/opt/xml-security-c-2.0.4 --enable-shared=no --with-xalan=no --with-openssl=yes --disable-xkms
 
 ## but if static library is intended to be used for building another shared library, it should be built like this:
- CFLAGS="-fPIC -fvisibility=hidden" CXXFLAGS="-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" \
+ CFLAGS="-O2 -fPIC -fvisibility=hidden" CXXFLAGS="-O2 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden" \
  openssl_LIBS="-L/home/dima/.local/opt/openssl-1.1.1t/lib -lcrypto -ldl" \
  PKG_CONFIG_PATH=~/.local/opt/xerces-c-3.2.3/lib/pkgconfig:~/.local/opt/openssl-1.1.1t/lib/pkgconfig \
  ../configure --prefix /home/dima/.local/opt/xml-security-c-2.0.4 --enable-shared=no --with-xalan=no --with-openssl=yes --disable-xkms
