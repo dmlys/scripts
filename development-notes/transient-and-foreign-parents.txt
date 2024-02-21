@@ -1,0 +1,78 @@
+Both windows and X server allows parent/owning relations between windows from different processes, both from top-level and child windows.
+While child windows from different processes is somewhat weird,
+top-level pop-up window from different process is fine and can be useful.
+
+Qt does not have dedicated mechanism for this, but this trick workds:
+This is done like this:
+    QWindow * parent_window = QWindow::fromWinId(foreign_winid);
+    QWindow * widget_window = widget->windowHandle();
+    widget_window->setTransientParent(parent_window);
+
+Interestingly  this does not works, but instead crashes(why? needs investigation):
+    QWindow * parent_window = QWindow::fromWinId(foreign_winid);
+    QWindow * widget_window = widget->windowHandle();
+    widget_window->setParent(parent_window);
+	
+How transient parent special for Qt?
+
+Few notes:
+ Transient here correspondents to WM_TRANSIENT_FOR xorg flag.
+ The naming setTransientParent quite confusing here.
+ Naming and doc implies that parent is transient, but logicly is' we - child window - that is transient.
+ Probably setTransientParent naming came from some background that i am not aware of.
+ Also for case w1->setTransientParent(w2) WM_TRANSIENT_FOR flag is set for w1 and points to w2 - again w1 is transient
+ BTW, WinAPI does not have any concept of transient windows.
+
+XORG Transient windows:
+    There is no separate full concept for transient windows, but there is WM_TRANSIENT_FOR property.
+
+    From https://tronche.com/gui/x/icccm/sec-4.html:
+    4.1.2.6. Transient windows Property
+      The WM_TRANSIENT_FOR property (of type WINDOW) contains the ID of another top-level window. The implication is that this window is a pop-up on behalf of the named window, and window managers may decide not to decorate transient windows or may treat them differently in other ways. In particular, window managers should present newly mapped WM_TRANSIENT_FOR windows without requiring any user interaction, even if mapping top-level windows normally does require interaction. Dialogue boxes, for example, are an example of windows that should have WM_TRANSIENT_FOR set.
+
+      It is important not to confuse WM_TRANSIENT_FOR with override-redirect. WM_TRANSIENT_FOR should be used in those cases where the pointer is not grabbed while the window is mapped (in other words, if other windows are allowed to be active while the transient is up). If other windows must be prevented from processing input (for example, when implementing pop-up menus), use override-redirect and grab the pointer while the window is mapped.
+
+Windows Foreign Parents - Parent window vs Owner window:
+
+    http://web.archive.org/web/20100318062734/http://msdn.microsoft.com/en-us/library/ms997562.aspx                  - old MSDN article
+    https://learn.microsoft.com/en-us/windows/win32/winmsg/window-features?redirectedfrom=MSDN#window-relationships  - new MSDN article
+    https://devblogs.microsoft.com/oldnewthing/20100315-00/?p=14613                                                  - Old new thing with some important info
+
+    In windows there is window owner and window parent, those 2 things are different, but exclusive.
+    Window can't have owner and parent, only parent or owner, or neither.
+
+    Windows without WS_CHILD flag are top-level windows and can't have parents, but can have owner.
+    Windows with    WS_CHILD flag are child     windows and       have parents, but      not owner.
+
+    If top-level, pop-up dialog must be created with foreign parent - parents handle must be passed as hwndparent to CreateWindowEx.
+    This handle can be changed after creation with  SetWindowLongPtr + GWLP_HWNDPARENT, ...
+
+Qt Foreign Parents on Windows Platform:
+    With qt foreign parent can we set like this:
+        // NOTE: CreateWindowEx call is delayed until window is shown,
+        // or some information is required from it, like winId(HWND).
+        // So if qt widget is created(without passing proper parent),
+        // and immediately setTransientParent is called on it - CreateWindowEx will receive expected HWND.
+        QWindow * parent_window = QWindow::fromWinId(foreign_parent_winid);
+        QWindow * widget_window = widget->windowHandle();
+
+        if (parent_window and widget_window)
+        {
+            widget_window->setTransientParent(parent_window);
+            // NOTE: window returned via fromWinId method above must be freed/deleted.
+            //  We do this by assigning widget as QObject parent of parent_window(note: not a qwindow parent).
+            //  When widget will be deleted, so will be parent_window QWindow object
+            parent_window->QObject::setParent(widget);
+        }
+
+    But for windows Qt(at least version 5.15.12) contains bug, that changes owner immediately(on show operation) to nullptr via SetWindowLongPtr + GWLP_HWNDPARENT.
+    Solution is to patch Qt(patch file attached at the end), or to change owner back again, for example like this:
+
+        QTimer::singleShot(0, widget, [parent_window, widget_window]
+        {
+            HWND parentHwnd = reinterpret_cast<HWND>(parent_window->winId());
+            HWND widgetHwnd = reinterpret_cast<HWND>(widget_window->winId());
+
+            SetWindowLongPtr(widgetHwnd, GWLP_HWNDPARENT, LONG_PTR(parentHwnd));
+        });
+
