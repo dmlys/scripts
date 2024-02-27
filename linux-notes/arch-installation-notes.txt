@@ -249,6 +249,7 @@ chmod g+s  some_folder - to enable group propagation
 /***********************************************************************
 /* missing firmare
 /***********************************************************************
+https://wiki.archlinux.org/title/Mkinitcpio#Possibly_missing_firmware_for_module_XXXX
 если mkinitcpio -P выдает варнинги о недостающих firmare - их можно установить, скорее всего они есть в AUR
 На ноуте N73SM у меня не было aic94xx, wd719x
 базовую информацию можно получить командой modinfo $firmare, modinfo aic94xx
@@ -261,6 +262,30 @@ git clone https://aur.archlinux.org/wd719xx-firmware.git
 cd ...
 makepkg --syncdeps --rmdeps --install
 
+
+/***********************************************************************
+/* Hibernation
+/***********************************************************************
+https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Hibernation
+Needs swap partition(or file)
+/etc/mkinitcpio.conf:
+  add "resume" to HOOKS at end before "fsck"
+
+regenerate initramfs:
+  mkinitcpio -P
+
+add resume runtime parameter to kernel via grub /etc/default/grub:
+  GRUB_CMDLINE_LINUX_DEFAULT="... resume=\"PARTLABEL=SWAP\" ... "
+
+Also useful:
+  /etc/tmpfiles.d/hibernation-image-size.conf:
+  #    Path                   Mode UID  GID  Age Argument
+  w    /sys/power/image_size  -    -    -    -   0
+
+This will write 0 to /sys/power/image_size at boot time
+https://www.kernel.org/doc/Documentation/power/interface.txt:
+  /sys/power/image_size controls the size of hibernation images.
+    In particular, writing '0' to this file will enforce hibernation images to be as small as possible.
 
 /***********************************************************************
 /* SAMBA
@@ -283,3 +308,4 @@ Tip: Whenever you modify the smb.conf file, run the testparm(1) command to check
 server max protocol = NT1
 
 по умолчанию используется более новый, но с ним у этих приложений почему-то проблемы
+

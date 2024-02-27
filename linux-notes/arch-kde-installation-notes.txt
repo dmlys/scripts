@@ -42,6 +42,25 @@ https://wiki.archlinux.org/title/NVIDIA#Installation
 /etc/modprobe.d/nvidia_drm_modeset.conf: options nvidia_drm modeset=1
 
 /***********************************************************************
+/* NVIDIA proprietary driver: screen glitches after suspend/sleep
+/***********************************************************************
+Проблема в особенностях проприетарного драйвера NVIDEA. Скорее всего с nouveau этой проблемы не будет.
+https://wiki.archlinux.org/title/NVIDIA/Tips_and_tricks#Preserve_video_memory_after_suspend
+
+By default the NVIDIA Linux drivers save and restore only essential video memory allocations on system suspend and resume. Quoting NVIDIA:
+
+    The resulting loss of video memory contents is partially compensated for by the user-space NVIDIA drivers,
+    and by some applications, but can lead to failures such as rendering corruption and application crashes upon exit from power management cycles.
+
+The "still experimental" interface enables saving all video memory (given enough space on disk or RAM).
+
+/etc/modprobe.d/nvidia_memsleep.conf:
+options nvidia NVreg_PreserveVideoMemoryAllocations=1
+
+systemctl enable nvidia-resume.service nvidia-suspend.service nvidia-hibernate.service
+
+
+/***********************************************************************
 /* Limit battery charge
 /***********************************************************************
 https://www.asus.com/support/FAQ/1032726/#4
