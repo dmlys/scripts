@@ -29,6 +29,12 @@ linux примеры:
   #debug   ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -debug   -no-optimize-debug -developer-build -c++std c++17 -nomake tests -nomake examples
   #release ./configure -prefix ~/.local/opt/qt-5.13.1 -opensource -confirm-license -release -force-debug-info                   -c++std c++17 -nomake tests -nomake examples
 
+linux minimal:
+  ./configure -prefix ~/.local/opt/qt-5.15.12/ -opensource -confirm-license -debug -developer-build -c++std c++17 -nomake tools -nomake tests -nomake examples -skip qtdeclarative -skip qtlocation -skip qtlottie -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 -skip qtquicktimeline -skip qtremoteobjects -skip qtwebglplugin -no-feature-network -no-feature-sql
+
+  #even more minimal
+  ./configure -prefix ~/.local/opt/qt-5.15.12/ -opensource -confirm-license -debug -developer-build -c++std c++17 -silent -no-opengl -no-directfb -no-eglfs -no-gbm -no-kms -no-linuxfb -xcb -nomake tools -nomake tests -nomake examples -skip qtdeclarative -skip qtlocation -skip qtlottie -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 -skip qtquicktimeline -skip qtremoteobjects -skip qtwebglplugin -no-feature-network -no-feature-sql
+
 linux-mingw примеры:
   cd qtbase - to build only qtbase modules(qt5core, qt5gui, etc)
   #debug ./configure -prefix /linux-data/mingw-qt5.15.1 -opensource -confirm-license -debug -no-optimize-debug -developer-build -static -c++std c++17 -nomake tests -nomake examples -opengl desktop -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32-
