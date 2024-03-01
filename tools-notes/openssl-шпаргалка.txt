@@ -1,5 +1,5 @@
-  Общая информация:
- документацию можно смотреть в man:
+Общая информация:
+документацию можно смотреть в man:
   * man openssl
   * man openssl-config - общее описание конфигурирования openssl
   * man openssl-req    - openssl req   под команда и параметры из openssl.cnf
@@ -7,7 +7,7 @@
   * man x509v3_config  - конфигурирование расширений v3 для x509 сертификатов
    ...
 
- форматы:
+форматы:
  	https://support.ssl.com/Knowledgebase/Article/View/19/0/der-vs-crt-vs-cer-vs-pem-certificates-and-how-to-convert-them
  	
  	X509 Сертификаты
@@ -97,7 +97,7 @@
  
  
  cert verify:
-  openssl verify -x509_strict -trusted root.pem -untrusted intermediate.pem -nameopt utf8   cert-to-verify.pem
+  openssl verify -trusted root.pem -untrusted intermediate.pem -nameopt utf8   cert-to-verify.pem
 
  cms:
   openssl cms -verify -in signature.der -inform DER -cmsout -print -noout                                   # напечатает информацию о подписи
@@ -105,86 +105,159 @@
   openssl cms -verify -in signature.der -inform DER -noverify -certfile CORICIABAWEB.pem -content data.txt  # detached signature, with external cert and data, -noverify for not verifing cert against CA
   # utf8 для сертификатов - хз как включить, похоже что нельзя
 
-
- простой самоподписанный сертификат:
- 
- 	# через запрос
- 	openssl req  -new > cert.csr
- 	openssl pkey -in privkey.pem -out key.pem
- 	openssl x509 -in cert.csr -out cert.pem -req -signkey key.pem -days 1001
- 	cat key.pem >> cert.pem
- 
- 	# одной командой
- 	# большинство параметров - будут спрошены утилитой через диалог, если не заданны command line аргументом
- 	openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 \
- 		-subj "/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=www.example.com"
- 
- 	#-sha256 вроде не нужно
- 	#-nodes - создает приватный ключ без пароля
- 	
- корневой самоподписанный сертификат
-    openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout ca-key.pem -out ca-cert.pem -days 365
-     # req   - подкоманда создания запроса на создания сертификата
-     # -x509 - сразу создать самоподписанный сертификат
-     # -nodes - создает приватный ключ без пароля
-     
-     # default /etc/ssl/openssl.cnf для [req] содержит x509_extensions = v3_ca, который содержит basicConstraints = critical,CA:true
-     
- сертификат подписанный CA:
-    # создаем запрос
-    openssl req -new -sha256 -nodes -newkey rsa:4096 -keyout key.pem -out cert.csr -addext subjectAltName=DNS:localhost,IP:127.0.0.1
-     # req   - подкоманда создания запроса на создания сертификата
-     # -new  - создаем новый запрос(не редактируем.смотрим существующий)
-     # -addext subjectAltName=DNS:localhost,IP:127.0.0.1 - указываем AltNames
-
-     # дополнительно
-     # -utf8   - otherwise all expected to be ASCII
-     # -config - альтернативный конфигурационный файл
-
-     # -extensions section
-     # -reqexts    section
-     #    позволяет задать альтернативную секцию для описания certificate extensions, то что обычно задается через x509_extensions/req_extensions
-
-     # -addext - Add a specific extension to the certificate (if the -x509 option is present) or certificate request.
-     #           The argument must have the form of a key=value pair as it would appear in a config file
-     #           По идее идут как если из конфигурационного файла, из соотв секции, например:
-     #
-     #           openssl.cnf:
-     #            [req]
-     #            x509_extensions = v3_ca
-     #            ...
-     #            [v3_ca]
-     #            subjectAltName = ...
-     #           аналогично -addext subjectAltName=...
-
-    # можно посмотреть созданный запрос с помощью
-    openssl req -in cert.csr -noout -text
-
-    # альтернативный метод:
-    openssl req -new -sha256 -nodes -newkey rsa:4096 -keyout key.pem -out cert.csr \
-          -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "\n[SAN]\nsubjectAltName=DNS:mydomain.com,DNS:www.mydomain.com"))
-
-    # создаем и подписываем сертификат
-    openssl x509 -req -in cert.csr -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out cert.pem -days 365 -sha256 -extfile <(printf "subjectAltName=DNS:localhost,IP:127.0.0.1")
-    # x509    - подкоманда манипулирования x509 сертификатами
-    # -req    - на вход запрос на создание сертификата
-    # -CA     - CA сертификат
-    # -CAkey  - CA сертификат
-    # -CAcreateserial - у всех сертификатов должен быть уникальный в рамках CA серийный номер, этот параметр создает новый файл с отслеживаемым серийником(ca-cert.srl)
-    # -extfile        - задает файл с v3 расширениями сертификата
-
- Сертификат и ключ для подписи exe с помощью signtool:
-   # Нужен сертификат с EKU(extendedKeyUsage) codeSigning(1.3.6.1.5.5.7.3.3). 
-   # Для этого нужно добавить -addext extendedKeyUsage=codeSigning. Все остальное аналогично.
-   # Пример cамоподписанный сертификат:
-   openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout signapp-key.pem -out signapp-cert.pem -days 365 -addext extendedKeyUsage=codeSigning
-
  PKCS #12:
    openssl pkcs12 -in keystore.p12 -out bag.pem -nodes -passin pass:'somepass' # -nodes -> don't encrypt the private keys at all
    # bag.pem будет содержать и ключ и сертификаты(связааный с ключом) и так и дополнительные(CA и прочие), дальше руками распотрошить
 
    # в обратную сторону с CA
    openssl pkcs12 -export -inkey key.pem -in cert.pem -CAfile ca-cert.pem -chain -out key.p12
+
+ 
+*****************************************************************************************
+*                 Генерация сертификатов и цепеочек сертификатов
+*****************************************************************************************
+Генерация сертификатов делается 2мя командами:
+  openssl req   ....    - создает запрос на создание сертификата неким CA органом, строго говоря создает PKCS#10 certificate request
+  openssl x509  ....    - создает сертификат на основе PKCS#10 запроса, и подписывает полученный сертификат CA ключом.
+
+  Есть еще 3я команда - openssl ca - она своего рода простенький certificate authority center.
+      Но на практике она использует файлы из папки установки openssl и в целом с ней чуть больше мороки, можно обойтись без нее.
+
+  Команды используют секции req и ca(по имени команд) из /etc/ssl/openssl.cnf для прописывания v3 extensions(и некоторых других, нам не важных параметров)
+  команда x509 по умолчанию не использует openssl.cnf, но имеет опции которые позволяют подтягивать оттуда v3 extension.
+    * man openssl-config - общее описание конфигурирования openssl
+    * man openssl-req    - openssl req   под команда и параметры из openssl.cnf
+    * man openssl-x509   - openssl x509  под команда и параметры из openssl.cnf
+    * man x509v3_config  - конфигурирование расширений v3 для x509 сертификатов
+
+  В стандартной поставке OpenSSL идет файл openssl.cnf в котором упрощенно имеется:
+      [ ca ]
+      x509_extensions = usr_cert    # The extensions to add to the cert
+      [ req ]
+      x509_extensions = v3_ca   # The extensions to add to the self signed cert
+      # req_extensions = v3_req # The extensions to add to a certificate request
+      
+      [ usr_cert ]
+      basicConstraints=CA:FALSE
+      subjectKeyIdentifier=hash
+      authorityKeyIdentifier=keyid,issuer
+      
+      [ v3_ca ]
+      subjectKeyIdentifier=hash
+      authorityKeyIdentifier=keyid:always,issuer
+      
+      # This is what PKIX recommends but some broken software chokes on critical extensions.
+      #basicConstraints = critical,CA:true
+      # So we do this instead.
+      basicConstraints = CA:true
+      
+      [ v3_req ]
+      # Extensions to add to a certificate request
+      basicConstraints = CA:FALSE
+      keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+    Итого в файле есть 3 секции описывающие v3 exts для генерации сертификатов.
+    v3_ca    - для certificate authority
+    v3_req   - для certificate request
+    usr_cert - extensions are added when 'ca' signs a request.
+
+    Это в теории(наверное), на практике команда:
+       openssl req       ...   считывает v3ext из [ req ] req_extensions            -reqexts    переопределяет секцию
+       openssl req -x509 ...   считывает v3ext из [ req ] x509_extensions (=v3_ca)  -extensions переопределяет секцию
+       openssl x509      ...   по-умолчанию вообще ничего не считывает openssl.cnf по-умолчанию. Но можно задать -extfile filename(по умолчанию путь пустой, а не /etc/ssl/openssl.cnf) и -extensions section
+ 
+    Похоже в сертификат попадают только v3 extensions заданные для команды x509. 
+    Команда req задает v3 extensions которые попадают в PKCS#10 запрос, но они оттуда не копируются автоматически командой x509.
+    Как итог их нужно дублировать в команде openssl x509, поэтому задавать v3 extensions в команду req выглядит избыточно.
+
+
+*****************************************************************************************
+Корневой самоподписанный сертификат:
+
+  openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout ca-key.pem -out ca-cert.pem -days 365 \
+    -subj "/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=www.example.com"
+
+  # req   - подкоманда создания запроса на создания сертификата
+  # -x509 - сразу создать самоподписанный сертификат, минуя запрос
+  # -nodes - создает приватный ключ без пароля
+  # -subj  - задает subject
+  # большинство параметров - будут спрошены утилитой через диалог, если не заданны command line аргументом, включая subj
+
+  # Для CA сертификатов важно что бы в v3 extensions были след свойства: 
+  #   basicConstraints = critical,CA:true
+  # и не плохо бы:
+  #   X509v3 Subject Key Identifier, X509v3 Authority Key Identifier
+  # default /etc/ssl/openssl.cnf для [req] содержит x509_extensions = v3_ca, который включит эти свойства(смотри выше)
+  
+
+*****************************************************************************************
+Конечный сертификат подписанный CA:
+  
+  # создаем запрос
+  openssl req -new -sha256 -nodes -newkey rsa:4096 -keyout key.pem -out cert.csr
+      -addext subjectAltName=DNS:localhost,IP:127.0.0.1
+
+    # req   - подкоманда создания запроса на создания сертификата
+    # -new  - создаем новый запрос(не редактируем/смотрим существующий)
+    # -addext subjectAltName=DNS:localhost,IP:127.0.0.1 - указываем AltNames
+    
+    # дополнительно
+    # -utf8   - otherwise all expected to be ASCII
+    # -config - альтернативный конфигурационный файл
+    #
+    # -reqexts    section позволяет задать альтернативную секцию для описания certificate extensions, то что обычно задается через req_extensions
+    # -extensions section позволяет задать альтернативную секцию для описания certificate extensions, то что обычно задается через x509_extensions
+    #
+
+    NOTE: -addext добавит extension только в PKCS#10 запрос,
+          он не попадает в сертификат автоматически, его нужно будет дублировать для команды openssl x509.
+          А значит он тут избыточен.
+    
+  # можно посмотреть созданный запрос с помощью
+  openssl req -in cert.csr -noout -text
+
+  # альтернативный метод:
+  openssl req -new -sha256 -nodes -newkey rsa:4096 -keyout key.pem -out cert.csr \
+          -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "\n[SAN]\nsubjectAltName=DNS:localhost,IP:127.0.0.1"))
+
+  # создаем и подписываем сертификат
+  openssl x509 -req -in cert.csr -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out cert.pem -days 365 -sha256 \
+    -extensions usr_cert -extfile <(cat /etc/ssl/openssl.cnf <(printf "\n[usr_cert]\nsubjectAltName=DNS:localhost,IP:127.0.0.1"))
+    
+    # x509    - подкоманда манипулирования x509 сертификатами
+    # -req    - на вход запрос на создание сертификата
+    # -CA     - CA сертификат
+    # -CAkey  - CA ключ
+    # -CAcreateserial - у всех сертификатов должен быть уникальный в рамках CA серийный номер, этот параметр создает новый файл с отслеживаемым серийником(ca-cert.srl)
+    # -extfile        - задает файл   с v3 расширениями сертификата
+    # -extensions     - задает секцию с v3 расширениями сертификата
+
+    # Мы хотим использовать секцию usr_cert из файла по-умолчанию потому что там прописаны:
+    # basicConstraints=CA:FALSE, subjectKeyIdentifier=hash, authorityKeyIdentifier=keyid,issuer, которые нам были бы полезны.
+    # Так же нам нужен nsubjectAltName, поэтому мы его "дочитываем" на лету продолжением секции:
+    # [usr_cert]
+    # subjectAltName=DNS:localhost,IP:127.0.0.1
+
+
+*****************************************************************************************
+Intermediate CA certificate:
+
+  openssl req -new -sha256 -nodes -newkey rsa:4096 -keyout inter-key.pem -out inter-cert.csr
+  openssl x509 -req -in inter-cert.csr -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out inter-cert.pem -days 365 -extfile /etc/ssl/openssl.cnf  -extensions v3_ca
+
+   # -extensions v3_ca - добавит обязательный basicConstraints = critical,CA:true, а так же X509v3 Subject Key Identifier, X509v3 Authority Key Identifier
+
+
+*****************************************************************************************
+Сертификат и ключ для подписи exe с помощью signtool:
+  # Нужен сертификат с EKU(extendedKeyUsage) codeSigning(1.3.6.1.5.5.7.3.3). 
+  # Для этого нужно добавить -addext extendedKeyUsage=codeSigning. Все остальное аналогично.
+  # Пример cамоподписанный сертификат:
+    openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout signapp-key.pem -out signapp-cert.pem -days 365 -addext extendedKeyUsage=codeSigning
+
+*****************************************************************************************
+*****************************************************************************************
+*****************************************************************************************
 
 
 JAVA keystore интеграция:
