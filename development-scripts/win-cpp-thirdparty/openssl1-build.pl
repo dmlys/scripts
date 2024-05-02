@@ -48,8 +48,8 @@ sub build_one
 		{
 			s/([\/-])\bZi\b/$1Z7/;
 			s/([\/-])MT(d?)/$1MD$2/ if $variant =~ /shared/;
-			s/libssl.lib/openssl-ssl-$suffix.lib/;
-			s/libcrypto.lib/openssl-crypto-$suffix.lib/;
+			s/\blibssl\.lib\b/openssl-ssl-$suffix.lib/;
+			s/\blibcrypto\.lib\b/openssl-crypto-$suffix.lib/;
 			print;
 		}
 	}

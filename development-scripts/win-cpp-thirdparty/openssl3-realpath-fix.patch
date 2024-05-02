@@ -1,0 +1,18 @@
+diff --git a/Configure b/Configure
+index 3b6617c177..5ab199f851 100755
+--- a/Configure
++++ b/Configure
+@@ -3506,6 +3506,13 @@ sub absolutedir {
+     if ($^O eq "VMS") {
+         return rel2abs($dir);
+     }
++    
++    # realpath() on Windows seems to check if the directory actually exists,
++    # which isn't what is wanted here.  All we want to know is if a directory
++    # spec is absolute, not if it exists.
++    if ($^O eq "MSWin32") {
++        return rel2abs($dir);
++    }
+ 
+     # We use realpath() on Unix, since no other will properly clean out
+     # a directory spec.
