@@ -12,6 +12,7 @@ Sony Bravia KDL-42W705B.xml
 	
 	ffmpeg -y -i input.mkv -c copy -vf "scale=1920:-1" -c:v libx264 -crf 17 -preset slow -tune film -profile:v high -level 4.1 output.mkv
 	ffmpeg -y -i input.mkv -c copy -c:a ac3            -c:v libx264 -crf 17 -preset slow -tune film -profile:v high -level 4.1 output.mkv
+	ffmpeg -y -i input.mkv -c copy                     -c:v libx265 -crf 26 -preset slow            -profile:v main            output.mkv
 	
 	ffmpeg -y -i input.mkv -c copy -filter:a volume=2 -c:a ac3 output.mkv
 	ffmpeg -y -i input.mkv -map 0:0 -map 0:2 -map 0:2 -map 0:3 -map 0:4 -c copy -c:a:1 ac3 -b:a:1 640k output.mkv
