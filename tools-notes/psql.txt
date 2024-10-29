@@ -29,3 +29,14 @@ bytea и текст, вывод в консоль текстовых блобо�
    Т.е. ASCII покажет как текст, остальное будет заэскейпнуто
 
  decode может быть полезен, если данные в base64, hex
+
+
+Обновить COLLATION для всех баз данных:
+postgres-fix.sh:
+  #"SELECT datname FROM pg_database WHERE datistemplate = false and datname != 'postgres'"
+  all="SELECT datname FROM pg_database WHERE datistemplate = false"
+  psql --user postgres --no-align --tuples-only --command "$all" | while read -a database ; do
+      echo "Processing ${database}..."
+      psql --user ${database} --command "REINDEX DATABASE \"${database}\"" --command "ALTER DATABASE \"${database}\" REFRESH COLLATION VERSION;"
+  done
+
