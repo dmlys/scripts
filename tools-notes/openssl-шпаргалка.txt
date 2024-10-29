@@ -107,14 +107,14 @@
 
  PKCS #12:
    openssl pkcs12 -in keystore.p12 -out bag.pem -nodes -passin pass:'somepass' # -nodes -> don't encrypt the private keys at all
-   # bag.pem будет содержать и ключ и сертификаты(связааный с ключом) и так и дополнительные(CA и прочие), дальше руками распотрошить
+   # bag.pem будет содержать и ключ и сертификаты(связанный с ключом) и так и дополнительные(CA и прочие), дальше руками распотрошить
 
    # в обратную сторону с CA
    openssl pkcs12 -export -inkey key.pem -in cert.pem -CAfile ca-cert.pem -chain -out key.p12
 
  
 *****************************************************************************************
-*                 Генерация сертификатов и цепеочек сертификатов
+*                 Генерация сертификатов и цепочек сертификатов
 *****************************************************************************************
 Генерация сертификатов делается 2мя командами:
   openssl req   ....    - создает запрос на создание сертификата неким CA органом, строго говоря создает PKCS#10 certificate request
@@ -162,9 +162,9 @@
     usr_cert - extensions are added when 'ca' signs a request.
 
     Это в теории(наверное), на практике команда:
-       openssl req       ...   считывает v3ext из [ req ] req_extensions            -reqexts    переопределяет секцию
-       openssl req -x509 ...   считывает v3ext из [ req ] x509_extensions (=v3_ca)  -extensions переопределяет секцию
-       openssl x509      ...   по-умолчанию вообще ничего не считывает openssl.cnf по-умолчанию. Но можно задать -extfile filename(по умолчанию путь пустой, а не /etc/ssl/openssl.cnf) и -extensions section
+       openssl req       ...   считывает v3ext из [ req ] req_extensions           ;  -reqexts    переопределяет секцию
+       openssl req -x509 ...   считывает v3ext из [ req ] x509_extensions (=v3_ca) ;  -extensions переопределяет секцию
+       openssl x509      ...   вообще ничего не считывает из openssl.cnf по-умолчанию. Но можно задать -extfile filename(по умолчанию путь пустой, а не /etc/ssl/openssl.cnf) и -extensions section
  
     Похоже в сертификат попадают только v3 extensions заданные для команды x509. 
     Команда req задает v3 extensions которые попадают в PKCS#10 запрос, но они оттуда не копируются автоматически командой x509.
