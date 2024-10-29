@@ -4,6 +4,9 @@ objcopy --only-keep-debug foo foo.debug
 strip --strip-debug foo
 objcopy --add-gnu-debuglink=foo.debug foo
 
+посмотреть уже существующий(или отсутствующий) debug link можно командой:
+  readelf --string-dump=.gnu_debuglink  foo
+
 
 Выдержка из Separate-Debug-Files.html:
 18.3 Debugging Information in Separate Files

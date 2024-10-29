@@ -1,4 +1,4 @@
-some simple spreadshhet to remember gdb commands
+some simple spreadsheet to remember gdb commands
 
 #print source listing
 l, list location   # Print lines centered around the line specified by location.
@@ -29,7 +29,11 @@ start       - run program and break immediately
 run         - run program
 step, s     - step
 next, n     - next, step over
-finish, fin - finish current subrouting, step out
+finish, fin - finish current subroutine, step out
+
+#frame 
+frame, f     - displays the currently selected frame.
+frame, f num - Specifies the zero-based frame number that will be selected as a result of running this command.
 
 #inspect objects
 p   var - print variable
@@ -37,12 +41,18 @@ p/x var - print in hex
 p   ptr - print pointer
 p  *ptr - print object pointed by ptr
 
+info locals - print local variables
+info args   - print function arguments
+
 set print object on
 ptype ptr
 
 #info
 info sharedLibraries - list of loaded so modules
 info threads         - print threads info
+info locals          - Print the local variables of the selected frame, each on a separate line.
+                       These are all variables (declared either static or automatic) accessible at the point of execution of the selected frame.
+info args            - print function arguments
 
 #thread
 thread <num>         - switch to thread <num>
@@ -110,6 +120,60 @@ If your source path is cluttered with directories that are no longer of interest
     Use directory with suitable arguments to reinstall the directories you want in the source path. You can add all the directories in one command. 
 
 
+#follow forks
+show detach-on-fork
+set follow-fork-mode MODE  #  parent(default), child
+
+show detach-on-fork
+set detach-on-fork MODE    #  on(default), off
+
+set follow-exec-mode MODE  # new, same(default)
+
+
+show detach-on-fork
+    Show whether detach-on-fork mode is on/off. 
+set follow-fork-mode MODE
+     Set the debugger response to a program call of 'fork' or 'vfork'.
+     A call to 'fork' or 'vfork' creates a new process.  The MODE
+     argument can be:
+        'parent'
+             The original process is debugged after a fork.  The child
+             process runs unimpeded.  This is the default.
+        'child'
+             The new process is debugged after a fork.  The parent process
+             runs unimpeded.
+
+show detach-on-fork
+     Show whether detach-on-fork mode is on/off.
+set detach-on-fork MODE
+     Tells gdb whether to detach one of the processes after a fork, or
+     retain debugger control over them both.
+        'on'
+            The child process (or parent process, depending on the value
+            of 'follow-fork-mode') will be detached and allowed to run
+            independently.  This is the default.
+        'off'
+            Both processes will be held under the control of GDB.  One
+            process (child or parent, depending on the value of
+            'follow-fork-mode') is debugged as usual, while the other is
+            held suspended.
+
+set follow-exec-mode MODE
+     Set debugger response to a program call of 'exec'.  An 'exec' call
+     replaces the program image of a process.
+     'follow-exec-mode' can be:
+     'new'
+          GDB creates a new inferior and rebinds the process to this new
+          inferior.  The program the process was running before the
+          'exec' call can be restarted afterwards by restarting the
+          original inferior.
+     'same'
+          GDB keeps the process bound to the same inferior.  The new
+          executable image replaces the previous executable loaded in
+          the inferior.  Restarting the inferior after the 'exec' call,
+          with e.g., the 'run' command, restarts the executable the
+          process was running after the 'exec' call.  This is the
+          default mode.
 
 Non stop mode:
 # Enable the async interface.
