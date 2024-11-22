@@ -1,0 +1,12 @@
+
+g++ --help
+g++ --help=common
+g++ --help=target
+g++ --target-help
+
+Если добавить -Q перед --help - вместо описания будут выводится значения по-умолчанию. Например:
+g++ -Q --help=target
+...
+-m32   [dsiabled]
+-m64   [enabled]
+...
