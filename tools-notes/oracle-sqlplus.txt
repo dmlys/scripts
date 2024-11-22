@@ -9,3 +9,9 @@ ERROR: ORA-12504: TNS:listener was not given the SERVICE_NAME in CONNECT_DATA
 
 alias sqlplus='rlwrap -c sqlplus '
 touch ~/.sqlplus_history
+
+
+# SET WRAP ON/OFF
+set linesize 120
+col <colname> format  a30
+col <colname> format  a30
