@@ -144,6 +144,9 @@ qbs config profiles.qt-5.11.2-local-debug.baseProfile clang           # по у�
 qbs config defaultProfile  qt-5-11-1
 qbs config defaultProfile  qt-0-0-0-bin
 
+qbs config profiles.x86_64-pc-linux-gnu-gcc-11_1.cpp.libraryPaths '["/home/user/.local/opt/library-ver/lib", "/home/user/.local/opt/library2-ver/lib"]'
+qbs config profiles.x86_64-pc-linux-gnu-gcc-11_1.cpp.systemIncludePaths '["/home/user/.local/opt/library-ver/include", "/home/user/.local/opt/library2-ver/include"]'
+
 qbs help build/...
 qbs config preferences.defaultBuildDirectory bin
 

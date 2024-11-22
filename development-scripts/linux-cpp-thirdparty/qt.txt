@@ -38,6 +38,20 @@ linux minimal:
 linux-mingw примеры:
   cd qtbase - to build only qtbase modules(qt5core, qt5gui, etc)
   #debug ./configure -prefix /linux-data/mingw-qt5.15.1 -opensource -confirm-license -debug -no-optimize-debug -developer-build -static -c++std c++17 -nomake tests -nomake examples -opengl desktop -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32-
+  
+  #debug: configure minimal, build only qt5base
+  ../qt-everywhere-src-5.15.15/configure -prefix /linux-data/mingw-qt-5-15-15 \
+     -opensource -confirm-license -debug -no-optimize-debug -developer-build -static -c++std c++17  \
+     -gui -widgets -no-dbus -make libs \
+     -opengl desktop -no-icu -no-angle \
+     -skip qtx11extras -skip qtactiveqt -skip qtdeclarative -skip qtlocation -skip qtlottie \
+     -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 \
+     -skip qtquicktimeline -skip qtremoteobjects -skip qtwebglplugin \
+     -no-feature-network -no-feature-sql \
+     -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- QMAKE_CXXFLAGS+=-Wa,-mbig-obj
+
+  make install-module-qtbase
+  make module-qtbase-install_subtargets
 
 
 windows примеры:
