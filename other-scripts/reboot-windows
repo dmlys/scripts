@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 set -o errexit 
-ID=`perl -ne "print \\$1 if /menuentry '(.*?windows.*?)'/i" /boot/grub/grub.cfg`
+ID=`sudo perl -ne "print \\$1 if /menuentry '(.*?windows.*?)'/i" /boot/grub/grub.cfg`
 if [[ -n ID ]]; then
-	grub-reboot "$ID"
+	sudo grub-reboot "$ID"
 	#reboot
 else
 	echo "Windows Boot Entry not found"
