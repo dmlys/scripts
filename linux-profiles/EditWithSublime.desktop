@@ -1,0 +1,14 @@
+# https://develop.kde.org/docs/apps/dolphin/service-menus/
+# should be put into ~/.local/share/kio/servicemenus/EditWithSublime.desktop
+# chmod +x ~/.local/share/kio/servicemenus/EditWithSublime.desktop
+[Desktop Entry]
+Type=Service
+MimeType=application/octet-stream
+Actions=EditWithSublime
+Icon=sublime-text
+X-KDE-Priority=TopLevel
+
+[Desktop Action EditWithSublime]
+Name=Edit with Sublime
+Exec=subl %F
+Icon=sublime-text
