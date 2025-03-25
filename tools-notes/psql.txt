@@ -40,3 +40,10 @@ postgres-fix.sh:
       psql --user ${database} --command "REINDEX DATABASE \"${database}\"" --command "ALTER DATABASE \"${database}\" REFRESH COLLATION VERSION;"
   done
 
+  all="SELECT datname FROM pg_database WHERE datistemplate = true"
+  psql --user postgres --no-align --tuples-only --command "$all" | while read -a database ; do
+      echo "Processing ${database}..."
+      psql --user postgres --command "ALTER DATABASE \"${database}\" REFRESH COLLATION VERSION;"
+  done
+
+

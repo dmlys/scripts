@@ -57,9 +57,10 @@
  				openssl x509 -outform der -in certificate.pem -out certificate.der
  				openssl x509 -inform  der -in certificate.der -out certificate.pem
  
- 			Конвертировать PEM в P7B
+ 			Конвертировать PEM <-> P7B
  
  				openssl crl2pkcs7 -nocrl -certfile certificate.cer -out certificate.p7b -certfile CACert.cer
+        openssl pkcs7 -in certificate.p7b -inform DER -print_certs -out certificate.pem
  
  			Конвертировать PEM <-> PFX
  
@@ -71,6 +72,8 @@
 Некоторый полезные команды OpenSSL:
  openssl version -a #выдаст версию и прочую полезную информацию о сборке OpenSSL в том числе пути к файлам конфигурации
 
+Посмотреть сертификат:
+  openssl x509 -in cert.pem -inform PEM/DER -nout -text -nameopt utf8
 
  Закрытый ключ получаемый из OpenSSH можно использовать как есть в OpenSSL:
   	openssl pkeyutl -decrypt -inkey .ssh/id_rsa
