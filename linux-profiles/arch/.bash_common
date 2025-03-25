@@ -28,7 +28,7 @@ shopt -s globstar
 
 # expand environment variables when bash completion triggers
 # cp $HOME/.config<TAB> -> cp /home/user/.config/
-shopt -s direxpand
+#shopt -s direxpand
 
 # private group umask
 umask 002

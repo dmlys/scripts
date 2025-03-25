@@ -91,7 +91,7 @@ mcedit /etc/hostname - записать желаемое имя
 mcedit /etc/hosts добавить:
 127.0.0.1	 localhost
 ::1		     localhost
-127.0.1.1	 myhostname.localdomain	myhostname
+127.0.0.1	 myhostname.localdomain	myhostname
 
 
 passwd - задать root пароль

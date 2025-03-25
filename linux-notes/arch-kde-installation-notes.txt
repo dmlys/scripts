@@ -39,7 +39,7 @@ https://wiki.archlinux.org/title/NVIDIA#Installation
 рекомендуется: Remove kms from the HOOKS array in /etc/mkinitcpio.conf and regenerate initramfs - mkinitcpio -P
 
 # to enable NVIDIA kernel mode setting on NVIDIA proprietary driver add following file with kernel option
-/etc/modprobe.d/nvidia_drm_modeset.conf: options nvidia_drm modeset=1
+/etc/modprobe.d/nvidia-drm-modeset.conf: options nvidia_drm modeset=1
 
 /***********************************************************************
 /* NVIDIA proprietary driver: screen glitches after suspend/sleep
@@ -54,7 +54,7 @@ By default the NVIDIA Linux drivers save and restore only essential video memory
 
 The "still experimental" interface enables saving all video memory (given enough space on disk or RAM).
 
-/etc/modprobe.d/nvidia_memsleep.conf:
+/etc/modprobe.d/nvidia-memsleep.conf:
 options nvidia NVreg_PreserveVideoMemoryAllocations=1
 
 systemctl enable nvidia-resume.service nvidia-suspend.service nvidia-hibernate.service
