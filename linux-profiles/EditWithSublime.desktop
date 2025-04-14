@@ -6,7 +6,7 @@ Type=Service
 MimeType=application/octet-stream
 Actions=EditWithSublime
 Icon=sublime-text
-X-KDE-Priority=TopLevel
+#X-KDE-Priority=TopLevel
 
 [Desktop Action EditWithSublime]
 Name=Edit with Sublime
