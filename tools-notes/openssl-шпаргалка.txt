@@ -113,7 +113,7 @@
    # bag.pem будет содержать и ключ и сертификаты(связанный с ключом) и так и дополнительные(CA и прочие), дальше руками распотрошить
 
    # в обратную сторону с CA
-   openssl pkcs12 -export -inkey key.pem -in cert.pem -CAfile ca-cert.pem -chain -out key.p12
+   openssl pkcs12 -export -inkey key.pem -in cert.pem -CAfile ca-cert.pem -chain -name cert-key-name -caname ca-name -out key.p12
 
  
 *****************************************************************************************
