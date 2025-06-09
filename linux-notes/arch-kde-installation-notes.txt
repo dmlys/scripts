@@ -195,8 +195,35 @@ mkdir ~/Documents ~/Downloads ~/Music ~/Pictures ~/Videos
 
 
 /***********************************************************************
+/* https://wiki.archlinux.org/title/PulseAudio/Examples#Having_both_speakers_and_headphones_plugged_in_and_switching_in_software_on-the-fly
+/***********************************************************************
+https://wiki.archlinux.org/title/PulseAudio/Examples#Having_both_speakers_and_headphones_plugged_in_and_switching_in_software_on-the-fly
+
+By design, PulseAudio automatically turns off Line Out when headphones are plugged in and uses Headphone slider instead.
+You can observe this behavior in alsamixer(1). What we want is to have Headphone and Line Out sliders working separately and at the same time.
+
+1. By default, Line Out's volume controlled only by Master, and not by Line Out slider itself. We want to merge Line Out with Master.
+Add this snippet to the end of the file:
+[Element Line Out]
+switch = mute
+volume = merge
+
+2. We need to completely cut off Line Out when we use headphones.
+Edit: /usr/share/pulseaudio/alsa-mixer/paths/analog-output-headphones.conf.
+Add this snippet to the end of the file:
+[Element Line Out]
+switch = off
+volume = off
+
+3. Like PulseAudio, ALSA itself cuts off speakers when headphones are plugged in. Run alsamixer (in case of Realtek HDA alsamixer -c0) and change Auto-Mute mode to disabled. 
+4. Restart PulseAudio
+
+/***********************************************************************
 /* https://wiki.archlinux.org/title/PulseAudio/Examples#Splitting_front
 /***********************************************************************
+!!! Это создаст только виртуальные устройства, более того это просто перенапривит rear динамики на наушники.
+    Тоесть нужно втыкать наушники в rear выход(спец гнездо для наушников, обычно спереди).
+
 https://wiki.archlinux.org/title/PulseAudio/Examples#Splitting_front/rear
 
 replace <alsa_output.sink> in commands bellow with device shown in command: pacmd list-sinks
