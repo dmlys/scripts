@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html class="no-js" xmlns="http://www.w3.org/1999/xhtml" prefix="" lang="en-US"><!--[if lt IE 7 ]><html class="ie ie6"  xmlns="http://www.w3.org/1999/xhtml" prefix="" lang="en-US"> <![endif]--><!--[if IE 7 ]><html class="ie ie7"  xmlns="http://www.w3.org/1999/xhtml" prefix="" lang="en-US"> <![endif]--><!--[if IE 8 ]><html class="ie ie8"  xmlns="http://www.w3.org/1999/xhtml" prefix="" lang="en-US"> <![endif]--><!--[if (gte IE 9)|!(IE)]><html  xmlns="http://www.w3.org/1999/xhtml" prefix="" lang="en-US"><![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+	<!-- Basic Page Needs
+  	================================================== -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>TCP Analysis and the Five-Tuple  |  Packet-Foo | Network Packet Capture and Analysis</title>
+
+	<!-- Mobile Specific Metas
+ 	================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	
+	<!--[if lt IE 9]>
+	<script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Favicons
+	================================================== -->
+	
+	
+<!-- BEGIN Metadata added by the Add-Meta-Tags WordPress plugin -->
+<meta name="description" content="Duplicate frames can have a big impact on the TCP analysis results in Wireshark, because it looks like there are lots of retransmitted segments or acknowledgements. While duplicates can't always be avoided in the capture process it is still possible to clean the trace file before analyzing it in Wireshark.">
+<meta name="keywords" content="wireshark, tcp, expert, 5 tuple, five tuple, tuple, false positive">
+<!-- END Metadata added by the Add-Meta-Tags WordPress plugin -->
+
+<meta name="robots" content="max-image-preview:large">
+	<style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style>
+	<link rel="dns-prefetch" href="https://fonts.googleapis.com/">
+<link rel="alternate" type="application/rss+xml" title="Packet-Foo | Network Packet Capture and Analysis » Feed" href="https://blog.packet-foo.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Packet-Foo | Network Packet Capture and Analysis » Comments Feed" href="https://blog.packet-foo.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Packet-Foo | Network Packet Capture and Analysis » TCP Analysis and the Five-Tuple Comments Feed" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/feed/">
+<div class="fit-vids-style">­<style>               .fluid-width-video-wrapper {                 width: 100%;                              position: relative;                       padding: 0;                            }                                                                                   .fluid-width-video-wrapper iframe,        .fluid-width-video-wrapper object,        .fluid-width-video-wrapper embed {           position: absolute;                       top: 0;                                   left: 0;                                  width: 100%;                              height: 100%;                          }                                       </style></div><script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.1.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.1.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/blog.packet-foo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.8"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\ud83d\udd25","\ud83d\udc26\u200b\ud83d\udd25")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<style id="wp-emoji-styles-inline-css" type="text/css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link rel="stylesheet" id="wp-block-library-css" href="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/style.min.css" type="text/css" media="all">
+<style id="classic-theme-styles-inline-css" type="text/css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<style id="global-styles-inline-css" type="text/css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel="stylesheet" id="style-css" href="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/style.css" type="text/css" media="all">
+<link rel="stylesheet" id="flexslider-css" href="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/flexslider.css" type="text/css" media="all">
+<link rel="stylesheet" id="font-awesome-css" href="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/font-awesome.css" type="text/css" media="all">
+<link rel="stylesheet" id="magnific-popup-css" href="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/magnific-popup.css" type="text/css" media="all">
+<link rel="stylesheet" id="googlefonts-default-css" href="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/css.css" type="text/css" media="all">
+<link rel="stylesheet" id="wp-document-revisions-front-css" href="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/style-front.css" type="text/css" media="all">
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/jquery.min.js" id="jquery-core-js"></script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/jquery-migrate.min.js" id="jquery-migrate-js"></script>
+<link rel="https://api.w.org/" href="https://blog.packet-foo.com/wp-json/"><link rel="alternate" title="JSON" type="application/json" href="https://blog.packet-foo.com/wp-json/wp/v2/posts/880"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://blog.packet-foo.com/xmlrpc.php?rsd">
+<meta name="generator" content="WordPress 6.8">
+<link rel="canonical" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/">
+<link rel="shortlink" href="https://blog.packet-foo.com/?p=880">
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://blog.packet-foo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fblog.packet-foo.com%2F2015%2F03%2Ftcp-analysis-and-the-five-tuple%2F">
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://blog.packet-foo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fblog.packet-foo.com%2F2015%2F03%2Ftcp-analysis-and-the-five-tuple%2F&amp;format=xml">
+<!-- Analytics by WP Statistics - https://wp-statistics.com -->
+<style id="pnp_styles" type="text/css">
+ 	/** 0 */
+	body {
+		color: #555555;
+		background: #f6f6f6;
+	}
+
+	.search-button:hover,
+	.mobile-menu-button:hover,
+	.search-button:active,
+	.mobile-menu-button:active,
+	article.sticky:after {
+		color: #6FD6B8;
+	}
+
+	input:focus, 
+	textarea:focus,
+	blockquote {
+		border-color: #6FD6B8;
+	}
+
+	article a,
+	article .the-content a,
+	#sidebar a,
+	.textwidget a {
+		color: #1e73be;
+	}
+	
+	a.more-link button,
+	button, 
+	.btn, 
+	input[type="submit"],
+	.pagination span.btn,
+	.pagination a.btn.light:hover {
+		background: #6FD6B8;
+	}
+
+	#sidebar li:before {
+		color: #6FD6B8;
+	}
+
+	#header, #footer {
+		background: #3C4144;
+	}
+
+	header nav ul li a:hover {
+		color: #3C4144;
+	}
+
+	article.format-quote:hover {
+		background: #6FD6B8;
+	}
+
+	#sidebar li a {
+		color: #555555;
+	}
+	
+	/** 10 */
+	article a:hover,
+	#sidebar a:hover {
+	    border-color: #1e73be;
+	}
+
+	#sidebar li a:hover {
+		color: #1e73be;
+	}
+
+	@media only screen and (max-width: 1219px) {
+		
+	}
+</style><style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style><script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/si_captcha_002.js"></script>
+<!-- begin SI CAPTCHA Anti-Spam - login/register form style -->
+<style type="text/css">
+.si_captcha_small { width:175px; height:45px; padding-top:10px; padding-bottom:10px; }
+.si_captcha_large { width:250px; height:60px; padding-top:10px; padding-bottom:10px; }
+img#si_image_com { border-style:none; margin:0; padding-right:5px; float:left; }
+img#si_image_reg { border-style:none; margin:0; padding-right:5px; float:left; }
+img#si_image_log { border-style:none; margin:0; padding-right:5px; float:left; }
+img#si_image_side_login { border-style:none; margin:0; padding-right:5px; float:left; }
+img#si_image_checkout { border-style:none; margin:0; padding-right:5px; float:left; }
+img#si_image_jetpack { border-style:none; margin:0; padding-right:5px; float:left; }
+img#si_image_bbpress_topic { border-style:none; margin:0; padding-right:5px; float:left; }
+.si_captcha_refresh { border-style:none; margin:0; vertical-align:bottom; }
+div#si_captcha_input { display:block; padding-top:15px; padding-bottom:5px; }
+label#si_captcha_code_label { margin:0; }
+input#si_captcha_code_input { width:65px; }
+p#si_captcha_code_p { clear: left; padding-top:10px; }
+.si-captcha-jetpack-error { color:#DC3232; }
+</style>
+<!-- end SI CAPTCHA Anti-Spam - login/register form style -->
+
+	<style id="pnp_styles" type="text/css">
+ 	/** 0 */
+	body {
+		color: #555555;
+		background: #f6f6f6;
+	}
+
+	.search-button:hover,
+	.mobile-menu-button:hover,
+	.search-button:active,
+	.mobile-menu-button:active,
+	article.sticky:after {
+		color: #6FD6B8;
+	}
+
+	input:focus, 
+	textarea:focus,
+	blockquote {
+		border-color: #6FD6B8;
+	}
+
+	article a,
+	article .the-content a,
+	#sidebar a,
+	.textwidget a {
+		color: #1e73be;
+	}
+	
+	a.more-link button,
+	button, 
+	.btn, 
+	input[type="submit"],
+	.pagination span.btn,
+	.pagination a.btn.light:hover {
+		background: #6FD6B8;
+	}
+
+	#sidebar li:before {
+		color: #6FD6B8;
+	}
+
+	#header, #footer {
+		background: #3C4144;
+	}
+
+	header nav ul li a:hover {
+		color: #3C4144;
+	}
+
+	article.format-quote:hover {
+		background: #6FD6B8;
+	}
+
+	#sidebar li a {
+		color: #555555;
+	}
+	
+	/** 10 */
+	article a:hover,
+	#sidebar a:hover {
+	    border-color: #1e73be;
+	}
+
+	#sidebar li a:hover {
+		color: #1e73be;
+	}
+
+	@media only screen and (max-width: 1219px) {
+		
+	}
+</style>
+</head>
+
+<body class="wp-singular post-template-default single single-post postid-880 single-format-standard wp-theme-typist">
+		
+	<!-- Primary Page Layout
+	================================================== -->
+
+	<header id="header">
+
+		<div class="container clear">
+			
+			<div id="logo" class="logo">
+				
+				
+				
+					<a class="site-title" href="https://blog.packet-foo.com/">
+						<img src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/packet-foo-blog-logo-new.png" alt="logo">
+					</a>
+
+								
+			</div>
+			
+			<div class="menubutton"><i class="fa fa-bars"></i></div>
+			
+			<nav><ul><li><a href="https://blog.packet-foo.com/wp-admin/nav-menus.php">Setup your menu</a></li></ul></nav>
+		</div>
+
+		<div class="clear"></div>
+
+	</header>
+
+	<div id="content" class="container content">
+
+	<div id="main">
+
+	
+<article class="post-880 post type-post status-publish format-standard has-post-thumbnail hentry category-cap category-tcp-analysis category-wireshark-cap tag-tcp tag-wireshark">
+
+	
+	<div class="featured">
+		<img src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePackets-860x175.png" alt="">
+	</div>
+
+		
+	<div class="post-content">
+		
+		<h4 class="post-title"><a href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/">TCP Analysis and the Five-Tuple</a></h4>
+		
+		
+<ul class="metadata clear">
+
+			<li><i class="fa fa-fw fa-pencil"></i><a href="https://blog.packet-foo.com/author/jasper/" title="Posts by Jasper" rel="author">Jasper</a></li>
+	
+			<li><i class="fa fa-fw fa-clock-o"></i><a href="https://blog.packet-foo.com/2015/03/">22/3/2015</a></li>
+	
+			<li><i class="fa fa-fw fa-list"></i><a href="https://blog.packet-foo.com/category/cap/" rel="category tag">Packet Capture</a>, <a href="https://blog.packet-foo.com/category/cap/tcp-analysis/" rel="category tag">TCP Analysis</a>, <a href="https://blog.packet-foo.com/category/cap/wireshark-cap/" rel="category tag">Wireshark</a></li>
+	
+			<li>
+			<i class="fa fa-fw fa-comment"></i>
+			<a href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/#comments">
+				8 Comments			</a>
+		</li>
+	
+</ul>		
+		<div class="the-content">
+	<p>The TCP expert of Wireshark is doing a pretty good job at 
+pinpointing problems, helping analysts to find the packets where things 
+go wrong. Unfortunately, there are some things that can throw the expert
+ off pretty badly, which can fool inexperienced analysts in believing 
+that there are big problems on the network. I did a talk about some of 
+those problems at <a title="Sharkfest 2013 Retrospective" href="http://sharkfest.wireshark.org/sf13.html" target="_blank" rel="noopener noreferrer">Sharkfest 2013</a> called “Top 5 False Positives”, and this post will be about on of them: Duplicate packets.</p>
+<h2><span id="more-880"></span> The Five-Tuple</h2>
+<div id="attachment_881" style="width: 733px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/5-TupleExample.png"><img fetchpriority="high" decoding="async" aria-describedby="caption-attachment-881" class="wp-image-881 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/5-TupleExample.png" alt="5-TupleExample" width="723" height="273" srcset="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/5-TupleExample.png 723w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/5-TupleExample-300x113.png 300w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/5-TupleExample-400x151.png 400w" sizes="(max-width: 723px) 100vw, 723px"></a><p id="caption-attachment-881" class="wp-caption-text">Figure 1: 5 Tuple example</p></div>
+<p>The first thing that has to happen when Wireshark crunches through a 
+ton of packets is to determine which protocol and conversation each 
+packet belongs to. It does that by constructing the so-called 
+“Five-Tuple” (or 5-tuple) from the packet it currently looks at, which 
+contains the source IP, source port, destination IP, destination port, 
+and the layer 4 protocol. An example would be 
+“192.168.124.100/50272/81.209.179.69/80/6” for a packet coming from port
+ 50272 of IP 192.168.124.100, going to port 80 of IP 81.209.179.69, 
+using IP protocol 6, which is TCP:</p>
+<p>The same IP and port combination with IP protocol 17 would indicate a
+ UDP conversation. UDP and TCP are the most common protocols the tuple 
+is available for, while you can’t build it for ICMP packets – simply 
+because ICMP does not use ports, so you’d be stuck with a “3-tuple” 😉</p>
+<h2>Tracking TCP Conversation behavior</h2>
+<p>After the 5-tuple for a TCP conversation was determined, there’s two 
+possible ways to continue (reduced to a very simple process; in reality 
+the process is much more complex in its details):</p>
+<ol>
+<li>there is no existing conversation with the same 5-tuple, so this is 
+the first packet of a new conversation detected in the trace. A new 
+entry is added to the conversation list and its TCP state recorded</li>
+<li>a matching entry in the conversation list exists, so we can analyze 
+the new packet in relation to the existing state of the TCP conversation</li>
+</ol>
+<p>One of the most important things to look at is the sequence number in
+ relation to the sequence number of the previous packet from the same 
+node. For each packet the “Next Expected Sequence Number” is calculated,
+ which you can see in Wireshark as well (as long as there is TCP payload
+ in the packet, because otherwise, the sequence number doesn’t change):</p>
+<div id="attachment_882" style="width: 717px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/TCPNextExpectedSequenceNumber.png"><img decoding="async" aria-describedby="caption-attachment-882" class="wp-image-882 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/TCPNextExpectedSequenceNumber.png" alt="TCPNextExpectedSequenceNumber" width="707" height="148" srcset="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/TCPNextExpectedSequenceNumber.png 707w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/TCPNextExpectedSequenceNumber-300x63.png 300w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/TCPNextExpectedSequenceNumber-400x84.png 400w" sizes="(max-width: 707px) 100vw, 707px"></a><p id="caption-attachment-882" class="wp-caption-text">Figure 2: TCP Next Expected Sequence Number</p></div>
+<p>To verify, Sequence number 4194561624 plus 498 bytes of TCP payload 
+equals 419452122. So when the next packet of this conversation is found,
+ it must have a sequence number of 419452122, otherwise something is 
+wrong (Wireshark Expert messages in quotes):</p>
+<ol>
+<li>the sequence is <strong>lower</strong> than expected, meaning that 
+this is a late (“out-of-order”) or retransmitted packet 
+(“Retransmission”/”Fast Retransmission”). The difference is basically in
+ the time of <span style="text-decoration: underline;">how late</span> 
+the packet arrives – a retransmission cannot arrive earlier than the 
+duration of one Round Trip Time after packet loss was signaled by the 
+receiver. If the new packet is arriving significantly faster, it’s an 
+out-of-order. The difference between a “Retransmission” and a “Fast 
+Retransmission” is in the way that packet loss is signaled or detected. 
+Check out <a title="LoveMyTool" href="http://www.lovemytool.com/blog/2014/09/the-tcp-retransmission-flavors-of-wireshark-by-chris-greer.html" target="_blank" rel="noopener noreferrer">Chris’ post at LoveMyTool</a> about the various flavors.</li>
+<li>the sequence is <strong>higher</strong> than expected, meaning that 
+at least one TCP segment is missing (“previous segment not captured”), 
+either because it was really lost in transmission, or simply not 
+captured because the capture device wasn’t placed correctly or the write
+ performance was too bad.</li>
+</ol>
+<h2>“Throwing off” the TCP expert</h2>
+<p>Since the TCP expert matches packets to conversations based on the 
+5-tuple, certain trace files can turn into a mess of TCP symptoms that 
+are nothing but <strong>false positives</strong> for the biggest part of
+ them. The problem in those cases is that the trace file contains the 
+same TCP segment twice (or even more times), usually caused by the way 
+the capture was performed. One of the most common capture problems are 
+true duplicate packets – packets, that were captured multiple times in a
+ SPAN port setup.</p>
+<h3>SPAN trouble</h3>
+<p>Imagine you want to do a capture of two servers that multiple clients
+ connect to, so you configure a SPAN session, e.g. like this:</p>
+<pre>Switch(config)#monitor session 1 source interface gigabitEthernet 1/10 both
+Switch(config)#monitor session 1 source interface gigabitEthernet 1/11 both
+Switch(config)#monitor session 1 destination interface gigabitEthernet 1/24</pre>
+<p>When a client talks to a server on port 10 or 11 there is no problem.
+ But when – for any reason – the servers themselves talk to each other, 
+you get the same packet twice: once when it enters the switch on port 
+10, and the second time when it exits on port 11 (or vice versa, of 
+course):</p>
+<div id="attachment_1274" style="width: 454px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/SPAN-Duplicates.gif"><img decoding="async" aria-describedby="caption-attachment-1274" class="wp-image-1274 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/SPAN-Duplicates.gif" alt="SPAN session resulting in duplicates" width="444" height="348"></a><p id="caption-attachment-1274" class="wp-caption-text">Figure 3: SPAN session resulting in duplicates</p></div>
+<p>This is what Wireshark will show for a trace capture that way if duplicates happen:</p>
+<div id="attachment_887" style="width: 906px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/DuplicatePackets.png"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-887" class="wp-image-887 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePackets.png" alt="DuplicatePackets" width="896" height="182" srcset="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePackets.png 896w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePackets-300x61.png 300w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePackets-400x81.png 400w" sizes="auto, (max-width: 896px) 100vw, 896px"></a><p id="caption-attachment-887" class="wp-caption-text">Figure 4: SPAN duplicates</p></div>
+<p>Take a look at the sequence numbers, and you’ll see that each packet 
+is seen twice – and the TCP expert gets crazy, because it thinks it’s 
+seeing tons of retransmissions, or (depending on the capture) “Duplicate
+ ACKs” when acknowledgement packets get duplicated. Now, the problem is 
+that with a of capture setup like seen above there is simply <strong>no way</strong>
+ to avoid duplicates. And the second problem is, you can’t filter away 
+the second occurrence of each packet with a display filter in Wireshark,
+ because the filter needs to find something to tell the two copies 
+apart. Which cannot work, because they’re <strong>identical</strong> 
+down to the last bit. Also, you cannot do the SPAN session in another 
+way in most cases, because you need both directions of both ports for 
+the normal client communication. Sometimes you can try a trick setup 
+like only monitoring the “receive” directions of a SPANned VLAN – e.g. 
+if you only capture incoming packets for the VLAN, you’ll just get it 
+once, but that only works for VLAN captures, not multiple ports.</p>
+<h4>Fighting true duplicates</h4>
+<p>Fortunately, there’s help to get rid of the true duplicates: you can use the command line tool “<strong>editcap</strong>”
+ to remove duplicates from trace files. Editcap is installed together 
+with Wireshark, and a typical application would look like this:</p>
+<pre>D:\Traces\blog&gt;editcap -d -D 50 duplicates.pcapng no-duplicates.pcapng
+15238 packets seen, 7570 packets skipped with duplicate window of 50 packets.</pre>
+<p>The parameter “-D 50” has editcap compare a history window of 50 
+frames to see if they’re exactly the same as the current frame. If 
+there’s a match, the current frame is discarded. As you can see, 7570 
+packets out of 15238 turned out to be duplicates, which is a little 
+under 50%. After the process, the example from above looks like this:</p>
+<div id="attachment_888" style="width: 834px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/DeduplicatedPackets.png"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-888" class="wp-image-888 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DeduplicatedPackets.png" alt="DeduplicatedPackets" width="824" height="187" srcset="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DeduplicatedPackets.png 824w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DeduplicatedPackets-300x68.png 300w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DeduplicatedPackets-400x91.png 400w" sizes="auto, (max-width: 824px) 100vw, 824px"></a><p id="caption-attachment-888" class="wp-caption-text">Figure 5: Deduplicated Packets</p></div>
+<p>See? Same packets as before, but no more problem.</p>
+<p><strong>Rule of thumb:</strong> if a trace looks really really bad, 
+with tons of TCP expert messages and no – or just a few – “previous 
+packet not captured” symptoms, check for duplicated frames first.</p>
+<h3>Routing Trouble</h3>
+<p>Routed packets can also throw the TCP expert off, even though the 
+packets are not exact duplicates. Here’s a sample, taken from a question
+ on the <a title="Wireshark Q&amp;A" href="https://ask.wireshark.org/questions/17420/losing-packets" target="_blank" rel="noopener noreferrer">Wireshark Q&amp;A</a> site (the question asked there is actually a good example of a Wireshark user being confused by the false positives):</p>
+<div id="attachment_891" style="width: 963px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/DuplicatePacketsAfterRouting.png"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-891" class="wp-image-891 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRouting.png" alt="DuplicatePacketsAfterRouting" width="953" height="108" srcset="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRouting.png 953w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRouting-300x34.png 300w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRouting-400x45.png 400w" sizes="auto, (max-width: 953px) 100vw, 953px"></a><p id="caption-attachment-891" class="wp-caption-text">Figure 6: Duplicate packets after routing</p></div>
+<p>Again, check if there are “packet not captured” messages – because if
+ there really is packet loss, you’ll see two symptoms: one for the lost 
+packet, and one for the retransmission of that packet. If you only see 
+retransmissions or duplicate ACKs, chances are high that you have 
+duplicates in the capture.</p>
+<p>If we take a look at the details of the packets, e.g. packet 103 and 
+packet 104, it looks like in the following screenshots. The first is the
+ packet before the routing process, with a TTL of 128:</p>
+<div id="attachment_892" style="width: 699px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/DuplicatePacketsAfterRoutingDetail1.png"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-892" class="wp-image-892 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail1.png" alt="DuplicatePacketsAfterRoutingDetail1" width="689" height="305" srcset="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail1.png 689w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail1-300x133.png 300w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail1-400x177.png 400w" sizes="auto, (max-width: 689px) 100vw, 689px"></a><p id="caption-attachment-892" class="wp-caption-text">Figure 7: TTL before routing</p></div>
+<p>After the routing was performed, the packet looks like this:</p>
+<div id="attachment_893" style="width: 694px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/DuplicatePacketsAfterRoutingDetail2.png"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-893" class="wp-image-893 size-full" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail2.png" alt="DuplicatePacketsAfterRoutingDetail2" width="684" height="305" srcset="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail2.png 684w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail2-300x134.png 300w, TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DuplicatePacketsAfterRoutingDetail2-400x178.png 400w" sizes="auto, (max-width: 684px) 100vw, 684px"></a><p id="caption-attachment-893" class="wp-caption-text">Figure 8: TTL after routing</p></div>
+<p>The differences are in the Ethernet layer, because after routing the 
+MAC addresses have to change for the new network segment – but the TCP 
+expert doesn’t care about MAC address changes. Also, the <strong>TTL</strong>
+ is reduced by one hop, of course – but again, the TCP expert does not 
+look at that detail either. The rest of the packet is the same, 
+especially the two things that the TCP expert depends upon:</p>
+<ol>
+<li>the 5-tuple is still 192.168.1.36/19813/192.168.2.9/1196/6</li>
+<li>the TCP layer plus the TCP payload, because it doesn’t get changed by the router</li>
+</ol>
+<p>The TCP expert in Wireshark doesn’t care if the same packet is 
+captured in different network segments, or if there are VLAN tags or 
+tunneling involved. If it sees the same 5-tuple and the same TCP 
+information (especially the sequence number and payload length) it will 
+assume it’s the same packet again: “Oh, a retransmission!”.</p>
+<p>Removing routed duplicates is actually simple: you can filter the 
+duplicates away in Wireshark and save the remaining packets to a new 
+file before analyzing them (Don’t forget to use “<strong>Export Specified Packets as</strong>”
+ in the file menu, not “Save as”). I usually use the VLAN tag (if 
+available) or the TTL for this, because it’s different – you could also 
+focus on the Ethernet addresses, but VLAN ids/TTL is usually faster (to 
+type into the filter field 🙂 ).</p>
+<h3>How to remove routing duplicates</h3>
+<p>To remove routing duplicates we need to determine which packets we 
+want to keep first. Depending on how the capture was set up you might 
+see duplicate packets coming from one IP or even both. In the example in
+ Figure 6 you can see that only packets from 192.168.1.36 are 
+duplicated, while those from 192.168.2.29 are not.&nbsp; This means that
+ we need to determine which of the two TTLs we keep and which two TTLs 
+we remove (two TTLs, because sender and receiver often have different 
+values, so with duplicates, you have four TTLs). Usually, this can be 
+done by looking at the MAC addresses and keep the packets based on 
+matching MAC address pairs. Then, filter on the relevant TTLs and save 
+the result:</p>
+<div id="attachment_1569" style="width: 748px" class="wp-caption alignnone"><a href="https://blog.packet-foo.com/wp-content/uploads/2015/03/DeduplicateVLANWithWireshark.gif"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-1569" class="size-full wp-image-1569" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/DeduplicateVLANWithWireshark.gif" alt="Deduplicating VLANs with Wireshark" width="738" height="480"></a><p id="caption-attachment-1569" class="wp-caption-text">Figure 9: Deduplicating VLANs with Wireshark</p></div>
+<h2>Countermeasures</h2>
+<p>Now that we know why the Wireshark expert diagnoses symptoms that 
+aren’t real, we can find a way to clean the trace up before analyzing 
+it. The first step here is one that may not be obvious: you need to <strong>realize</strong>
+ first that duplicates are messing with the TCP expert. For that, you 
+should always keep an eye on the amount and attributes of 
+retransmissions, duplicate ACKs and out-of-orders:</p>
+<ul>
+<li>check if there are more packets than usual having a TCP symptom of 
+retransmission, out-of-order or duplicate ACK. This requires some 
+experience with what’s normal, so do your baselines (I sound a bit like <a title="LoveMyTool" href="http://www.lovemytool.com/blog/tony-fortunato/" target="_blank" rel="noopener noreferrer">Tony</a> here 😉 )</li>
+<li>verify if you also can find “Previous segment not captured” symptoms
+ in the trace – if you don’t see those symptoms of lost segments but 
+their retransmissions, it’s often (but not always!) just a duplicate, 
+because you have two copies of the same segment but no “oh, something 
+was lost” message</li>
+<li>if you think you have duplicates, compare the two packets by 
+clicking on them one after the other in the packet list in rapid 
+succession, while watching the hex view. If the bytes do not change 
+visibly, the packets are identical.</li>
+<li>final check: the delta time between the two packets. Duplicates are 
+typically less than a few microsecond apart, because they’re just two 
+copies made on the same device at the same time. Real retransmissions 
+need at least the full round trip time to get to the destination.</li>
+<li>Tip: you can also just run editcap on a trace file to see if it 
+removes duplicates. If it does, there probably were some (“probably”, 
+because there are some frame types identical down to the byte that 
+aren’t duplicates, e.g. BPDU frames. But those have delta times in the 
+seconds, not milliseconds)</li>
+</ul>
+<p>If you have determined that your trace file contains duplicates, 
+remove them before continuing. Either use editcap as demonstrated (for 
+full frame, byte-by-byte duplicates), or filter one instance away in 
+Wireshark for routed duplicates.</p>
+<p>&nbsp;</p>
+</div>		
+		
+<div class="post-tags">
+	<i class="fa fa-fw fa-tags"></i> Tags: <a href="https://blog.packet-foo.com/tag/tcp/" rel="tag">TCP</a>, <a href="https://blog.packet-foo.com/tag/wireshark/" rel="tag">wireshark</a></div>
+
+
+		<div class="clear"></div>
+
+		
+		
+	<div id="comments" class="comments cf">
+
+		<h3 class="float-left comments-title">
+			Discussions			<span class="comments-number">
+				 — 
+				8 Responses			</span>
+		</h3>
+
+		<div class="clearfix"></div>
+		
+		<ul class="commentlist">
+				
+    <li id="li-comment-24879" class="cf">
+        
+        <div id="comment-24879" class="comment even thread-even depth-1">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Alberto</span>
+
+                <span class="comment-meta">
+
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2016-06-22T16:25:11+02:00">
+                        June 22, 2016 on 4:25 pm                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>Thanks for this post, very informative!</p>
+<p>For those who are looking for a quick filter to clean up a trace with retransmissions/duplicates:</p>
+<p>not tcp.analysis.duplicate_ack and not tcp.analysis.retransmission</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=24879#respond" data-commentid="24879" data-postid="880" data-belowelement="comment-24879" data-respondelement="respond" data-replyto="Reply to Alberto" aria-label="Reply to Alberto">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <ul class="children">
+
+    <li id="li-comment-24880" class="cf">
+        
+        <div id="comment-24880" class="comment byuser comment-author-jasper bypostauthor odd alt depth-2">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Jasper Bongertz</span>
+
+                <span class="comment-meta">
+
+                                        <span class="comment-parent">
+                        <i class="fa fa-mail-forward"></i>
+                        Alberto                    </span>
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2016-06-22T16:32:30+02:00">
+                        June 22, 2016 on 4:32 pm                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>Thanks, Alberto!</p>
+<p>I have to add that your filter expression does hide duplicate acks 
+and retransmissions caused by duplicates, but it also filters away 
+legitimate “problem” packets – so I do not think it is very useful.</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=24880#respond" data-commentid="24880" data-postid="880" data-belowelement="comment-24880" data-respondelement="respond" data-replyto="Reply to Jasper Bongertz" aria-label="Reply to Jasper Bongertz">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <!-- #comment-## -->
+</ul><!-- .children -->
+<!-- #comment-## -->
+
+    <li id="li-comment-25123" class="cf">
+        
+        <div id="comment-25123" class="comment even thread-odd thread-alt depth-1">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Ernest Brant</span>
+
+                <span class="comment-meta">
+
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2016-12-03T09:24:28+01:00">
+                        December 3, 2016 on 9:24 am                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>Hello Jasper</p>
+<p>Another great post to help me on my quest for knowledge 🙂 </p>
+<p>These post on capturing scenarios, issues and solutions really help 
+especially for people  who are starting to look at the lower levels 
+(what’s on the wire) as opposed to just looking that the OS/App levels. 
+So people (including me) can start to make more informed decisions on 
+that you are really looking at, when it comes to a trace file (I will 
+also check out your video link above)</p>
+<p>Question:<br>
+In this post you mentioned the following:</p>
+<p>(Don’t forget to use “Export Specified Packets as” in the file menu, 
+not “Save as”). I usually use the TTL for this, because it’s different –
+ you could also focus on the Ethernet addresses, but TTL is usually 
+faster (to type into the filter field  )</p>
+<p>Can you please explain ‘how to set the TTL filter’, when choose 
+‘export specific packets as’ in Wireshark, I do not appear to get a 
+filter option at this point (see graphic below) </p>
+<p><a href="https://1drv.ms/i/s!AqL5zUwOWToZbM7aGvYgmGeVLEw" rel="nofollow ugc">https://1drv.ms/i/s!AqL5zUwOWToZbM7aGvYgmGeVLEw</a></p>
+<p>Therefore I assume you need to enter a display filter first, if I try
+ a display filter and use ‘Apply as filter’ in a IP TTL e.g. ip.ttl == 
+58  I naturally only get TTL whose TTL = 58</p>
+<p>How do I filter to remove the duplicates as far as TTL is concerned please Jasper</p>
+<p>Thanks again<br>
+Ernie</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=25123#respond" data-commentid="25123" data-postid="880" data-belowelement="comment-25123" data-respondelement="respond" data-replyto="Reply to Ernest Brant" aria-label="Reply to Ernest Brant">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <!-- #comment-## -->
+
+    <li id="li-comment-25124" class="cf">
+        
+        <div id="comment-25124" class="comment byuser comment-author-jasper bypostauthor odd alt thread-even depth-1">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Jasper</span>
+
+                <span class="comment-meta">
+
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2016-12-03T13:37:48+01:00">
+                        December 3, 2016 on 1:37 pm                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>Thanks, for the feeback, Ernie! </p>
+<p>You’re right, the part about filtering on TTL assumes that the reader
+ knows more than I should have. I’ll update the blog post instead of 
+writing it all into the comment field to make it clearer.</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=25124#respond" data-commentid="25124" data-postid="880" data-belowelement="comment-25124" data-respondelement="respond" data-replyto="Reply to Jasper" aria-label="Reply to Jasper">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <!-- #comment-## -->
+
+    <li id="li-comment-25125" class="cf">
+        
+        <div id="comment-25125" class="comment even thread-odd thread-alt depth-1">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Ernest Brant</span>
+
+                <span class="comment-meta">
+
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2016-12-03T20:31:58+01:00">
+                        December 3, 2016 on 8:31 pm                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>Thanks Jasper, much appreciated 🙂</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=25125#respond" data-commentid="25125" data-postid="880" data-belowelement="comment-25125" data-respondelement="respond" data-replyto="Reply to Ernest Brant" aria-label="Reply to Ernest Brant">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <!-- #comment-## -->
+
+    <li id="li-comment-25159" class="cf">
+        
+        <div id="comment-25159" class="comment odd alt thread-even depth-1">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Ernest Brant</span>
+
+                <span class="comment-meta">
+
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2016-12-18T19:46:03+01:00">
+                        December 18, 2016 on 7:46 pm                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>Hello Jasper</p>
+<p>Thanks for updating the blog to demonstrate how to filter on TTL 🙂</p>
+<p>Ernest</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=25159#respond" data-commentid="25159" data-postid="880" data-belowelement="comment-25159" data-respondelement="respond" data-replyto="Reply to Ernest Brant" aria-label="Reply to Ernest Brant">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <!-- #comment-## -->
+
+    <li id="li-comment-26825" class="cf">
+        
+        <div id="comment-26825" class="comment even thread-odd thread-alt depth-1">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Colin</span>
+
+                <span class="comment-meta">
+
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2018-07-19T18:47:36+02:00">
+                        July 19, 2018 on 6:47 pm                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>“As you can see, 7570 packets out of 15238 turned out to be duplicates, which is a little over 50%.”</p>
+<p>You meant ‘a little under 50%’ ! Otherwise this would be worrying, this would mean there were packets that occured 3x or more 🙂</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=26825#respond" data-commentid="26825" data-postid="880" data-belowelement="comment-26825" data-respondelement="respond" data-replyto="Reply to Colin" aria-label="Reply to Colin">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <ul class="children">
+
+    <li id="li-comment-26826" class="cf">
+        
+        <div id="comment-26826" class="comment byuser comment-author-jasper bypostauthor odd alt depth-2">
+            
+                        
+            <div class="comment-body">
+            
+                <span class="fn">Jasper</span>
+
+                <span class="comment-meta">
+
+                                        <span class="comment-parent">
+                        <i class="fa fa-mail-forward"></i>
+                        Colin                    </span>
+                    
+                    <span class="bullet" aria-hidden="true">·</span>
+                    <span class="comment-date" title="2018-07-19T19:24:21+02:00">
+                        July 19, 2018 on 7:24 pm                    </span>
+
+                    
+                    
+                </span>
+
+                <div class="comment-content cf">
+
+                    <p>You’re absolutely correct, of course – fixed now. Thanks 🙂</p>
+<p>On a side note: I have seen traces with more than 50% duplicates, but
+ that is rare. It requires SPANning more than 2 ports (or one ore more 
+VLANs), and a lot of broad/multicast packets. I’ve seen it when SPANning
+ a big VLAN on a Cisco 6500.</p>
+
+                </div>
+                
+                                <span class="reply">
+                    <a rel="nofollow" class="comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/?replytocom=26826#respond" data-commentid="26826" data-postid="880" data-belowelement="comment-26826" data-respondelement="respond" data-replyto="Reply to Jasper" aria-label="Reply to Jasper">Reply</a>                </span>
+                                
+            </div>
+            
+        </div>
+    
+    </li>
+    
+    <!-- #comment-## -->
+</ul><!-- .children -->
+<!-- #comment-## -->
+		</ul>
+	
+		<div class="navigation">
+			<div class="next-posts"></div>
+			<div class="prev-posts"></div>
+		</div>
+			
+				
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title"> <small><a rel="nofollow" id="cancel-comment-reply-link" href="https://blog.packet-foo.com/2015/03/tcp-analysis-and-the-five-tuple/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://blog.packet-foo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea autocomplete="new-password" id="comment" name="b76f72ebae" cols="45" rows="8" maxlength="65525" required="required"></textarea><textarea id="a0390b89806a731b132a907e058c94a9" aria-label="hp-comment" aria-hidden="true" name="comment" autocomplete="new-password" style="padding:0 !important;clip:rect(1px, 1px, 1px, 1px) !important;position:absolute !important;white-space:nowrap !important;height:1px !important;width:1px !important;overflow:hidden !important;" tabindex="-1"></textarea><script data-noptimize="">document.getElementById("comment").setAttribute( "id", "a0390b89806a731b132a907e058c94a9" );document.getElementById("b76f72ebae").setAttribute( "id", "comment" );</script></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label><input id="author" name="author" type="text" size="30"></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label><input id="email" name="email" type="text" size="30"></p>
+<p class="comment-form-url"><label for="url">Website</label><input id="url" name="url" type="text" size="30"></p>
+
+
+<div class="si_captcha_small"><img id="si_image_com" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/securimage_show.html" width="132" height="45" alt="CAPTCHA" title="CAPTCHA">
+    <input id="si_code_com" name="si_code_com" type="hidden" value="vHCJOoffRJ9iDkPh">
+    <div id="si_refresh_com">
+<a href="#" rel="nofollow" title="Refresh" onclick="si_captcha_refresh('si_image_com','com','/wp-content/plugins/si-captcha-for-wordpress/captcha','https://blog.packet-foo.com/wp-content/plugins/si-captcha-for-wordpress/captcha/securimage_show.php?si_sm_captcha=1&amp;si_form_id=com&amp;prefix='); return false;">
+      <img class="si_captcha_refresh" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/refresh.png" width="22" height="20" alt="Refresh" onclick="this.blur();"></a>
+  </div>
+  </div>
+
+<p id="si_captcha_code_p">
+<input id="si_captcha_code" name="si_captcha_code" type="text">
+<label for="si_captcha_code">CAPTCHA Code</label><span class="required"> *</span>
+</p>
+
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Submit"> <input type="hidden" name="comment_post_ID" value="880" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p></form>	</div><!-- #respond -->
+		
+	
+		
+	</div><!-- END #comments-->
+
+	
+	</div>
+
+</article>		
+
+	</div>
+
+	<div id="sidebar">
+    <div id="search-4" class="widget widget_search"><form action="https://blog.packet-foo.com/" id="searchform-widget" method="get">
+    <div>
+    	<label class="screen-reader-text" for="s">Search for:</label>
+		<input type="text" name="s" id="s" value="To search, type and hit Enter..." onfocus="if(this.value==this.defaultValue)this.value='';" onblur="if(this.value=='')this.value=this.defaultValue;">
+    </div>
+</form></div><div id="pages-2" class="widget widget_pages"><h6>Downloads</h6>
+			<ul>
+				<li class="page_item page-item-2458"><a href="https://blog.packet-foo.com/jaspers-colorfilters/">Jasper’s Colorfilters</a></li>
+<li class="page_item page-item-1688"><a href="https://blog.packet-foo.com/sharkfest-2017-hands-on-files/">Sharkfest 2017 Hands-On Files</a></li>
+<li class="page_item page-item-2440"><a href="https://blog.packet-foo.com/sharkfest-2019-eu-packet-challenge/">Sharkfest 2019 EU Packet Challenge</a></li>
+<li class="page_item page-item-2404"><a href="https://blog.packet-foo.com/sharkfest-2019-us-packet-challenge/">Sharkfest 2019 US Packet Challenge</a></li>
+<li class="page_item page-item-2450"><a href="https://blog.packet-foo.com/the-network-packet-capture-playbook/">The Network Packet Capture Playbook</a></li>
+			</ul>
+
+			</div><div id="recent-comments-6" class="widget widget_recent_comments"><h6>Recent Comments</h6><ul id="recentcomments"><li class="recentcomments"><span class="comment-author-link"><a href="https://lanforge.wordpress.com/" class="url" rel="ugc external nofollow">Jed Reynolds</a></span> on <a href="https://blog.packet-foo.com/2014/07/wireshark-file-storage/comment-page-1/#comment-64716">Wireshark File Storage</a></li><li class="recentcomments"><span class="comment-author-link">SV</span> on <a href="https://blog.packet-foo.com/2020/07/analyzing-a-failed-tls-connection/comment-page-1/#comment-64089">Analyzing a failed TLS connection</a></li><li class="recentcomments"><span class="comment-author-link">Jasper</span> on <a href="https://blog.packet-foo.com/2018/08/wireshark-column-setup-deepdive/comment-page-1/#comment-61385">Wireshark Column Setup Deepdive</a></li><li class="recentcomments"><span class="comment-author-link">Jasper</span> on <a href="https://blog.packet-foo.com/2019/04/wireless-capture-on-windows/comment-page-1/#comment-61384">Wireless Capture on Windows</a></li><li class="recentcomments"><span class="comment-author-link">Ram</span> on <a href="https://blog.packet-foo.com/2018/08/wireshark-column-setup-deepdive/comment-page-1/#comment-61284">Wireshark Column Setup Deepdive</a></li></ul></div>
+		<div id="recent-posts-4" class="widget widget_recent_entries">
+		<h6>Recent Posts</h6>
+		<ul>
+											<li>
+					<a href="https://blog.packet-foo.com/2021/06/ddos-tracefile-for-sharkfest-europe-2021/">DDoS Tracefile for SharkFest Europe 2021</a>
+									</li>
+											<li>
+					<a href="https://blog.packet-foo.com/2021/01/introducing-dns-hammer-part-2/">Introducing DNS Hammer, Part 2: Auditing a Name Server’s Rate Limiting Configuration</a>
+									</li>
+											<li>
+					<a href="https://blog.packet-foo.com/2021/01/introducing-dns-hammer-part-1-ddos-analysis-from-dns-reflection-to-rate-limiting/">Introducing DNS Hammer, Part 1: DDoS Analysis – From DNS Reflection to Rate Limiting</a>
+									</li>
+											<li>
+					<a href="https://blog.packet-foo.com/2020/07/analyzing-a-failed-tls-connection/">Analyzing a failed TLS connection</a>
+									</li>
+											<li>
+					<a href="https://blog.packet-foo.com/2019/07/patch-patch-patch/">Patch! Patch! Patch!</a>
+									</li>
+					</ul>
+
+		</div><div id="archives-6" class="widget widget_archive"><h6>Archives</h6>		<label class="screen-reader-text" for="archives-dropdown-6">Archives</label>
+		<select id="archives-dropdown-6" name="archive-dropdown">
+			
+			<option value="" selected="selected">Select Month</option>
+				<option value="https://blog.packet-foo.com/2021/06/"> June 2021 </option>
+	<option value="https://blog.packet-foo.com/2021/01/"> January 2021 </option>
+	<option value="https://blog.packet-foo.com/2020/07/"> July 2020 </option>
+	<option value="https://blog.packet-foo.com/2019/07/"> July 2019 </option>
+	<option value="https://blog.packet-foo.com/2019/04/"> April 2019 </option>
+	<option value="https://blog.packet-foo.com/2019/03/"> March 2019 </option>
+	<option value="https://blog.packet-foo.com/2018/11/"> November 2018 </option>
+	<option value="https://blog.packet-foo.com/2018/10/"> October 2018 </option>
+	<option value="https://blog.packet-foo.com/2018/09/"> September 2018 </option>
+	<option value="https://blog.packet-foo.com/2018/08/"> August 2018 </option>
+	<option value="https://blog.packet-foo.com/2018/07/"> July 2018 </option>
+	<option value="https://blog.packet-foo.com/2018/05/"> May 2018 </option>
+	<option value="https://blog.packet-foo.com/2018/04/"> April 2018 </option>
+	<option value="https://blog.packet-foo.com/2018/01/"> January 2018 </option>
+	<option value="https://blog.packet-foo.com/2017/12/"> December 2017 </option>
+	<option value="https://blog.packet-foo.com/2017/07/"> July 2017 </option>
+	<option value="https://blog.packet-foo.com/2017/06/"> June 2017 </option>
+	<option value="https://blog.packet-foo.com/2017/03/"> March 2017 </option>
+	<option value="https://blog.packet-foo.com/2017/01/"> January 2017 </option>
+	<option value="https://blog.packet-foo.com/2016/12/"> December 2016 </option>
+	<option value="https://blog.packet-foo.com/2016/11/"> November 2016 </option>
+	<option value="https://blog.packet-foo.com/2016/10/"> October 2016 </option>
+	<option value="https://blog.packet-foo.com/2016/09/"> September 2016 </option>
+	<option value="https://blog.packet-foo.com/2016/07/"> July 2016 </option>
+	<option value="https://blog.packet-foo.com/2016/05/"> May 2016 </option>
+	<option value="https://blog.packet-foo.com/2015/08/"> August 2015 </option>
+	<option value="https://blog.packet-foo.com/2015/07/"> July 2015 </option>
+	<option value="https://blog.packet-foo.com/2015/05/"> May 2015 </option>
+	<option value="https://blog.packet-foo.com/2015/04/"> April 2015 </option>
+	<option value="https://blog.packet-foo.com/2015/03/"> March 2015 </option>
+	<option value="https://blog.packet-foo.com/2015/02/"> February 2015 </option>
+	<option value="https://blog.packet-foo.com/2015/01/"> January 2015 </option>
+	<option value="https://blog.packet-foo.com/2014/12/"> December 2014 </option>
+	<option value="https://blog.packet-foo.com/2014/10/"> October 2014 </option>
+	<option value="https://blog.packet-foo.com/2014/09/"> September 2014 </option>
+	<option value="https://blog.packet-foo.com/2014/08/"> August 2014 </option>
+	<option value="https://blog.packet-foo.com/2014/07/"> July 2014 </option>
+	<option value="https://blog.packet-foo.com/2014/06/"> June 2014 </option>
+	<option value="https://blog.packet-foo.com/2014/05/"> May 2014 </option>
+	<option value="https://blog.packet-foo.com/2014/01/"> January 2014 </option>
+	<option value="https://blog.packet-foo.com/2013/11/"> November 2013 </option>
+	<option value="https://blog.packet-foo.com/2013/10/"> October 2013 </option>
+	<option value="https://blog.packet-foo.com/2013/09/"> September 2013 </option>
+	<option value="https://blog.packet-foo.com/2013/08/"> August 2013 </option>
+	<option value="https://blog.packet-foo.com/2013/07/"> July 2013 </option>
+	<option value="https://blog.packet-foo.com/2013/06/"> June 2013 </option>
+	<option value="https://blog.packet-foo.com/2013/05/"> May 2013 </option>
+	<option value="https://blog.packet-foo.com/2013/04/"> April 2013 </option>
+
+		</select>
+
+			<script type="text/javascript">
+/* <![CDATA[ */
+
+(function() {
+	var dropdown = document.getElementById( "archives-dropdown-6" );
+	function onSelectChange() {
+		if ( dropdown.options[ dropdown.selectedIndex ].value !== '' ) {
+			document.location.href = this.options[ this.selectedIndex ].value;
+		}
+	}
+	dropdown.onchange = onSelectChange;
+})();
+
+/* ]]> */
+</script>
+</div><div id="meta-6" class="widget widget_meta"><h6>Meta</h6>
+		<ul>
+						<li><a href="https://blog.packet-foo.com/wp-login.php">Log in</a></li>
+			<li><a href="https://blog.packet-foo.com/feed/">Entries feed</a></li>
+			<li><a href="https://blog.packet-foo.com/comments/feed/">Comments feed</a></li>
+
+			<li><a href="https://wordpress.org/">WordPress.org</a></li>
+		</ul>
+
+		</div><div id="pages-3" class="widget widget_pages"><h6>Rechtliches</h6>
+			<ul>
+				<li class="page_item page-item-2065"><a href="https://blog.packet-foo.com/erklarung-zur-informationspflicht-datenschutzerklarung/">Erklärung zur Informationspflicht (Datenschutzerklärung)</a></li>
+<li class="page_item page-item-459"><a href="https://blog.packet-foo.com/impressum-und-visdp/">Impressum und ViSdP</a></li>
+<li class="page_item page-item-2458"><a href="https://blog.packet-foo.com/jaspers-colorfilters/">Jasper’s Colorfilters</a></li>
+<li class="page_item page-item-2440"><a href="https://blog.packet-foo.com/sharkfest-2019-eu-packet-challenge/">Sharkfest 2019 EU Packet Challenge</a></li>
+<li class="page_item page-item-2404"><a href="https://blog.packet-foo.com/sharkfest-2019-us-packet-challenge/">Sharkfest 2019 US Packet Challenge</a></li>
+<li class="page_item page-item-2450"><a href="https://blog.packet-foo.com/the-network-packet-capture-playbook/">The Network Packet Capture Playbook</a></li>
+			</ul>
+
+			</div></div>	
+	</div><!-- end #content -->
+
+	<footer id="footer">
+
+		<div class="container clear">
+
+			<div class="copyright float-left">
+				<span class="footer-text"><a href="https://www.packet-foo.com/">PACKET-FOO.COM</a> Analyzing network packets since 2003 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://blog.packet-foo.com/impressum-und-visdp/">Impressum</a></span>
+			</div>
+
+			<div class="social-icons float-right">
+				
+				<a href="https://twitter.com/PacketJay"><i class="fa fa-twitter"></i></a><a href="https://plus.google.com/102341784722576412208/posts"><i class="fa fa-google-plus"></i></a>				
+			</div>
+
+		</div>
+
+	</footer>
+
+	
+
+
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/*"},{"not":{"href_matches":["\/wp-*.php","\/wp-admin\/*","\/wp-content\/uploads\/*","\/wp-content\/*","\/wp-content\/plugins\/*","\/wp-content\/themes\/typist\/*","\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/comment-reply.min.js" id="comment-reply-js" async="async" data-wp-strategy="async"></script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/jquery.fitvids.js" id="fitvids-js"></script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/respond.min.js" id="respond-js"></script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/hoverIntent.min.js" id="hoverIntent-js"></script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/jquery.magnific-popup.js" id="magnific-popup-js"></script>
+<script type="text/javascript" id="global-js-extra">
+/* <![CDATA[ */
+var pnpvars = {"templateurl":"https:\/\/blog.packet-foo.com\/wp-content\/themes\/typist\/","ajaxurl":"https:\/\/blog.packet-foo.com\/wp-admin\/admin-ajax.php","site_title":"Packet-Foo | Network Packet Capture and Analysis"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/jquery.global.js" id="global-js"></script>
+<script type="text/javascript" id="wp-statistics-tracker-js-extra">
+/* <![CDATA[ */
+var WP_Statistics_Tracker_Object = {"requestUrl":"https:\/\/blog.packet-foo.com\/wp-json\/wp-statistics\/v2","ajaxUrl":"https:\/\/blog.packet-foo.com\/wp-admin\/admin-ajax.php","hitParams":{"wp_statistics_hit":1,"source_type":"post","source_id":880,"search_query":"","signature":"e7f8a489f40a14292cf785788a47ef85","endpoint":"hit"},"onlineParams":{"wp_statistics_hit":1,"source_type":"post","source_id":880,"search_query":"","signature":"e7f8a489f40a14292cf785788a47ef85","endpoint":"online"},"option":{"userOnline":"1","consentLevel":"","dntEnabled":"1","bypassAdBlockers":"","isWpConsentApiActive":false,"trackAnonymously":false,"isPreview":false},"jsCheckTime":"60000","isLegacyEventLoaded":""};
+/* ]]> */
+</script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/tracker.js" id="wp-statistics-tracker-js"></script>
+<script type="text/javascript" src="TCP%20Analysis%20and%20the%20Five-Tuple%20_%20Packet-Foo%20_%20Network%20Packet%20Capture%20and%20Analysis_files/si_captcha.js" id="si_captcha-js"></script>
+
+<!-- End Document
+================================================== -->
+
+</body></html>
