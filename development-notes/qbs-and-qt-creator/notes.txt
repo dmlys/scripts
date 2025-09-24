@@ -62,6 +62,7 @@ Tools -> Options -> C++:
 Tools -> Options -> Build and run: General:
   Save all files before build: true
   Open compile output pane when building: true
+  Start build processes with low priority: true
 
   Default build directory:
     тут по умолчанию относительный путь выше проекта, стоит поменять на, например, bin
@@ -69,7 +70,7 @@ Tools -> Options -> Build and run: General:
 
 
 
-Tools -> Options -> Build and run: General:
+Tools -> Options -> Debugger: General:
   General:
     Switch to previous mode on debugger exit: true
 

@@ -187,7 +187,7 @@ linux может не сохранять яркость при перезагр�
 по backlight еще можно почитать:
 https://wiki.ubuntu.com/Kernel/Debugging/Backlight
 
-выключить нафиг baloo(сервис индексации файлов, по факту на слабых машинах может приводить к тормазам)
+выключить нафиг baloo(сервис индексации файлов, по факту на слабых машинах может приводить к тормозам)
 $ balooctl disable
 
 дефолтные папки:
@@ -203,6 +203,7 @@ By design, PulseAudio automatically turns off Line Out when headphones are plugg
 You can observe this behavior in alsamixer(1). What we want is to have Headphone and Line Out sliders working separately and at the same time.
 
 1. By default, Line Out's volume controlled only by Master, and not by Line Out slider itself. We want to merge Line Out with Master.
+Edit: /usr/share/pulseaudio/alsa-mixer/paths/analog-output-lineout.conf
 Add this snippet to the end of the file:
 [Element Line Out]
 switch = mute
@@ -221,8 +222,8 @@ volume = off
 /***********************************************************************
 /* https://wiki.archlinux.org/title/PulseAudio/Examples#Splitting_front
 /***********************************************************************
-!!! Это создаст только виртуальные устройства, более того это просто перенапривит rear динамики на наушники.
-    Тоесть нужно втыкать наушники в rear выход(спец гнездо для наушников, обычно спереди).
+!!! Это создаст только виртуальные устройства, более того это просто перенаправит rear динамики на наушники.
+    То есть нужно втыкать наушники в rear выход(спец гнездо для наушников, обычно сзади, там же где и line-out).
 
 https://wiki.archlinux.org/title/PulseAudio/Examples#Splitting_front/rear
 
