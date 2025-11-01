@@ -18,22 +18,45 @@ xhost +local: - разрешить любые локальные подключ�
 
 Далее распространенные формы авторизации: MIT-MAGIC-COOKIE-1, XDM-AUTHORIZATION-1
 from man Xsecurity:
-MIT-MAGIC-COOKIE-1
-	      When  using MIT-MAGIC-COOKIE-1, the client sends a 128 bit "cookie" along with the connection setup information.  If the cookie presented by the client matches one that the X server has, the connection is allowed access.  The cookie is chosen so that it is hard to guess; xdm generates such cookies automatically when this form of access control is used.  The user's copy of the cookie is usually stored in the .Xauthority file  in the home directory, although the environment variable XAUTHORITY can be used to specify an alternate location.  Xdm automatically passes a cookie to the server for each new login session, and stores the cookie in the user file at login.
+  MIT-MAGIC-COOKIE-1
+	      When using MIT-MAGIC-COOKIE-1, the client sends a 128 bit "cookie" along with the connection setup information.
+        If the cookie presented by the client matches one that the X server has, the connection is allowed access.
+        The cookie is chosen so that it is hard to guess; xdm generates such cookies automatically when this form of access control is used.
+        The user's copy of the cookie is usually stored in the .Xauthority file  in the home directory,
+        although the environment variable XAUTHORITY can be used to specify an alternate location.
+        Xdm automatically passes a cookie to the server for each new login session, and stores the cookie in the user file at login.
 
-	      The cookie is transmitted on the network without encryption, so there is nothing to prevent a network snooper from obtaining the data and using it to gain access to the X server.  This system is useful in an environment  where many users are running applications on the same machine and want to avoid interference from each other, with the caveat that this control is only as good as the access control to the physical network. In environments where network-level snooping is difficult, this system can work reasonably well.
+	      The cookie is transmitted on the network without encryption,
+        so there is nothing to prevent a network snooper from obtaining the data and using it to gain access to the X server.
+        This system is useful in an environment where many users are running applications on the same machine and want to avoid interference from each other,
+        with the caveat that this control is only as good as the access control to the physical network.
+        In environments where network-level snooping is difficult, this system can work reasonably well.
 
 	XDM-AUTHORIZATION-1
-	      Sites who compile with DES support can use a DES-based access control mechanism called XDM-AUTHORIZATION-1.  It is similar in usage to MIT-MAGIC-COOKIE-1 in that a key is stored in the .Xauthority file and is  shared with the X server.  However, this key consists of two parts - a 56 bit DES encryption key and 64 bits of random data used as the authenticator.
+	      Sites who compile with DES support can use a DES-based access control mechanism called XDM-AUTHORIZATION-1.
+        It is similar in usage to MIT-MAGIC-COOKIE-1 in that a key is stored in the .Xauthority file and is shared with the X server.
+        However, this key consists of two parts - a 56 bit DES encryption key and 64 bits of random data used as the authenticator.
 
-	      When connecting to the X server, the application generates 192 bits of data by combining the current time in seconds (since 00:00 1/1/1970 GMT) along with 48 bits of "identifier".  For TCP/IPv4 connections, the identifier is the address plus port number; for local connections it is the process ID and 32 bits to form a unique id (in case multiple connections to the same server are made from  a  single  process).   This  192  bit packet  is  then  encrypted using the DES key and sent to the X server, which is able to verify if the requestor is authorized to connect by decrypting with the same DES key and validating the authenticator and additional data.  This system is useful in many environments where host-based access control is inappropriate and where network security cannot be ensured.
+	      When connecting to the X server, the application generates 192 bits of data by combining the current time in seconds (since 00:00 1/1/1970 GMT) along with 48 bits of "identifier".
+        For TCP/IPv4 connections, the identifier is the address plus port number;
+        for local connections it is the process ID and 32 bits to form a unique id (in case multiple connections to the same server are made from a single process).
+        This 192 bit packet is then encrypted using the DES key and sent to the X server,
+        which is able to verify if the requestor is authorized to connect by decrypting with the same DES key and validating the authenticator and additional data.
+        This system is useful in many environments where host-based access control is inappropriate and where network security cannot be ensured.
 
-  THE AUTHORIZATION FILE
-         Except for Host Access control and Server Interpreted Access Control, each of these systems uses data stored in the .Xauthority file to generate the correct authorization information to pass along to the X server at connection  setup.   MIT-MAGIC-COOKIE-1  and XDM-AUTHORIZATION-1 store secret data in the file; so anyone who can read the file can gain access to the X server.
+THE AUTHORIZATION FILE
+         Except for Host Access control and Server Interpreted Access Control, each of these systems uses data stored in the .Xauthority file
+         to generate the correct authorization information to pass along to the X server at connection  setup.
+         MIT-MAGIC-COOKIE-1  and XDM-AUTHORIZATION-1 store secret data in the file; so anyone who can read the file can gain access to the X server.
 
-         Each entry in the .Xauthority file matches a certain connection family (TCP/IP, DECnet or local connections) and X display name (hostname plus display number).  This allows multiple authorization entries for different  displays  to share the same data file.  A special connection family (FamilyWild, value 65535) causes an entry to match every display, allowing the entry to be used for all connections.  Each entry additionally contains the authorization name and whatever private authorization data is needed by that authorization type to generate the correct information at connection setup time.
+         Each entry in the .Xauthority file matches a certain connection family (TCP/IP, DECnet or local connections) and X display name (hostname plus display number).
+         This allows multiple authorization entries for different displays to share the same data file.
+         A special connection family (FamilyWild, value 65535) causes an entry to match every display, allowing the entry to be used for all connections.
+         Each entry additionally contains the authorization name and whatever private authorization data 
+         is needed by that authorization type to generate the correct information at connection setup time.
 
-         The xauth program manipulates the .Xauthority file format.  It understands the semantics of the connection families and address formats, displaying them in an easy to understand format.  It also understands  that  SUN-DES-1 uses string values for the authorization data, and displays them appropriately.
+         The xauth program manipulates the .Xauthority file format. It understands the semantics of the connection families and address formats,
+         displaying them in an easy to understand format. It also understands that SUN-DES-1 uses string values for the authorization data, and displays them appropriately.
 
 
 https://wiki.archlinux.org/index.php/Systemd-nspawn#Use_an_X_environment
