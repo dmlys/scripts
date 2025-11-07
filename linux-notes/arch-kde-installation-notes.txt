@@ -33,11 +33,16 @@ reboot
 /***********************************************************************
 /* NVIDIA proprietary driver
 /***********************************************************************
-pacman --sync --needed nvidia nvidia-utils nvidia-settings
+pacman --sync --needed nvidia-open nvidia-utils nvidia-settings
 
 https://wiki.archlinux.org/title/NVIDIA#Installation
+# The nvidia-utils package contains a file which blacklists the nouveau module once you reboot.
+# Optionally, you can also remove kms from the HOOKS array in /etc/mkinitcpio.conf and regenerate the initramfs.
+# This will prevent the initramfs from containing the nouveau module making sure the kernel cannot load it during early boot.
+## Это как будто бы только для исключения nouveau и, в целом, не обязательно.
 рекомендуется: Remove kms from the HOOKS array in /etc/mkinitcpio.conf and regenerate initramfs - mkinitcpio -P
 
+# С новых версий nvidia(560.35.03-5) DRM вроде как включен по-умолчанию и следующее не нужно, хотя и не сломает ничего
 # to enable NVIDIA kernel mode setting on NVIDIA proprietary driver add following file with kernel option
 /etc/modprobe.d/nvidia-drm-modeset.conf: options nvidia_drm modeset=1
 
@@ -46,6 +51,12 @@ https://wiki.archlinux.org/title/NVIDIA#Installation
 /***********************************************************************
 Проблема в особенностях проприетарного драйвера NVIDEA. Скорее всего с nouveau этой проблемы не будет.
 https://wiki.archlinux.org/title/NVIDIA/Tips_and_tricks#Preserve_video_memory_after_suspend
+    
+!!! Если nvidia модули добавлены в early userspace mkinitcpio.conf MODULES=(...nvidia...)
+    То этот механизм не будет работать, поскольку  /usr/lib/modprobe.d/nvidia-sleep.conf задает options nvidia NVreg_TemporaryFilePath=/var/tmp
+    и /var/tmp еще недоступен, а еще драйвер будет ругаться на procfs при выходе из hibernation'а.
+    Смотри шрифты для Linux console предлагают добавить nvidia в early userpsace.
+    
 
 By default the NVIDIA Linux drivers save and restore only essential video memory allocations on system suspend and resume. Quoting NVIDIA:
 
@@ -54,10 +65,19 @@ By default the NVIDIA Linux drivers save and restore only essential video memory
 
 The "still experimental" interface enables saving all video memory (given enough space on disk or RAM).
 
-/etc/modprobe.d/nvidia-memsleep.conf:
-options nvidia NVreg_PreserveVideoMemoryAllocations=1
+To save and restore all video memory contents,
+NVreg_PreserveVideoMemoryAllocations=1 kernel module parameter for the nvidia kernel module needs to be set.
 
-systemctl enable nvidia-resume.service nvidia-suspend.service nvidia-hibernate.service
+While NVIDIA does not set this by default, Arch Linux does so for the supported drivers, making preserve work out of the box. 
+
+## В последних версиях это уже настроенно, и параметры   options nvidia NVreg_PreserveVideoMemoryAllocations=1   уже заданны в /usr/lib/modprobe.d/nvidia-sleep.conf
+## Так же nvidia-resume.service nvidia-suspend.service nvidia-hibernate.service должны быть включены по-умолчанию
+!! следующие действие не нужны
+
+## /etc/modprobe.d/nvidia-memsleep.conf:
+## options nvidia NVreg_PreserveVideoMemoryAllocations=1
+
+## systemctl enable nvidia-resume.service nvidia-suspend.service nvidia-hibernate.service
 
 
 /***********************************************************************

@@ -87,6 +87,12 @@ hwclock --systohc
 mcedit /etc/locale.gen
 locale-gen
 
+## Строго говоря не обязательно, но Linux console(или какой-то компонент с этим связанный) будет считать что она не в UTF-8 работает(а видимо в CP437),
+## из-за чего всякие Linux Console шрифты(kbd) для отображения unicode'а не будет работать
+/etc/locale.conf:
+LANG=C.UTF-8
+
+
 mcedit /etc/hostname - записать желаемое имя
 mcedit /etc/hosts добавить:
 127.0.0.1	 localhost
@@ -161,8 +167,9 @@ timedatectl set-local-rtc 1
 можно и возможно стоит подправить /etc/fstab
 genfstab пишет options rw,relatime, почему не defaults(,relatime)?
 
+
 /etc/pacman.conf:
-IgnorePkg   = kiconthemes
+IgnorePkg   = 
 IgnoreGroup = modified
 ...
 Color
@@ -193,6 +200,8 @@ NOTE: /etc/grub.d/30_os-prober - присутствует и без пакета
 
 pacman --sync --needed pacman-contrib # содержит rankmirrors, pactree и ряд прочих полезных утилит
 
+pacman --sync --needed kbd  # Linux console шрифты и прочие keyboard mapping'и
+pacman --sync --needed terminus-font # Доп terminus шрифты для Linux console
 pacman --sync --needed mc
 pacman --sync --needed htop
 pacman --sync --needed sudo
@@ -214,6 +223,64 @@ pacman --sync --needed git
 
 
 pacman --sync --needed pax-utils # содержит lddtree
+
+/***********************************************************************
+/* Linux console
+/***********************************************************************
+!!! Это строго опционально и нужно что сменить шрифт в Linux Console, например поддерживающий кириллицу или просто какой-то не дефолтный
+    Для графических окружений(GNOME, KDE, etc) это все не нужно.
+    
+https://wiki.archlinux.org/title/Linux_console#Fonts
+https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Persistent_configuration
+
+Одноразово в данной сессии:
+setfont UniCyr_8x16  #
+loadkeys ru          # от root'а
+
+Persistent: В /etc/vconsole.conf прописать:
+FONT=UniCyr_8x16 # из пакета kbd; или можно взять terminus "ter-c16b" из покета terminus-font
+KEYMAP=ru  # Русская раскладка, так же из пакета kbd. Переключение раскладки строго по Ctrl+Shift - это прописано в самой раскладке, в других может быть по другому
+
+systemctl status systemd-vconsole-setup.service  # Что бы подхватить изменения, или просто reboot
+
+
+
+Для NVIDIA еще потребуется следующее:
+https://wiki.archlinux.org/title/Linux_console#Persistent_configuration
+https://wiki.archlinux.org/title/NVIDIA#Early_loading
+
+If the fonts appear to not change on boot, or change only temporarily,
+it is most likely that they got reset when graphics driver was initialized and console was switched to framebuffer.
+By default, all in-tree kernel drivers are loaded early,
+NVIDIA users should see NVIDIA#Early loading to load their graphics driver before /etc/vconsole.conf is applied.
+
+
+!!! Это сломает hibernation - https://wiki.archlinux.org/title/NVIDIA/Tips_and_tricks#Preserve_video_memory_after_suspend
+    /usr/lib/modprobe.d/nvidia-sleep.conf задает options nvidia NVreg_TemporaryFilePath=/var/tmp и /var/tmp еще недоступен в early userspace.
+    
+Нужно в /etc/mkinitcpio.conf прописать MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm) и выполнить mkinitcpio -P
+Делать это нужно после каждого обновления nvidia драйверов, или сделать pacman hook для автоматизации
+
+/etc/pacman.d/hooks/nvidia.hook:
+[Trigger]
+Operation=Install
+Operation=Upgrade
+Operation=Remove
+Type=Package
+# You can remove package(s) that don't apply to your config, e.g. if you only use nvidia-open you can remove nvidia-lts as a Target
+Target=nvidia
+Target=nvidia-open
+Target=nvidia-lts
+# If running a different kernel, modify below to match
+Target=linux
+
+[Action]
+Description=Updating NVIDIA module in initcpio
+Depends=mkinitcpio
+When=PostTransaction
+NeedsTargets
+Exec=/bin/sh -c 'while read -r trg; do case $trg in linux*) exit 0; esac; done; /usr/bin/mkinitcpio -P'
+
 
 /***********************************************************************
 /* Создаем пользователя
@@ -273,6 +340,9 @@ Needs swap partition(or file)
 
 regenerate initramfs:
   mkinitcpio -P
+
+for latest versions of systemd resume is optional - it manually sets swap partition location,
+but systemd by default will save this information on hibernation into EFI vars, so resume is no longer needed, unless you want to override defaults.
 
 add resume runtime parameter to kernel via grub /etc/default/grub:
   GRUB_CMDLINE_LINUX_DEFAULT="... resume=\"PARTLABEL=SWAP\" ... "
