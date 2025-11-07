@@ -1,0 +1,15 @@
+/**************************************************
+/* Показать файлы из пакета, которые были изменены
+/**************************************************
+# покажет backup files и скажет были ли они изменены
+# (backup - набор файлов описываемых в PKGBUILD, как правило конфиги)
+# В целом работает только для /etc конфигов
+pacman --query -ii <pkg>  
+
+# check that package files exist (-kk for file properties)
+# покажет что какие-то файлы были изменены, если таковые есть
+pacman --query -kk mkinitcpio
+
+# показать конкретные изменения по файлу
+tar -xOf /var/cache/pacman/pkg/mkinitcpio-39.2-3-any.pkg.tar.zst etc/mkinitcpio.conf | colordiff /etc/mkinitcpio.conf -
+
