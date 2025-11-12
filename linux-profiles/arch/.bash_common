@@ -36,6 +36,9 @@ umask 002
 #turn off Ctrl+S, Ctrl+Q termianl stop
 stty -ixon
 
+# disable bell in linux console
+[[ `tty` == /dev/tty[0-9]* ]] && setterm --blength=0
+
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
