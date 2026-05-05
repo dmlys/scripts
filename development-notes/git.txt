@@ -8,6 +8,9 @@ git stash show -p stash@{1}
 # технически, видимо, stash commit удаляет сохраняемое, а при git stash pop - reverse'ит
 git diff -R stash@{0}
 
+запушить tag в ветку
+git push origin  refs/tags/<something>^{commit}:refs/heads/release/<something>
+
 ============================================
 git rebase master -Xignore-space-change -Xfind-renames=100%
 -X прокидывает доп флаги в merge алгоритм
