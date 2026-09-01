@@ -9,7 +9,7 @@ git stash show -p stash@{1}
 git diff -R stash@{0}
 
 запушить tag в ветку
-git push origin  refs/tags/<something>^{commit}:refs/heads/release/<something>
+git push origin  refs/tags/r<something>^{commit}:refs/heads/release/<something>
 
 ============================================
 git rebase master -Xignore-space-change -Xfind-renames=100%
