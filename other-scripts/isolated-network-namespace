@@ -1,0 +1,55 @@
+#!/bin/bash
+
+NSNAME=isolated
+NSNAME_GATEWAY=192.168.254.1
+
+BRIDGE_NAME=virbr0
+# looks like interface name can't be >= 16 chars
+VETH_NSEXT_NAME=veth-isltd-ext
+VETH_NSINT_NAME=veth-isltd-int
+
+    VETH_NSMASK=192.168.254.0/24
+#VETH_NSEXT_ADDR=192.168.254.4/24
+VETH_NSINT_ADDR=192.168.254.3/24
+
+LAN_NETWORK=192.168.1.0/24
+
+
+
+function create
+{
+	set -eux
+
+	ip netns add $NSNAME
+
+	ip -netns $NSNAME addr add 127.0.0.1/8 dev lo
+	ip -netns $NSNAME link set lo up
+
+	ip link add $VETH_NSEXT_NAME type veth peer $VETH_NSINT_NAME netns $NSNAME
+	ip link set $VETH_NSEXT_NAME up master $BRIDGE_NAME
+
+	ip -netns $NSNAME link set $VETH_NSINT_NAME up
+	ip -netns $NSNAME addr add $VETH_NSINT_ADDR dev $VETH_NSINT_NAME
+	ip -netns $NSNAME route add $LAN_NETWORK via ${NSNAME_GATEWAY%/*} dev $VETH_NSINT_NAME proto static
+	ip -netns $NSNAME route add default via ${NSNAME_GATEWAY%/*} dev $VETH_NSINT_NAME proto static
+
+	mkdir --parents /etc/netns/$NSNAME
+	echo nameserver $NSNAME_GATEWAY > /etc/netns/$NSNAME/resolv.conf
+}
+
+function destroy
+{
+	set -eux
+
+	#ip link set $VETH_NSEXT_NAME down nomaster
+
+	# removing namespace will delete VETH_INT device, and that will remove counterpart VETH_EXT device
+	# so the only thing that we need to do is delete network namespace itself, and /etc/netns/$NSNAME directory
+	rm -r /etc/netns/$NSNAME
+	ip netns delete $NSNAME
+}
+
+
+case "$1" in
+	create|destroy) "$1" ;;
+esac
